@@ -116,16 +116,3 @@ module enclosure_ssr_mount(obj) {
         translate([24, -14, 0]) M6_tube();
     }
 }
-
-enclosure = enclosure_define(L=115, W=78, H=60, thick=1.5);
-
-difference() {
-    enclosure_box(enclosure);
-    union() {
-        enclosure_punch(enclosure, wall="front", D=11.5, horizontal=enclosure_L(enclosure) / 2, vertical=enclosure_H(enclosure) / 2);
-        enclosure_punch(enclosure, wall="left", D=14, horizontal=18, vertical=40);
-        enclosure_punch(enclosure, wall="right", D=14, horizontal=60, vertical=40);
-    }
-}
-
-translate([0, enclosure_W(enclosure) + 10, 0]) enclosure_lid(enclosure);
