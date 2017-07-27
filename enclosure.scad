@@ -63,6 +63,25 @@ module enclosure_punch(obj, wall, D, horizontal, vertical) {
     translate(translates[wall_id]) rotate(rotations[wall_id])  linear_extrude(height=thick+2) circle(r=D/2, $fn=100) children();
 }
 
+module enclosure_lid(obj) {
+    L = enclosure_L(obj);
+    W = enclosure_W(obj);
+    thick = enclosure_thick(obj);
+    
+    module hole() {
+        linear_extrude(height=thick) circle(r=6.6/2, $fn=100);
+        linear_extrude(height=thick/2) circle(r=12/2, $fn=100);
+    }
+    
+    difference() {
+        linear_extrude(height=thick) square([L, W]);
+        union() {
+            translate([mount/2,W/2,0]) hole();
+            translate([L-mount/2,W/2,0]) hole();
+        }
+    }
+}
+
 enclosure = enclosure_define(L=115, W=78, H=60, thick=1.5);
 
 difference() {
@@ -73,3 +92,5 @@ difference() {
         enclosure_punch(enclosure, wall="right", D=14, horizontal=60, vertical=40);
     }
 }
+
+translate([0, enclosure_W(enclosure) + 10, 0]) enclosure_lid(enclosure);
