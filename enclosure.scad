@@ -105,6 +105,18 @@ module enclosure_pi_mount(obj) {
     }
 }
 
+module enclosure_ssr_mount(obj) {
+    thick = enclosure_thick(obj);
+
+    translate([thick, thick, thick])
+    union() {
+        M6_tube();
+        translate([47.6, 0, 0]) M6_tube();
+        translate([24, 14, 0]) M6_tube();
+        translate([24, -14, 0]) M6_tube();
+    }
+}
+
 enclosure = enclosure_define(L=115, W=78, H=60, thick=1.5);
 
 difference() {
