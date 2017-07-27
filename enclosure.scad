@@ -23,9 +23,11 @@ module enclosure_box(obj)
     
 	module mount()
 	{
-        union() {
-           translate([0, 0, H-15-thick]) linear_extrude(height=thick) circle(r=mount/2, $fn=100);
-           translate([0, 0, H-15]) M6_tube(D=mount, windings=16);
+        if (H >= 16 - thick) {
+            union() {
+               translate([0, 0, H-16-thick]) linear_extrude(height=thick) circle(r=mount/2, $fn=100);
+               translate([0, 0, H-16]) M6_tube(D=mount, windings=16);
+            }
         }
 	}
 
