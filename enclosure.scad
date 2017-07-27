@@ -93,6 +93,18 @@ module enclosure_lid(obj) {
     }
 }
 
+module enclosure_pi_mount(obj) {
+    thick = enclosure_thick(obj);
+
+    translate([thick, thick, thick])
+    union() {
+        M2_5_tube();
+        translate( [58, 0, 0] ) M2_5_tube();
+        translate( [0, 49, 0] ) M2_5_tube();
+        translate( [58, 49, 0] ) M2_5_tube();
+    }
+}
+
 enclosure = enclosure_define(L=115, W=78, H=60, thick=1.5);
 
 difference() {
