@@ -1,14 +1,15 @@
 include <threads.scad>
 include <utils.scad>
 
-function enclosure_define(L=115, W=78, H=34, thick=2.5, mount=12) = 
-    [ L, W, H, thick, mount ];
+function enclosure_define(L=115, W=78, H=34, thick=2.5, mount=12, lip=true) = 
+    [ L, W, H, thick, mount, lip ];
 
 function enclosure_L(obj) = obj[0];
 function enclosure_W(obj) = obj[1];
 function enclosure_H(obj) = obj[2];
 function enclosure_thick(obj) = obj[3];
 function enclosure_mount(obj) = obj[4];
+function enclosure_lip(obj) = obj[5];
 
 function enclosure_wall(str) = str == "front" ? 0 : str == "left" ? 1 : str == "right" ? 2 : str == "back"?  3 : -1;
     
@@ -40,9 +41,11 @@ module enclosure_box(obj)
     }
 
     module lip() {
-        translate([thick/2, thick/2, H-thick/2])
-        linear_extrude(height=thick/2)
-        rounded_square(r=thick*2, w=W-thick, h=L-thick);
+        if (enclosure_lip(obj)) {
+            translate([thick/2, thick/2, H-thick/2])
+            linear_extrude(height=thick/2)
+            rounded_square(r=thick*2, w=W-thick, h=L-thick);
+        }
     }
 
     difference() {
@@ -76,10 +79,12 @@ module enclosure_lid(obj) {
     }
     
     module lip() {
-        translate([0, 0, thick/2])
-        difference() {
-            linear_extrude(height=thick/2) rounded_square(r=thick*2, w=W, h=L);
-            linear_extrude(height=thick/2) translate([thick/2, thick/2, 0]) rounded_square(r=thick*2, w=W-thick, h=L-thick);
+        if (enclosure_lip(obj)) {
+            translate([0, 0, thick/2])
+            difference() {
+                linear_extrude(height=thick/2) rounded_square(r=thick*2, w=W, h=L);
+                linear_extrude(height=thick/2) translate([thick/2, thick/2, 0]) rounded_square(r=thick*2, w=W-thick, h=L-thick);
+            }
         }
     }
 
