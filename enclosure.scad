@@ -1,4 +1,5 @@
 include <threads.scad>
+include <utils.scad>
 
 function enclosure_define(L=115, W=78, H=34, thick=2.5, mount=12) = 
     [ L, W, H, thick, mount ];
@@ -19,19 +20,6 @@ module enclosure_box(obj)
     thick = enclosure_thick(obj);
     mount = enclosure_mount(obj);
     
-	module roundedsquare(r,w,h)
-	{
-		union()
-		{
-			translate([r,r]) circle(r=r, $fn=50);
-			translate([r,w-r]) circle(r=r, $fn=50);
-			translate([h-r,r]) circle(r=r, $fn=50);
-			translate([h-r,w-r]) circle(r=r, $fn=50);
-			translate([0,r]) square([h,w-(r*2)]);	
-			translate([r,0]) square([h-(r*2),w]);
-		}	
-	}
-	
 	module mount()
 	{
         union() {
@@ -40,14 +28,27 @@ module enclosure_box(obj)
         }
 	}
 
-	difference()
-	{	
-	    linear_extrude(height=H) roundedsquare(r=thick*2,w=W,h=L);
-		translate([thick, thick, thick]) linear_extrude(height=H+2) roundedsquare(r=thick,w=W-thick*2,h=L-thick*2);
+    module box() {
+        union() {
+            difference() {
+                linear_extrude(height=H) rounded_square(r=thick*2,w=W,h=L);
+                translate([thick, thick, thick]) linear_extrude(height=H+2) rounded_square(r=thick,w=W-thick*2,h=L-thick*2);
+            }
+            translate([mount/2,W/2,0]) mount();
+            translate([L-mount/2,W/2,0]) mount();
+        }
     }
-    
-    translate([mount/2,W/2,0]) mount();
-    translate([L-mount/2,W/2,0]) mount();
+
+    module lip() {
+        translate([thick/2, thick/2, H-thick/2])
+        linear_extrude(height=thick/2)
+        rounded_square(r=thick*2, w=W-thick, h=L-thick);
+    }
+
+    difference() {
+        box();
+        lip();
+    }
 }
 
 module enclosure_punch(obj, wall, D, horizontal, vertical) {
@@ -67,17 +68,27 @@ module enclosure_lid(obj) {
     L = enclosure_L(obj);
     W = enclosure_W(obj);
     thick = enclosure_thick(obj);
+    mount = enclosure_mount(obj);
     
     module hole() {
         linear_extrude(height=thick) circle(r=6.6/2, $fn=100);
-        linear_extrude(height=thick/2) circle(r=12/2, $fn=100);
+        linear_extrude(height=thick/2) circle(r=10/2, $fn=100);
     }
     
+    module lip() {
+        translate([0, 0, thick/2])
+        difference() {
+            linear_extrude(height=thick/2) rounded_square(r=thick*2, w=W, h=L);
+            linear_extrude(height=thick/2) translate([thick/2, thick/2, 0]) rounded_square(r=thick*2, w=W-thick, h=L-thick);
+        }
+    }
+
     difference() {
-        linear_extrude(height=thick) square([L, W]);
+        linear_extrude(height=thick) rounded_square(r=thick*2, w=W, h=L);
         union() {
             translate([mount/2,W/2,0]) hole();
             translate([L-mount/2,W/2,0]) hole();
+            lip();
         }
     }
 }
