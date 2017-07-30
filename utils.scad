@@ -1,10 +1,16 @@
-module rounded_square(r,w,h) {
+module rounded_square(size, r=1) {
+    x=size[0];
+    y=size[1];
     union() {
 	translate([r,r]) circle(r=r, $fn=50);
-	translate([r,w-r]) circle(r=r, $fn=50);
-	translate([h-r,r]) circle(r=r, $fn=50);
-	translate([h-r,w-r]) circle(r=r, $fn=50);
-	translate([0,r]) square([h,w-(r*2)]);	
-	translate([r,0]) square([h-(r*2),w]);
+	translate([r,y-r]) circle(r=r, $fn=50);
+	translate([x-r,r]) circle(r=r, $fn=50);
+	translate([x-r,y-r]) circle(r=r, $fn=50);
+	translate([0,r]) square([x,y-(r*2)]);	
+	translate([r,0]) square([x-(r*2),y]);
     }	
+}
+
+module rounded_cube(size, r=1) {
+    linear_extrude(height=size[2]) rounded_square(size);
 }
