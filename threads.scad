@@ -1,31 +1,77 @@
 use <Threading.scad>
 
-module M2_5_thread(windings = 16)
+function M2_5_pitch() = 0.45;
+function M6_pitch() = 1;
+
+module thread(length, pitch, d)
 {
-   threading(pitch = 0.45, d=6, windings=windings, full=true);
+   windings = length / pitch;
+   threading(pitch = pitch, d=d, windings=windings);
 }
 
-module M2_5_nut(D = 6, windings = 8)
-{
-   Threading(D=D, pitch = 0.45, d=2.5, windings=windings, full=true, $fn=6);
+module nut(D, pitch, d) {
+   Threading(D=D, pitch = pitch, d=d, windings=5, full=true, $fn=6);  
 }
 
-module M2_5_tube(D=6, windings = 8)
-{
-  Threading(D=D, pitch = 0.45, d=2.5, windings=windings, full=true, $fn=100);
+module tube(D, pitch, d, length) {
+    windings = length / pitch;
+    Threading(D=D, pitch = pitch, d=d, windings=windings, full=true, $fn=100);  
 }
 
-module M6_thread(windings = 16)
+module M2_5_nut(D=5)
 {
-   threading(pitch = 1, d=6, windings=windings, full=true);
+    nut(D, pitch=M2_5_pitch(), d=2.5);
 }
 
-module M6_nut(windings = 8)
+module M2_5_hex_bolt(length = 16, D=6, h=2)
 {
-   Threading(D=12, pitch = 1, d=6, windings=windings, full=true, $fn=6);  
+    union() {
+        thread(d=2.5, pitch=M2_5_pitch(), length=length+h);
+        cylinder(d=D, h=h, $fn=6);
+    }
 }
 
-module M6_tube(D=12, windings = 8)
+module M2_5_thread(length = 16)
 {
-  Threading(D=D, pitch = 1, d=6, windings=windings, full=true, $fn=100);  
+    thread(length=length, pitch=M2_5_pitch(), d=2.5);
+}
+
+module M2_5_tube(length=16, D=6)
+{
+    tube(D=D, pitch = M2_5_pitch(), d=2.5, length=length);
+}
+
+module M6_hex_bolt(length = 16, D=12, h=3)
+{
+    union() {
+        thread(d=6, pitch=M6_pitch(), length=length+h);
+        cylinder(d=D, h=h, $fn=6);
+    }
+}
+
+module M6_nut(D=12)
+{
+    nut(D=D, pitch=M6_pitch(), d=6);
+}
+
+module M6_thread(length = 16)
+{
+    thread(length=length, pitch=M6_pitch(), d=6);
+}
+
+module M6_tube(length = 8, D=12)
+{
+    Threading(D=D, pitch = M6_pitch(), d=6, length=length);
+}
+
+module threads_test() {
+    translate([0, 0, 0]) M2_5_thread(length=10);
+    translate([10, 0, 0]) M2_5_nut();
+    translate([20, 0, 0]) M2_5_hex_bolt();
+    translate([30, 0, 0]) M2_5_tube(length=10);
+
+    translate([0, 15, 0]) M6_thread(length=10);
+    translate([15, 15, 0]) M6_nut();
+    translate([30, 15, 0]) M6_hex_bolt();
+    translate([45, 15, 0]) M6_tube(length=10);
 }
