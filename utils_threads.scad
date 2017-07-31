@@ -1,25 +1,25 @@
-use <threads.scad>
+use <quickthread.scad>
 
 function M2_5_pitch() = 0.45;
 function M6_pitch() = 1;
 
 module thread(length, pitch, d)
 {
-    metric_thread(pitch = pitch, diameter=d, length=length);
+    isoThread(d=d, h=length, pitch=pitch, internal=false); // $fn ?
 }
 
 module nut(D, pitch, d) {
-    h=pitch*5;
+    length=pitch*5;
     difference() {
-        cylinder(d=D, h=h, $fn=6);
-        metric_thread(pitch = pitch, diameter=d, length=h, internal=true);  
+        cylinder(d=D, h=length, $fn=6);
+	isoThread(d=d, h=length, pitch=pitch, internal=true); // $fn ?
     }
 }
 
 module tube(D, pitch, d, length) {
     difference() {
         cylinder(d=D, h=length, $fn=100);
-        metric_thread(pitch = pitch, diameter=d, length=length, internal=true);  
+	isoThread(d=d, h=length, pitch=pitch, internal=true); // $fn ?
     }
 }
 
@@ -80,5 +80,3 @@ module threads_test() {
     translate([30, 15, 0]) M6_hex_bolt();
     translate([45, 15, 0]) M6_tube(length=10);
 }
-
-threads_test();
