@@ -80,5 +80,3 @@ module threads_test() {
     translate([30, 15, 0]) M6_hex_bolt();
     translate([45, 15, 0]) M6_tube(length=10);
 }
-
-threads_test();
