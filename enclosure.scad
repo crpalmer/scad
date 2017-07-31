@@ -113,13 +113,17 @@ module enclosure_pi_mount(obj) {
         }
     }
 
+    module mount() {
+            cylinder(d=2.5, h=3, $fn=100);
+    }
+    
     module mounts() {
         translate([thick + 3.5, thick+3.5, thick])
         union() {
-            M2_5_tube();
-            translate( [58, 0, 0] ) M2_5_tube();
-            translate( [0, 49, 0] ) M2_5_tube();
-            translate( [58, 49, 0] ) M2_5_tube();
+            mount();
+            translate( [58, 0, 0] ) mount();
+            translate( [0, 49, 0] ) mount();
+            translate( [58, 49, 0] ) mount();
         }
     }
     
@@ -152,6 +156,7 @@ module enclosure_ssr_mount(obj) {
         }
     }
 }
-E = enclosure_define([63, 50, 1], thick=1);
+
+E=enclosure_define([100, 100, 1], thick=1);
 enclosure_box(E);
-translate([2, 2, 0]) enclosure_ssr_mount(E);
+translate([5, 5, 0]) enclosure_ssr_mount(E); //enclosure_pi_mount(E);
