@@ -1,4 +1,3 @@
-include <threads.scad>
 include <utils.scad>
 
 function enclosure_define(size, thick=2.5, mount=12, lip=true) = 
