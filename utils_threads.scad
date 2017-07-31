@@ -1,21 +1,26 @@
-use <Threading.scad>
+use <threads.scad>
 
 function M2_5_pitch() = 0.45;
 function M6_pitch() = 1;
 
 module thread(length, pitch, d)
 {
-   windings = length / pitch;
-   threading(pitch = pitch, d=d, windings=windings);
+    metric_thread(pitch = pitch, diameter=d, length=length);
 }
 
 module nut(D, pitch, d) {
-   Threading(D=D, pitch = pitch, d=d, windings=5, full=true, $fn=6);  
+    h=pitch*5;
+    difference() {
+        cylinder(d=D, h=h, $fn=6);
+        metric_thread(pitch = pitch, diameter=d, length=h, internal=true);  
+    }
 }
 
 module tube(D, pitch, d, length) {
-    windings = length / pitch;
-    Threading(D=D, pitch = pitch, d=d, windings=windings, full=true, $fn=100);  
+    difference() {
+        cylinder(d=D, h=length, $fn=100);
+        metric_thread(pitch = pitch, diameter=d, length=length, internal=true);  
+    }
 }
 
 module M2_5_nut(D=5)
@@ -61,7 +66,7 @@ module M6_thread(length = 16)
 
 module M6_tube(length = 8, D=12)
 {
-    Threading(D=D, pitch = M6_pitch(), d=6, length=length);
+    tube(D=D, pitch = M6_pitch(), d=6, length=length);
 }
 
 module threads_test() {
@@ -75,3 +80,5 @@ module threads_test() {
     translate([30, 15, 0]) M6_hex_bolt();
     translate([45, 15, 0]) M6_tube(length=10);
 }
+
+threads_test();
