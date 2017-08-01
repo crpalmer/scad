@@ -1,5 +1,7 @@
 include <utils_threads.scad>
 
+function flatten(V) = [ for (a = V) for (b = a) b ];
+
 module rounded_square(size, r=1) {
     x=size[0];
     y=size[1];
