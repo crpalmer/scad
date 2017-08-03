@@ -24,7 +24,7 @@ module enclosure_box(obj)
 	{
         if (z >= 16 - thick) {
             union() {
-               translate([0, 0, z-16-thick]) linear_extrude(height=thick) circle(r=mount/2, $fn=100);
+                cylinder(r=mount/2, h=z-16, $fn=100);
                translate([0, 0, z-16]) M6_tube(D=mount, windings=16);
             }
         }
