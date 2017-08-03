@@ -155,7 +155,3 @@ module enclosure_ssr_mount(obj) {
         }
     }
 }
-
-E=enclosure_define([100, 100, 1], thick=1);
-enclosure_box(E);
-translate([5, 5, 0]) enclosure_ssr_mount(E); //enclosure_pi_mount(E);
