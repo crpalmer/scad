@@ -25,7 +25,7 @@ module enclosure_box(obj)
         if (z >= 16 - thick) {
             union() {
                 cylinder(r=mount/2, h=z-16, $fn=100);
-               translate([0, 0, z-16]) M6_tube(D=mount, windings=16);
+                translate([0, 0, z-16]) No6_tube(D=mount, windings=16);
             }
         }
 	}
@@ -148,10 +148,10 @@ module enclosure_ssr_mount(obj) {
     union() {
         outline();
         translate([4.75, 22.25, 0]) union() {
-            M6_tube();
-            translate([47.6, 0, 0]) M6_tube();
-            translate([24, 14, 0]) M6_tube();
-            translate([24, -14, 0]) M6_tube();
+            No6_tube();
+            translate([47.6, 0, 0]) No6_tube();
+            translate([24, 14, 0]) No6_tube();
+            translate([24, -14, 0]) No6_tube();
         }
     }
 }
