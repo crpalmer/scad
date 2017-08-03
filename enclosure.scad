@@ -1,6 +1,6 @@
 include <utils.scad>
 
-function enclosure_define(size, thick=2.5, mount=12, lip=true) = 
+function enclosure_define(size, thick=2.5, mount=9, lip=true) =
     [ size[0], size[1], size[2], thick, mount, lip ];
 
 function enclosure_x(obj) = obj[0];
