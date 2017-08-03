@@ -11,7 +11,7 @@ function enclosure_mount(obj) = obj[4];
 function enclosure_lip(obj) = obj[5];
 
 function enclosure_wall(str) = str == "front" ? 0 : str == "left" ? 1 : str == "right" ? 2 : str == "back"?  3 : -1;
-    
+
 module enclosure_box(obj)
 {
     x = enclosure_x(obj);
@@ -19,16 +19,15 @@ module enclosure_box(obj)
     z = enclosure_z(obj);
     thick = enclosure_thick(obj);
     mount = enclosure_mount(obj);
-    
-	module mount()
-	{
+
+    module mount() {
         if (z >= 16 - thick) {
             union() {
                 cylinder(r=mount/2, h=z-16, $fn=100);
                 translate([0, 0, z-16]) No6_tube(D=mount, windings=16);
             }
         }
-	}
+    }
 
     module box() {
         union() {
@@ -74,12 +73,12 @@ module enclosure_lid(obj) {
     y = enclosure_y(obj);
     thick = enclosure_thick(obj);
     mount = enclosure_mount(obj);
-    
+
     module hole() {
         cylinder(r=6.6/2, h=thick, $fn=100);
         cylinder(r=10/2, h=thick/2, $fn=100);
     }
-    
+
     module lip() {
         if (enclosure_lip(obj)) {
             translate([0, 0, thick/2])
@@ -115,7 +114,7 @@ module enclosure_pi_mount(obj) {
     module mount() {
             cylinder(d=2.5, h=3, $fn=100);
     }
-    
+
     module mounts() {
         translate([thick + 3.5, thick+3.5, thick])
         union() {
@@ -125,7 +124,7 @@ module enclosure_pi_mount(obj) {
             translate( [58, 49, 0] ) mount();
         }
     }
-    
+
     union() {
         outline();
         mounts();
@@ -143,7 +142,7 @@ module enclosure_ssr_mount(obj) {
             translate([T, T,0]) cube([ssr_size[0] - T*2, ssr_size[1] - T*2], T);
         }
     }
-    
+
     translate([thick, thick, thick])
     union() {
         outline();

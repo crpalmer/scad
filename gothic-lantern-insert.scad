@@ -13,14 +13,14 @@ module generate(top_size, bottom_size) {
         [  delta_b[0], delta_b[1], top_b],
         [ -delta_b[0], delta_b[1], top_b]
     ];
-    
+
     top = [
         [ -delta_t[0], -delta_t[1], top_z],
         [  delta_t[0], -delta_t[1], top_z],
         [  delta_t[0], delta_t[1], top_z],
         [ -delta_t[0], delta_t[1], top_z]
     ];
-    
+
     mid = [ for (t = top) [ t[0], t[1], mid_z ] ];
 
     function this_side(side) = side*4;
@@ -35,7 +35,7 @@ module generate(top_size, bottom_size) {
 
     faces_lower = [for (side=[0:3]) [side, next_side(side), next_side(side) + 4, side + 4 ]];
     faces_upper = [for (f=faces_lower) f + [4, 4, 4, 4]];
-        
+
     faces=concat([faces_bottom], [faces_top], faces_lower, faces_upper);
     echo(points);
     echo(faces);
