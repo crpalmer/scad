@@ -42,8 +42,8 @@ module enclosure_box(obj)
 
     module lip() {
         if (enclosure_lip(obj)) {
-            translate([thick/2, thick/2, z-thick/2])
-            rounded_cube(size=[x - thick,y - thick, thick/2], r=thick*2);
+            translate([thick/2, thick/2, z-thick])
+            rounded_cube(size=[x - thick,y - thick, thick], r=thick*2);
         }
     }
 
