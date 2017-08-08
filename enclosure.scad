@@ -75,8 +75,7 @@ module enclosure_lid(obj) {
     mount = enclosure_mount(obj);
 
     module hole() {
-        cylinder(r=6.6/2, h=thick, $fn=100);
-        cylinder(r=10/2, h=thick/2, $fn=100);
+        cylinder(r=4/2, h=thick, $fn=100);
     }
 
     module lip() {
