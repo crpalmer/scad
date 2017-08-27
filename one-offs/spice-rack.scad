@@ -13,12 +13,15 @@ module step(n)
        union() {
            difference() {
                cube([W, step_depth+step_lip, first_step+n*step_height]);
-             //  translate([wall, wall, 0]) cube([W-wall*2, step_depth+step_lip-wall, first_step+n*step_height - wall]);
+               union() {
+                   translate([wall, wall, 0]) cube([(W-wall*3)/2, step_depth+step_lip-wall, first_step+n*step_height - wall]);
+                   translate([wall*2+(W-wall*3)/2, wall, 0]) cube([(W-wall*3)/2, step_depth+step_lip-wall, first_step+n*step_height - wall]);
+               }
            }
            cube([W, step_lip, first_step+n*step_height+step_lip_height]);
        };
 }
 
-N=5;
+N=4;
 for(i=[0:N-1]) step(i);
 translate([0, N*(step_depth+step_lip), 0]) cube([W, wall, first_step+N*step_height]);
