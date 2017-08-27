@@ -1,4 +1,4 @@
-W=6.5*25.4;
+W=85;
 
 step_depth=50;
 step_lip=3.5;
@@ -13,10 +13,8 @@ module step(n)
        union() {
            difference() {
                cube([W, step_depth+step_lip, first_step+n*step_height]);
-               union() {
-                   translate([wall, wall, 0]) cube([(W-wall*3)/2, step_depth+step_lip-wall, first_step+n*step_height - wall]);
-                   translate([wall*2+(W-wall*3)/2, wall, 0]) cube([(W-wall*3)/2, step_depth+step_lip-wall, first_step+n*step_height - wall]);
-               }
+               translate([wall, wall, 0]) cube([W-wall*2, step_depth+step_lip-wall, first_step+n*step_height - wall]);
+               translate([0, step_depth/2, first_step+(n-0.5)*step_height]) rotate([0, 90, 0]) cylinder(d=4, h=W);
            }
            cube([W, step_lip, first_step+n*step_height+step_lip_height]);
        };
