@@ -12,9 +12,10 @@ module arch(v)
     x=v[0];
     y=v[1];
     z=v[2];
+    hyp=x/sqrt(2);
     union() {
         cube([x, y, z - x]);
-        translate([x/2, 0, z-x]) rotate([-90, -90, 0])  cylinder(d=x, h=y, $fn=100);
+        translate([x/2, 0, z-x]) rotate([0, 45, 0]) translate([-hyp/2, 0, -hyp/2]) cube([hyp, y, hyp]);
     };
 }
 
@@ -33,9 +34,9 @@ module cut_front(n) {
     H=first_step+n*step_height;
     translate([0, n*(step_depth+step_lip)+step_lip, 0])
     if (n >= 2) {
-        for (i=[0:2])
-            translate([W/7*(i*2+1), 0, 0])
-            arch([W/7, step_depth+step_lip*2, H-step_height/2]);
+        for (i=[0:1])
+            translate([W/5*(i*2+1), 0, 0])
+            arch([W/5, step_depth+step_lip*2, H-step_height/2]);
     };
 }
 
@@ -45,12 +46,16 @@ module cut_side(n) {
     rotate([0, 0, -90]) arch([step_depth-step_lip, W*2, H+step_height/2]);
 }
 
+module doit() {
 N=4;
 difference() {
     union() {
-        for(i=[0:N-1]) step(i);
+        for(i=[1:N-1]) step(i);
     };
     for(i=[0:N-1]) cut_side(i);
     for(i=[0:N-1]) cut_front(i);
 };
+}
+
+doit();
 //arch([2, 3, 8]);
