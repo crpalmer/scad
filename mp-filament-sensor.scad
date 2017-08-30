@@ -14,7 +14,7 @@ module base_frame()
 module screw_holes()
 {
     union() {
-        translate([5, 15, 0]) union() {
+        translate([4.9, 15, 0]) union() {
             cylinder(d=3.25, h=20, center=true);
             translate([0, 0, 10]) cylinder(d=6.25, h=10, center=true);
         };
@@ -22,7 +22,7 @@ module screw_holes()
             cylinder(d=3.25, h=20, center=true);
             translate([0, 0, 10]) cylinder(d=6.25, h=10, center=true);
         };
-        translate([47, 15, 0]) cylinder(d=6.25, h=2, center=true);
+        translate([47, 15, 0]) cylinder(d=8, h=20, center=true);
     };
 }
 
