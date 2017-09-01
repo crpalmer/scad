@@ -1,34 +1,39 @@
 use <threads.scad>
 
+function thread_d_delta() = +.1;
+function internal_d_delta() = +.65;
+
 function M2_5_pitch() = 0.45;
 function M6_pitch() = 1;
 
-function No6_d() = 0.16;
+function No6_d() = 0.13;
 function No6_tpi() = 32;
+function quarter_twenty_d() = 0.25;
+function quarter_twenty_tpi() = 20;
 
 module m_thread(length, pitch, d)
 {
-    metric_thread(pitch = pitch, diameter=d, length=length);
+    metric_thread(pitch = pitch, diameter=d+thread_d_delta(), length=length);
 }
 
 module m_nut(D, pitch, d) {
     h=pitch*5;
     difference() {
         cylinder(d=D, h=h, $fn=6);
-        metric_thread(pitch = pitch, diameter=d, length=h, internal=true);
+        metric_thread(pitch = pitch, diameter=d+internal_d_delta(), length=h, internal=true);
     }
 }
 
 module m_tube(D, pitch, d, length) {
     difference() {
         cylinder(d=D, h=length, $fn=100);
-        metric_thread(pitch = pitch, diameter=d, length=length, internal=true);
+        metric_thread(pitch = pitch, diameter=d+internal_d_delta(), length=length, internal=true);
     }
 }
 
 module e_thread(length, tpi, d)
 {
-   english_thread(threads_per_inch = tpi, diameter=d, length=length / 25.4);
+   english_thread(threads_per_inch = tpi, diameter=d+thread_d_delta()/25.4, length=length / 25.4);
 }
 
 module e_nut(D, tpi, d) {
@@ -36,14 +41,14 @@ module e_nut(D, tpi, d) {
     h_mm = h_in * 25.4;
     difference() {
         cylinder(d=D, h=h_mm, $fn=6);
-        english_thread(threads_per_inch = tpi, diameter=d, length=h_in, internal=true);
+        english_thread(threads_per_inch = tpi, diameter=d+internal_d_delta()/25.4, length=h_in, internal=true);
     }
 }
 
 module e_tube(D, tpi, d, length) {
     difference() {
         cylinder(d=D, h=length, $fn=100);
-        english_thread(threads_per_inch = tpi, diameter=d, length=length/25.4, internal=true);
+        english_thread(threads_per_inch = tpi, diameter=d+internal_d_delta()/25.4, length=length/25.4, internal=true);
     }
 }
 
@@ -114,6 +119,29 @@ module No6_thread(length=12)
 module No6_tube(length=8, D=8)
 {
     e_tube(D=D, tpi=No6_tpi(), d=No6_d(), length=length);
+}
+
+module quarter_twenty_hex_bolt(length = 12, D=12.5, h=4)
+{
+    union() {
+        e_thread(d=quarter_twenty_d(), tpi=quarter_twenty_tpi(), length=length+h);
+        cylinder(d=D, h=h, $fn=6);
+    }
+}
+
+module quarter_twenty_nut(D=12.5)
+{
+    e_nut(D=D, tpi=quarter_twenty_tpi(), d=quarter_twenty_d());
+}
+
+module quarter_twenty_thread(length=12)
+{
+    e_thread(length=length, tpi=quarter_twenty_tpi(), d=quarter_twenty_d());
+}
+
+module quarter_twenty_tube(length=8, D=8)
+{
+    e_tube(D=D, tpi=quarter_twenty_tpi(), d=quarter_twenty_d(), length=length);
 }
 
 module threads_test() {
