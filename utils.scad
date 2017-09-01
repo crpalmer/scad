@@ -18,3 +18,10 @@ module rounded_square(size, r=1) {
 module rounded_cube(size, r=1) {
     linear_extrude(height=size[2]) rounded_square(size);
 }
+
+module tapered_cylinder(d0, d1, h, steps=20) {
+    D=(d0-d1)/steps;
+    H=h/steps;
+    translate([0, 0, -h/2]) for (i=[0:steps-1]) translate([0, 0, H*i]) cylinder(d=d0-D*i, h=H, center=true);
+}
+    
