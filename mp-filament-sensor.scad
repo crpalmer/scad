@@ -37,11 +37,11 @@ module screw_holes()
 module filament_holes() {
     translate([35, 0, 11])
         union() {
-            rotate([-90, 0, 0]) cylinder(d=2, h=50, center=true);
-            rotate([-90, 0, 0]) tapered_cylinder(d0=4, d1=2, h=1);
-            translate([0, 2, 0]) rotate([90, 0, 0]) tapered_cylinder(d0=4, d1=2, h=1);
-            translate([0, 10.25, 0]) rotate([90, 0, 0]) tapered_cylinder(d0=4, d1=2, h=1);
-            translate([0, 9.25, 0]) rotate([-90, 0, 0]) tapered_cylinder(d0=4, d1=2, h=1);
+            rotate([-90, 0, 0]) cylinder(d=2.5, h=50, center=true);
+            rotate([-90, 0, 0]) tapered_cylinder(d0=4, d1=2.5, h=1);
+            translate([0, 2, 0]) rotate([90, 0, 0]) tapered_cylinder(d0=4, d1=2.5, h=1);
+            translate([0, 10.25, 0]) rotate([90, 0, 0]) tapered_cylinder(d0=4, d1=2.5, h=1);
+            translate([0, 9.25, 0]) rotate([-90, 0, 0]) tapered_cylinder(d0=4, d1=2.5, h=1);
         };
 }
 
