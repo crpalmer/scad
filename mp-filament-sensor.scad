@@ -26,11 +26,11 @@ module screw_holes()
             cylinder(d=3.25, h=20, center=true);
             translate([0, 0, 13]) cylinder(d=7, h=20, center=true);
         };
-        translate([47, 15, 0])
-            union() {
-                cylinder(d=8, h=10, center=true);
-                translate([0, 0, 5]) tapered_cylinder(d0=8, d1=0.01, h=5);
-            };
+//        translate([47, 15, 0])
+//            union() {
+//                cylinder(d=8, h=10, center=true);
+//                translate([0, 0, 5]) tapered_cylinder(d0=8, d1=0.01, h=5);
+//            };
     };
 }
 
