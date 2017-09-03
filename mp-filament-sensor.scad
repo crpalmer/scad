@@ -42,8 +42,8 @@ module filament_holes() {
 
 module sensor_holes() {
     translate([21, 1.5, 8.5]) union() {
-        translate([6.6, 0, 0]) cube([5.25, 7, 10.5]);  // left sensor
-        translate([14.5, 0, 0]) cube([5.25, 7, 10.5]); // right sensor
+        translate([6.6, 0, 0]) cube([5.125, 7, 10.5]);  // left sensor
+        translate([14.675, 0, 0]) cube([5.125, 7, 10.5]); // right sensor
         translate([0, 0, 7.5]) cube([25.5, 7, 3.5]); // top cutout
         translate([24.25-2, 3.5, 0]) cylinder(d=3, h=20); // screw hole
         translate([12, 3.125, 3]) rotate([0, 90, 0]) cylinder(d=1, h=6, center=true); // cut down on the visible area to make the filament easier to spot
