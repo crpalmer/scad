@@ -5,6 +5,8 @@ M=MM;
 $fn=100;
 
 lower_h=7;
+filament_tube_d=2;
+peep_hole_d=1;
 
 module base_frame()
 {
@@ -34,9 +36,9 @@ module screw_holes()
 module filament_holes() {
     translate([34.25, 0, 11.5])
         union() {
-            rotate([-90, 0, 0]) cylinder(d=2.25, h=50, center=true);
-            rotate([-90, 0, 0]) tapered_cylinder(d0=4, d1=2.25, h=2);
-            translate([0, 10.25, 0]) rotate([90, 0, 0]) tapered_cylinder(d0=4, d1=2.25, h=2);
+            rotate([-90, 0, 0]) cylinder(d=filament_tube_d, h=50, center=true);
+            rotate([-90, 0, 0]) tapered_cylinder(d0=filament_tube_d*2, d1=filament_tube_d, h=2);
+            translate([0, 10.25, 0]) rotate([90, 0, 0]) tapered_cylinder(d0=filament_tube_d*2, d1=filament_tube_d, h=2);
         };
 }
 
@@ -46,7 +48,7 @@ module sensor_holes() {
         translate([14.675, 0, 0]) cube([5.125, 7, 10.5]); // right sensor
         translate([0, 0, 7.5]) cube([25.5, 7, 3.5]); // top cutout
         translate([24.25-2, 3.5, 0]) cylinder(d=3, h=20); // screw hole
-        translate([12, 3.125, 3]) rotate([0, 90, 0]) cylinder(d=1, h=6, center=true); // cut down on the visible area to make the filament easier to spot
+        translate([12, 3.125, 3]) rotate([0, 90, 0]) cylinder(d=peep_hole_d, h=6, center=true); // cut down on the visible area to make the filament easier to spot
     };
 }
 
@@ -70,6 +72,14 @@ difference() {
     cube([100, 100, 8]);
 };
 }
+
+module doit3() {
+    union() {
+        filament_holes();
+        sensor_holes();
+    };
+}
+
 
 //translate([-20, 0, -8]) doit2();
 doit();
