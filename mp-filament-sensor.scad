@@ -9,7 +9,10 @@ filament_tube_d=2;
 peep_hole_d=1;
 
 module sensor_mount() {
-    translate([23-M, 0, 0]) cube([30-M, 10-M, 19-M]); // Sensor mount
+    union() {
+        translate([23-M, 0, 0]) cube([30-M, 10-M, 19-M]); // Sensor mount
+        translate([34.25-M-3, 0, 0]) cube([9-M, 20-M, 15-M]); // Filament tube
+    };
 }
 
 module base_frame()
@@ -42,7 +45,7 @@ module filament_holes() {
         union() {
             rotate([-90, 0, 0]) cylinder(d=filament_tube_d, h=50, center=true);
             rotate([-90, 0, 0]) tapered_cylinder(d0=filament_tube_d*2, d1=filament_tube_d, h=2);
-            translate([0, 10.25, 0]) rotate([90, 0, 0]) tapered_cylinder(d0=filament_tube_d*2, d1=filament_tube_d, h=2);
+            translate([0, 20.25, 0]) rotate([90, 0, 0]) tapered_cylinder(d0=filament_tube_d*2, d1=filament_tube_d, h=2);
         };
 }
 
