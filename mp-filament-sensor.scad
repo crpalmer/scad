@@ -34,9 +34,9 @@ module screw_holes()
 module filament_holes() {
     translate([34.25, 0, 11.5])
         union() {
-            rotate([-90, 0, 0]) cylinder(d=2.25, h=50, center=true);
             rotate([-90, 0, 0]) tapered_cylinder(d0=4, d1=2.25, h=2);
             translate([0, 10.25, 0]) rotate([90, 0, 0]) tapered_cylinder(d0=4, d1=2.25, h=2);
+            translate([-1.125, 0.875, -1.125]) cube([2.25, 8.5, 5]);
         };
 }
 
