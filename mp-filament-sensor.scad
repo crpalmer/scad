@@ -8,12 +8,16 @@ lower_h=7;
 filament_tube_d=2;
 peep_hole_d=1;
 
+module sensor_mount() {
+    translate([23-M, 0, 0]) cube([30-M, 10-M, 19-M]); // Sensor mount
+}
+
 module base_frame()
 {
     union() {
         cube([20-M, 20-M, lower_h-M]); // Left side screw plate
         cube([55-M, 10-M, lower_h-M]); // Bottom base portion
-        translate([23-M, 0, 0]) cube([30-M, 10-M, 19-M]); // Sensor mount
+        sensor_mount();
         translate([50+M/2, 0, 0]) cube([5-M, 76-M, lower_h-M]); // Right base
         translate([39+M/2, 65+M/2, 0]) cube([16-M, 11-M, lower_h-M]); // Right screw plate
     };
@@ -52,7 +56,7 @@ module sensor_holes() {
     };
 }
 
-module doit() {
+module generate_full_mount() {
 difference() {
     translate([M/2, M/2, M/2]) minkowski() {
         base_frame();
@@ -64,13 +68,18 @@ difference() {
 };
 }
 
-module doit2() {
-difference() {
-    translate([22, 0, 0]) cube([30-M, 10, 19]);
-    filament_holes();
-    sensor_holes();
-    cube([100, 100, 8]);
-};
+module sensor_module_only() {
+    translate([-20, 0, -8])
+        difference() {
+            translate([M/2, M/2, M/2]) minkowski() {
+                sensor_mount();
+                sphere([MM, MM, MM]);
+            };
+            filament_holes();
+            sensor_holes();
+            translate([-10, -10, -10]) cube([100, 100, 18]);
+        }
+    ;
 }
 
 module doit3() {
@@ -81,5 +90,5 @@ module doit3() {
 }
 
 
-//translate([-20, 0, -8]) doit2();
-doit();
+//sensor_module_only();
+generate_full_mount();
