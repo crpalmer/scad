@@ -7,14 +7,14 @@ filament_tube_d=3.1;
 
 module sensor_mount() {
     translate([M, M, M]) minkowski() {
-        cube([30-M*2, 15-M*2, 12.5-M*2]); // Sensor mount
-        cylinder(r=M, h=M);
+        cube([30-M*2, 15-M*2, 14.5-M*2]); // Sensor mount
+        sphere([M, M, M]);
     };
 }
 
 module filament_holes() {
-    rotate([-90, 0, 0]) tapered_cylinder(d0=filament_tube_d*2, d1=filament_tube_d, h=4.5);
-    translate([0, 15, 0]) rotate([90, 0, 0]) tapered_cylinder(d0=7, d1=filament_tube_d, h=4.5);
+    rotate([-90, 0, 0]) tapered_cylinder(d0=filament_tube_d*2, d1=filament_tube_d, h=4.1);
+    translate([0, 15, 0]) rotate([90, 0, 0]) tapered_cylinder(d0=7, d1=filament_tube_d, h=4.1);
 }
 
 module sensor_holes() {
@@ -28,8 +28,8 @@ module sensor_holes() {
 module a() {
 difference() {
     sensor_mount();
-    translate([0, 4, 2]) sensor_holes();
-    translate([13, -0.1006, 4.5]) filament_holes();
+    translate([0, 4, 4]) sensor_holes();
+    translate([13, 0, 6.5]) filament_holes();
 };
 }
 
