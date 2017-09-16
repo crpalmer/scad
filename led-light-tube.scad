@@ -6,7 +6,7 @@ wall_thickness=2;
 tube_d=20;
 tube_len=20;
 board_h=4;
-nut_insert_height=5;
+nut_insert_height=3.25;
 screw_d=4;
 
 mounting_len=25;
