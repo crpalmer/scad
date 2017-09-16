@@ -9,8 +9,9 @@ board_h=4;
 nut_insert_height=5;
 screw_d=4;
 
-mounting_len=50;
-mounting_width=25;
+mounting_len=25;
+mounting_w=12.5;
+mounting_screw_d=5;
 bracket_screw_d=3;
 
 
@@ -106,16 +107,17 @@ module mounting_bracket() {
     difference() {
         minkowski() {
             union() {
-                cube([mounting_len+wall_thickness, mounting_width, wall_thickness]);
-                cube([wall_thickness, mounting_width, mounting_len+wall_thickness]);
-                translate([0, mounting_width/2, mounting_len+wall_thickness]) rotate([0, 90, 0]) cylinder(d=mounting_width, h=wall_thickness);
+                cube([mounting_len+wall_thickness, mounting_w, wall_thickness]);
+                cube([wall_thickness, mounting_w, mounting_len+wall_thickness]);
+                translate([0, mounting_w/2, mounting_len+wall_thickness]) rotate([0, 90, 0]) cylinder(d=mounting_w, h=wall_thickness);
             };
             sphere([1,1,1]);
         };
-        translate([(mounting_len+wall_thickness)/3*2, mounting_width/4, -wall_thickness]) cylinder(d=screw_d, h=wall_thickness*3);
-        translate([(mounting_len+wall_thickness)/3*2, mounting_width/4*3, -wall_thickness]) cylinder(d=screw_d, h=wall_thickness*3);
-        translate([-wall_thickness, mounting_width/2, mounting_len+wall_thickness]) rotate([0, 90, 0]) cylinder(d=screw_d, h=wall_thickness*3);
+        translate([(mounting_len+wall_thickness)/8*3, mounting_w/2, -wall_thickness]) cylinder(d=mounting_screw_d, h=wall_thickness*3);
+        translate([(mounting_len+wall_thickness)/8*6, mounting_w/2, -wall_thickness]) cylinder(d=mounting_screw_d, h=wall_thickness*3);
+        translate([-wall_thickness, mounting_w/2, mounting_len+wall_thickness]) rotate([0, 90, 0]) cylinder(d=screw_d, h=wall_thickness*3);
     };
 }
+
 //light_tube();
 mounting_bracket();
