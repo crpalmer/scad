@@ -46,16 +46,6 @@ module nut_insert_cutout() {
         cylinder(r=0.2, h=wall_thickness);
     };
 }
-
-module nut_insert() {
-    difference() {
-        minkowski() {
-            cylinder(d=8.8, h=nut_insert_height-wall_thickness, $fn=6);
-            cylinder(r=wall_thickness, h=wall_thickness);
-        };
-        nut_insert_cutout();
-    };
-}
     
 function light_tube_attachment_w() = nut_insert_height+wall_thickness;;
 function light_tube_attachment_h() = light_tube_attachment_w()*1.5;
