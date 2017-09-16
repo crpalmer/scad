@@ -121,6 +121,14 @@ module No6_tube(length=8, D=8)
     e_tube(D=D, tpi=No6_tpi(), d=No6_d(), length=length);
 }
 
+module No6_nut_insert_cutout(h=3.25)
+{
+    minkowski() {
+        cylinder(d=8.8, h=h-0.01, $fn=6);
+        cylinder(r=0.2, h=0.01);
+    };
+}
+
 module quarter_twenty_hex_bolt(length = 12, D=12.5, h=4)
 {
     union() {

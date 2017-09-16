@@ -1,4 +1,5 @@
 include <utils.scad>
+include <utils_threads.scad>
 
 $fn=20;
 
@@ -40,13 +41,6 @@ module light_tube_shell() {
     };
 }
 
-module nut_insert_cutout() {
-    minkowski() {
-        cylinder(d=8.8, h=nut_insert_height-wall_thickness, $fn=6);
-        cylinder(r=0.2, h=wall_thickness);
-    };
-}
-    
 function light_tube_attachment_w() = nut_insert_height+wall_thickness;;
 function light_tube_attachment_h() = light_tube_attachment_w()*1.5;
 
@@ -76,7 +70,7 @@ module light_tube_attachment() {
     difference() {
         light_tube_attachment_body();
         translate([0, mounting_w/2, h+nut_insert_height*2])
-            rotate([0, 90, 0]) nut_insert_cutout();
+            rotate([0, 90, 0]) No6_nut_insert_cutout(h=nut_insert_height);
         translate([0, mounting_w/2, h+nut_insert_height*2])
             rotate([0, 90, 0]) cylinder(d=screw_d, h=w*10);
     };
