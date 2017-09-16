@@ -18,6 +18,7 @@ module generate_end() {
         translate([guide_d/2, guide_d*2], 0) cylinder(hole_d/2, h=guide_d*3);
         translate([end[0]-guide_d/2, guide_d*2, 0]) cylinder(hole_d/2, h=guide_d*3);
         translate([guide_d*3+screw_d/2, guide_d*1.5, 0]) cylinder(r=guide_d/2, h=guide_d*3);
+        translate([guide_d*3+screw_d/2, guide_d*1.5, end[2]-3.25]) No6_nut_insert_cutout(h=100);
     };
 }
 
