@@ -7,12 +7,12 @@ tube_d=20;
 tube_len=20;
 board_h=4;
 nut_insert_height=5;
-mounting_w=12.5;
 screw_d=4;
 
-mounting_len=20;
+mounting_len=50;
+mounting_width=25;
 bracket_screw_d=3;
-bracket_len=20;
+
 
 outer_tube_d = tube_d+wall_thickness*2;
 outer_tube_d_top = outer_tube_d*sqrt(2)+wall_thickness*2;
@@ -103,20 +103,19 @@ module light_tube() {
 }
 
 module mounting_bracket() {
-    union() {
-        difference() {
-            cube([mounting_len, outer_tube_d, wall_thickness]);
-            translate([mounting_len/3*2, outer_tube_d/4, 0]) cylinder(r=bracket_screw_d/2, h=wall_thickness);
-            translate([mounting_len/3*2, outer_tube_d/4*3, 0]) cylinder(r=bracket_screw_d/2, h=wall_thickness);
+    difference() {
+        minkowski() {
+            union() {
+                cube([mounting_len+wall_thickness, mounting_width, wall_thickness]);
+                cube([wall_thickness, mounting_width, mounting_len+wall_thickness]);
+                translate([0, mounting_width/2, mounting_len+wall_thickness]) rotate([0, 90, 0]) cylinder(d=mounting_width, h=wall_thickness);
+            };
+            sphere([1,1,1]);
         };
-        difference() {
-            cube([wall_thickness, outer_tube_d, mounting_len+bracket_len]);
-            translate([0, outer_tube_d/2, mounting_len+bracket_len/2]) rotate([0, 90, 0]) cylinder(r=position_screw_d/2, h=wall_thickness*10);
-            translate([0, outer_tube_d/4, mounting_len/2+wall_thickness]) rotate([0, 90, 0]) cylinder(r=bracket_screw_d/2, h=wall_thickness);
-            translate([0, outer_tube_d/4*3, mounting_len/2+wall_thickness]) rotate([0, 90, 0]) cylinder(r=bracket_screw_d/2, h=wall_thickness);
-        };
+        translate([(mounting_len+wall_thickness)/3*2, mounting_width/4, -wall_thickness]) cylinder(d=screw_d, h=wall_thickness*3);
+        translate([(mounting_len+wall_thickness)/3*2, mounting_width/4*3, -wall_thickness]) cylinder(d=screw_d, h=wall_thickness*3);
+        translate([-wall_thickness, mounting_width/2, mounting_len+wall_thickness]) rotate([0, 90, 0]) cylinder(d=screw_d, h=wall_thickness*3);
     };
 }
-
-light_tube();
-//mounting_bracket();
+//light_tube();
+mounting_bracket();
