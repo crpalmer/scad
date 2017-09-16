@@ -5,8 +5,11 @@ $fn=20;
 wall_thickness=2;
 tube_d=20;
 tube_len=20;
-board_h=8;
-position_screw_d=3;
+board_h=4;
+nut_insert_height=5;
+mounting_w=12.5;
+screw_d=4;
+
 mounting_len=20;
 bracket_screw_d=3;
 bracket_len=20;
@@ -35,12 +38,67 @@ module light_tube_shell() {
         sphere([1, 1, 1]);
     };
 }
+
+module nut_insert_cutout() {
+    minkowski() {
+        cylinder(d=8.8, h=nut_insert_height-wall_thickness, $fn=6);
+        cylinder(r=0.2, h=wall_thickness);
+    };
+}
+
+module nut_insert() {
+    difference() {
+        minkowski() {
+            cylinder(d=8.8, h=nut_insert_height-wall_thickness, $fn=6);
+            cylinder(r=wall_thickness, h=wall_thickness);
+        };
+        nut_insert_cutout();
+    };
+}
     
+function light_tube_attachment_w() = nut_insert_height+wall_thickness;;
+function light_tube_attachment_h() = light_tube_attachment_w()*1.5;
+
+module light_tube_attachment_body() {
+    w=light_tube_attachment_w();
+    h=light_tube_attachment_h();
+    steps=h*10;
+    delta_x=w/steps;
+    delta_z=h/steps;
+
+    translate([1, 0, 0]) minkowski() {
+        union() {
+            for (i = [0:steps-1])
+                translate([0, 0, delta_z*i])
+                    cube([delta_x*(i+1), mounting_w, delta_z]);
+            translate([0, 0, h])
+                cube([w, mounting_w, nut_insert_height*3.5]);
+        };
+        sphere([1,1,1]);
+    };
+}
+
+module light_tube_attachment() {
+    w=light_tube_attachment_w();
+    h=light_tube_attachment_h();
+
+    difference() {
+        light_tube_attachment_body();
+        translate([0, mounting_w/2, h+nut_insert_height*2])
+            rotate([0, 90, 0]) nut_insert_cutout();
+        translate([0, mounting_w/2, h+nut_insert_height*2])
+            rotate([0, 90, 0]) cylinder(d=screw_d, h=w*10);
+    };
+}
+
 module light_tube() {
     difference() {
-        light_tube_shell();
-        cylinder(d=tube_d, h=tube_len);
-        translate([-board_w/2+wall_thickness, -board_w/2+wall_thickness, tube_len]) cube([board_w-wall_thickness*2, board_w-wall_thickness*2, board_h*2]);
+            union() {
+                light_tube_shell();
+                translate([board_w/2-wall_thickness, -mounting_w/2, tube_len+board_h+wall_thickness-light_tube_attachment_h()]) light_tube_attachment();
+            };
+            cylinder(d=tube_d, h=tube_len);
+            translate([-board_w/2+wall_thickness, -board_w/2+wall_thickness, tube_len]) cube([board_w-wall_thickness*2, board_w-wall_thickness*2, board_h*2]);
     };
 }
 
