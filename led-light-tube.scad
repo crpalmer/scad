@@ -102,20 +102,6 @@ module light_tube() {
     };
 }
 
-module light_tube_bottom() {
-    w=board_w-wall_thickness*2;
-    difference() {
-        union() {
-            cube([w, w, wall_thickness]);
-            translate([w/2-wall_thickness/2, wall_thickness, 0])
-                cube([wall_thickness, w, mounting_len]);
-        };
-        translate([mounting_len/2, outer_tube_d/2, mounting_len/3*2]) rotate([0,90,0])
-            cylinder(r=position_screw_d/2, h=wall_thickness*10, center=true);
-        translate([10, 10, 0]) cylinder(d=5, h=wall_thickness);
-    };
-}
-
 module mounting_bracket() {
     union() {
         difference() {
@@ -133,5 +119,4 @@ module mounting_bracket() {
 }
 
 light_tube();
-//light_tube_bottom();
 //mounting_bracket();
