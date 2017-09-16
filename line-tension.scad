@@ -1,8 +1,8 @@
 $fn=100;
 
-guide_d=5;
-guide_l=40;
-guide_clearance=0.1;
+guide_d=9;
+guide_l=80;
+guide_clearance=0.3;
 screw_d=4;
 hole_d=1;
 
