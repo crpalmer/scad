@@ -1,8 +1,10 @@
+include <utils_threads.scad>
+
 $fn=100;
 
-guide_d=9;
-guide_l=80;
-guide_clearance=0.3;
+guide_d=6;
+guide_l=40;
+guide_clearance=0.2;
 screw_d=4;
 hole_d=1;
 
