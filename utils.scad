@@ -24,4 +24,6 @@ module tapered_cylinder(d0, d1, h, steps=20) {
     H=h/steps;
     for (i=[0:steps-1]) translate([0, 0, H*i]) cylinder(d=d0-D*i, h=H);
 }
-    
+
+function inch_to_mm(inch) = inch * 25.4;
+function mm_to_inch(mm) = mm / 25.4;
