@@ -5,7 +5,7 @@ $fn=100;
 
 wall=2;
 bottom=4;
-clearance=0.25;
+clearance=0.2;
 
 // From the HS81 specs:
 // servo_len=inch_to_mm(1.17);
@@ -13,11 +13,19 @@ clearance=0.25;
 // servo_hole_h=inch_to_mm(0.47)/2;
 
 // Measured from Futuba s3107:
-servo_len=21.75;
-servo_w=11.10;
-servo_hole_h=5.4;        // From edge of servo body to middle of hole
-servo_hole_offset=2.75;  // From body to middle of mounting hole
-servo_screw_d=2.5;        // M3 self tapping tap hole
+// servo_len=21.75;
+// servo_w=11.10;
+// servo_hole_h=5.4;        // From edge of servo body to middle of hole
+// servo_hole_offset=2.75;  // From body to middle of mounting hole
+// servo_screw_d=2.5;        // M3 self tapping tap hole
+
+// HS81
+servo_len=29.8;
+servo_w=12;
+servo_hole_h=5.4;         // From edge of servo body to middle of hole
+servo_hole_offset=3.125;  // From body to middle of mounting hole
+servo_screw_d=2.5;       // M3 self tapping tap hole
+
 
 mounting_screw_d=3.5;     // M3 self tapping through hole
 mounting_extra_len=3;
