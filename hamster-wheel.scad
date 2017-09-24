@@ -109,7 +109,15 @@ wheel_cage_clearance=11;
 //CUSTOMIZER VARIABLES END
 
 // [Wheel:Print Wheel,SnapOnAxel:Print Axel,AxelWithPost:Print Snap-on Axel and Center Post,All:Show all parts with cage bars(not for print)]
-print_part();
+// print_part();
+
+difference() {
+    print_wheel();
+    translate([7, 7, -10]) cylinder(d=4.2, h=100);
+    translate([-7, 7, -10]) cylinder(d=4.2, h=100);
+    translate([7, -7, -10]) cylinder(d=4.2, h=100);
+    translate([-7, -7, -10]) cylinder(d=4.2, h=100);
+};
 
 module print_part() {
   if (part=="Wheel") {
