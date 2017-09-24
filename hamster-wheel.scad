@@ -29,10 +29,10 @@ part = "Wheel"; // [Wheel:Print Wheel,SnapOnAxel:Snap on Axel,AxelWithPost:Print
 
 // This section displays the wheel options
 // Diameter(mm) of wheel (measured to the outside)
-wheel_diam=150;  // [90:200]
+wheel_diam=10.5*25.4;  // [90:200]
 
 // Depth(mm) of wheel determines width of the running track
-wheel_depth=65;  // [20:120]
+wheel_depth=3*25.4;  // [20:120]
 
 // Thickness of back of wheel
 back_thick=1.8;  // [1.0,1.2,1.4,1.6,1.8,2.0,2.2,2.4,2.6,2.8]
@@ -67,7 +67,7 @@ hole_coverage=50; // [0:75]
 hole_sections=12; // [4:16]
 
 // Number of treads on running path (creates bumps for grip)
-tread_sections=40; // [10:80]
+tread_sections=60; // [10:80]
 
 
 //echo("tread bump distance=",(3.14159*wheel_diam)/tread_sections);
