@@ -14,7 +14,7 @@ mounting_len=25;
 mounting_w=12.5;
 mounting_screw_d=5;
 bracket_screw_d=3;
-
+stake_len=inch_to_mm(3);
 
 outer_tube_d = tube_d+wall_thickness*2;
 outer_tube_d_top = outer_tube_d*sqrt(2)+wall_thickness*2;
@@ -103,5 +103,21 @@ module mounting_bracket() {
     };
 }
 
+module mounting_stake() {
+    difference() {
+        minkowski() {
+            union() {
+                cube([mounting_w, mounting_len+wall_thickness, wall_thickness]);
+                translate([mounting_w/2, mounting_len+wall_thickness, 0]) cylinder(d=mounting_w, h=wall_thickness);
+                linear_extrude(height=wall_thickness) polygon([[0, 0], [mounting_w, 0], [mounting_w/2, -stake_len], [0, 0]]);
+            };
+            sphere([1,1,1]);
+        };
+        translate([mounting_w/2, mounting_len+wall_thickness, -wall_thickness]) cylinder(d=screw_d, h=wall_thickness*3);
+    };
+}
+
 //light_tube();
-mounting_bracket();
+//mounting_bracket();
+mounting_stake();
+
