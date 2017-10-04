@@ -20,9 +20,7 @@ module rounded_cube(size, r=1) {
 }
 
 module tapered_cylinder(d0, d1, h, steps=20) {
-    D=(d0-d1)/steps;
-    H=h/steps;
-    for (i=[0:steps-1]) translate([0, 0, H*i]) cylinder(d=d0-D*i, h=H);
+    linear_extrude(height=h, scale=d1/d0) circle(d=d0);
 }
 
 function inch_to_mm(inch) = inch * 25.4;
