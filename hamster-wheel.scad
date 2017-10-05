@@ -35,17 +35,17 @@ wheel_diam=10.5*25.4;  // [90:200]
 wheel_depth=3*25.4;  // [20:120]
 
 // Thickness of back of wheel
-back_thick=1.8;  // [1.0,1.2,1.4,1.6,1.8,2.0,2.2,2.4,2.6,2.8]
+back_thick=2;  // [1.0,1.2,1.4,1.6,1.8,2.0,2.2,2.4,2.6,2.8]
 
 // Thickness of wheel running track
 wheel_thick=1.6; // [1.0,1.2,1.4,1.6,1.8,2.0,2.2,2.4,2.6,2.8]
 
 
 // Diameter of your axel.  Must hold the wheel and fit through bars
-axel_diam=8; // [2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7,7.5,8,8.5,9,9.5,10,10.5,11,11.5,12]
+axel_diam=4; // [2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7,7.5,8,8.5,9,9.5,10,10.5,11,11.5,12]
 
 // Center post outside diameter.  At least +4 over axel diameter.
-center_post_diam=12; // [4,4.5,6,6.5,7,7.5,8,8.5,9,10,11,12,13,14,15,16]
+center_post_diam=8; // [4,4.5,6,6.5,7,7.5,8,8.5,9,10,11,12,13,14,15,16]
 
 // Center post height (also the axel length).  Over half of wheel depth. 
 center_post_h=46;  // [10:120]
@@ -112,11 +112,25 @@ wheel_cage_clearance=11;
 // print_part();
 
 difference() {
-    print_wheel();
-    translate([7, 7, -10]) cylinder(d=4.2, h=100);
-    translate([-7, 7, -10]) cylinder(d=4.2, h=100);
-    translate([7, -7, -10]) cylinder(d=4.2, h=100);
-    translate([-7, -7, -10]) cylinder(d=4.2, h=100);
+    union() {
+        print_wheel();
+        translate([6.9, 6.9, 0]) cylinder(d=7.5, h=10, $fn=100);
+        translate([-6.9, 6.9, 0]) cylinder(d=7.5, h=10, $fn=100);
+        translate([6.9, -6.9, 0]) cylinder(d=7.5, h=10, $fn=100);
+        translate([-6.9, -6.9, 0]) cylinder(d=7.5, h=10, $fn=100);
+    };
+    
+    translate([6.9, 6.9, -10]) cylinder(d=4.1, h=100, $fn=100);
+    translate([6.9, 6.9, 3]) cylinder(d=7.5, h=100, $fn=100);
+    
+    translate([-6.9, 6.9, -10]) cylinder(d=4.1, h=100, $fn=100);
+    translate([-6.9, 6.9, 3]) cylinder(d=7.5, h=100, $fn=100);
+    
+    translate([6.9, -6.9, -10]) cylinder(d=4.1, h=100, $fn=100);
+    translate([6.9, -6.9, 3]) cylinder(d=7.5, h=100, $fn=100);
+    
+    translate([-6.9, -6.9, -10]) cylinder(d=4.1, h=100, $fn=100);
+    translate([-6.9, -6.9, 3]) cylinder(d=7.5, h=100, $fn=100);
 };
 
 module print_part() {
