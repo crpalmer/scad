@@ -87,6 +87,17 @@ module light_tube() {
     };
 }
 
+module mounting_arm() {
+    union() {
+        cube([mounting_w, mounting_len+wall_thickness, wall_thickness]);
+        translate([mounting_w/2, mounting_len+wall_thickness, 0]) cylinder(d=mounting_w, h=wall_thickness);
+    }
+}
+
+module mounting_hole() {
+    translate([mounting_w/2, mounting_len+wall_thickness, -wall_thickness]) cylinder(d=screw_d, h=wall_thickness*3);
+}
+
 module mounting_bracket() {
     difference() {
         minkowski() {
@@ -107,17 +118,32 @@ module mounting_stake() {
     difference() {
         minkowski() {
             union() {
-                cube([mounting_w, mounting_len+wall_thickness, wall_thickness]);
-                translate([mounting_w/2, mounting_len+wall_thickness, 0]) cylinder(d=mounting_w, h=wall_thickness);
+                mounting_arm();
                 linear_extrude(height=wall_thickness) polygon([[0, 0], [mounting_w, 0], [mounting_w/2, -stake_len], [0, 0]]);
             };
             sphere([1,1,1]);
         };
-        translate([mounting_w/2, mounting_len+wall_thickness, -wall_thickness]) cylinder(d=screw_d, h=wall_thickness*3);
+        mounting_hole();
     };
+}
+
+module cross_arm() {
+    difference() {
+        minkowski() {
+            union() {
+                mounting_arm();
+                translate([mounting_w, 0, 0]) rotate([0, -90, -90]) mounting_arm();
+                cube([mounting_w, wall_thickness, mounting_w]);
+            }
+            sphere([1,1,1]);
+        }
+        mounting_hole();
+        translate([mounting_w, 0, 0]) rotate([0, -90, -90]) mounting_hole();
+    }
 }
 
 //light_tube();
 //mounting_bracket();
-mounting_stake();
+//mounting_stake();
+cross_arm();
 
