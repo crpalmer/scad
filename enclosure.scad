@@ -1,7 +1,7 @@
 include <utils.scad>
 
-function enclosure_define(size, thick=2.5, mount=9, lip=true) =
-    [ size[0], size[1], size[2], thick, mount, lip ];
+function enclosure_define(size, thick=2.5, mount=9, lip=true, screw_d=2.5, screw_len=8) =
+    [ size[0], size[1], size[2], thick, mount, lip, screw_d, screw_len ];
 
 function enclosure_x(obj) = obj[0];
 function enclosure_y(obj) = obj[1];
@@ -9,23 +9,27 @@ function enclosure_z(obj) = obj[2];
 function enclosure_thick(obj) = obj[3];
 function enclosure_mount(obj) = obj[4];
 function enclosure_lip(obj) = obj[5];
+function enclosure_screw_d(obj) = obj[6];
+function enclosure_screw_len(obj) = obj[7];
 
 function enclosure_wall(str) = str == "front" ? 0 : str == "left" ? 1 : str == "right" ? 2 : str == "back"?  3 : -1;
 
 module enclosure_box(obj)
 {
+    $fn=100;
+
     x = enclosure_x(obj);
     y = enclosure_y(obj);
     z = enclosure_z(obj);
     thick = enclosure_thick(obj);
     mount = enclosure_mount(obj);
+    screw_len = enclosure_screw_len(obj);
+    screw_d = enclosure_screw_d(obj);
 
     module mount() {
-        if (z >= 16 - thick) {
-            union() {
-                cylinder(r=mount/2, h=z-16, $fn=100);
-                translate([0, 0, z-16]) No6_tube(D=mount, length=16);
-            }
+        difference() {
+            cylinder(d=mount, h=z);
+            translate([0, 0, z-screw_len]) cylinder(d=screw_d, h=screw_len);
         }
     }
 
@@ -69,13 +73,16 @@ module enclosure_punch(obj, wall, at, D) {
 }
 
 module enclosure_lid(obj) {
+    $fn = 100;
+
     x = enclosure_x(obj);
     y = enclosure_y(obj);
     thick = enclosure_thick(obj);
     mount = enclosure_mount(obj);
+    screw_d = enclosure_screw_d(obj);
 
     module hole() {
-        cylinder(r=4/2, h=thick, $fn=100);
+        cylinder(d=screw_d + 0.5, h=thick);
     }
 
     module lip() {
@@ -130,7 +137,20 @@ module enclosure_pi_mount(obj) {
     }
 }
 
+module self_tap_tube(obj) {
+    screw_d = enclosure_screw_d(obj);
+    screw_len = enclosure_screw_len(obj);
+    thick = enclosure_thick(obj);
+
+    difference() {
+        cylinder(d=screw_d + thick*2, h=thick+screw_len);
+        translate([0, 0, thick]) cylinder(d=screw_d, h=screw_len);
+    }
+}
+
 module enclosure_ssr_mount(obj) {
+    $fn = 100;
+
     thick = enclosure_thick(obj);
     ssr_size = [57.3, 44.5, 22.6];
     T = thick*.1;
@@ -146,10 +166,10 @@ module enclosure_ssr_mount(obj) {
     union() {
         outline();
         translate([4.75, 22.25, 0]) union() {
-            No6_tube();
-            translate([47.6, 0, 0]) No6_tube();
-            translate([24, 14, 0]) No6_tube();
-            translate([24, -14, 0]) No6_tube();
+            self_tap_tube(obj=obj);
+            translate([47.6, 0, 0]) self_tap_tube(obj=obj);
+            translate([24, 14, 0]) self_tap_tube(obj=obj);
+            translate([24, -14, 0]) self_tap_tube(obj=obj);
         }
     }
 }
