@@ -72,6 +72,31 @@ module enclosure_punch(obj, wall, at, D) {
     translate(translates[wall_id]) rotate(rotations[wall_id]) cylinder(h=thick+2, r=D/2, $fn=100);
 }
 
+module enclosure_mounting_tabs(obj, wall, hole_d=5) {
+    $fn = 100;
+
+    e_x = enclosure_x(obj);
+    e_y = enclosure_y(obj);
+    thick = enclosure_thick(obj);
+    wall_id = enclosure_wall(wall);
+    D = hole_d + thick * 2;
+
+    module tab() {
+        difference() {
+            cube([D, D, thick]);
+            translate([thick + hole_d / 2, thick + hole_d / 2, 0]) cylinder(d=hole_d, h=thick);
+        }
+    }
+
+    mounts = [ [ [0, -D, 0], [e_x - D, -D, 0] ],
+                [ [-D, 0, 0], [-D, e_y - D, 0] ],
+                [ [e_x, 0, 0], [e_x, e_y - D, 0] ],
+                [ [0, e_y, 0], [e_x - D, e_y, 0] ] ];
+
+    translate(mounts[wall_id][0]) tab();
+    translate(mounts[wall_id][1]) tab();
+}
+
 module enclosure_lid(obj) {
     $fn = 100;
 
