@@ -162,21 +162,32 @@ module enclosure_pi_mount(obj) {
     }
 }
 
+module tube(obj) {
+    screw_d = enclosure_screw_d(obj);
+    screw_len = enclosure_screw_len(obj);
+    thick = enclosure_thick(obj);
+
+    cylinder(d=screw_d + thick*2, h=thick+screw_len);
+}
+
 module self_tap_tube(obj) {
     screw_d = enclosure_screw_d(obj);
     screw_len = enclosure_screw_len(obj);
     thick = enclosure_thick(obj);
 
     difference() {
-        cylinder(d=screw_d + thick*2, h=thick+screw_len);
-        translate([0, 0, thick]) cylinder(d=screw_d, h=screw_len);
+	tube();
+	translate([0, 0, thick]) cylinder(d=screw_d, h=screw_len);
     }
 }
 
 module enclosure_ssr_mount(obj) {
     $fn = 100;
 
+    screw_d = enclosure_screw_d(obj);
+    screw_len = enclosure_screw_len(obj);
     thick = enclosure_thick(obj);
+
     ssr_size = [57.3, 44.5, 22.6];
     T = thick*.1;
 
@@ -191,10 +202,30 @@ module enclosure_ssr_mount(obj) {
     union() {
         outline();
         translate([4.75, 22.25, 0]) union() {
-            self_tap_tube(obj=obj);
-            translate([47.6, 0, 0]) self_tap_tube(obj=obj);
-            translate([24, 14, 0]) self_tap_tube(obj=obj);
-            translate([24, -14, 0]) self_tap_tube(obj=obj);
+            self_tap_tube(obj);
+            translate([47.6, 0, 0]) self_tap_tube(obj);
+            translate([24, 14, 0]) tube(obj);
+            translate([24, -14, 0]) tube(obj);
         }
     }
 }
+
+module enclosure_relay_module_mount(obj) {
+    $fn = 100;
+
+    screw_d = enclosure_screw_d(obj);
+    screw_len = enclosure_screw_len(obj);
+    thick = enclosure_thick(obj);
+
+    module_size = [ 27, 34 ];
+    hole_offset = [ 8, 5 ];
+    deltas = [+1, -1];
+
+    for (hole = [ [0, 0], [0, 1], [1, 0], [1, 1] ]) {
+	x = module_size[0] * hole[0] + deltas[hole[0]] * hole_offset[0];
+	y = module_size[1] * hole[1] + deltas[hole[1]] * hole_offset[1];
+echo( [ module_size[0], hole[1], deltas[hole[0]], hole_offset[0] ]);
+	translate( [ x, y, thick ]) self_tap_tube(obj);
+    }
+}
+
