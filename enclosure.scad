@@ -88,8 +88,8 @@ module enclosure_mounting_tabs(obj, wall, hole_d=5) {
 
     module tab() {
         difference() {
-            cube([D, D, thick]);
-            translate([thick + hole_d / 2, thick + hole_d / 2, 0]) cylinder(d=hole_d, h=thick);
+            cube([D, D, thick*2]);
+            translate([thick + hole_d / 2, thick + hole_d / 2, 0]) cylinder(d=hole_d, h=thick*2);
         }
     }
 
