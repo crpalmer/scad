@@ -215,6 +215,18 @@ module enclosure_ssr_mount(obj) {
     }
 }
 
+module enclosure_maestro_mount(obj) {
+    $fn = 100;
+
+    thick = enclosure_thick(obj);
+
+    translate([thick, thick, thick])
+    union() {
+	translate([19.6, 3.5, 0]) self_tap_tube(obj);
+	translate([2.5, 17.9, 0]) self_tap_tube(obj);
+    }
+}
+
 module enclosure_relay_module_mount(obj) {
     $fn = 100;
 
