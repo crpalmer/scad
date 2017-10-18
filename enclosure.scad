@@ -172,7 +172,7 @@ module tube(obj) {
     screw_len = enclosure_screw_len(obj);
     thick = enclosure_thick(obj);
 
-    cylinder(d=screw_d + thick*2, h=thick+screw_len);
+    cylinder(d=screw_d + thick*2, h=screw_len);
 }
 
 module self_tap_tube(obj) {
@@ -181,8 +181,8 @@ module self_tap_tube(obj) {
     thick = enclosure_thick(obj);
 
     difference() {
-	tube();
-	translate([0, 0, thick]) cylinder(d=screw_d, h=screw_len);
+	tube(obj);
+	cylinder(d=screw_d, h=screw_len);
     }
 }
 
