@@ -111,22 +111,24 @@ module enclosure_lid(obj) {
     mount = enclosure_mount(obj);
     screw_d = enclosure_screw_d(obj);
 
+    clearance = 0.1;
+
     module hole() {
-        cylinder(d=screw_d + 0.5, h=thick);
+        cylinder(d=screw_d + 0.5, h=thick*2);
     }
 
     module lip() {
         if (enclosure_lip(obj)) {
-            translate([0, 0, thick/2])
+            translate([0, 0, thick*1.5])
             difference() {
-                rounded_cube(r=thick*2, size=[x, y, thick]);
-                translate([thick/2, thick/2, 0]) rounded_cube(r=thick*2, size=[x-thick, y-thick, thick/2]);
+                rounded_cube(r=thick*2, size=[x, y, thick/2]);
+                translate([thick/2+clearance, thick/2+clearance, 0]) rounded_cube(r=thick*2, size=[x-thick-clearance*2, y-thick-clearance*2, thick/2]);
             }
         }
     }
 
     difference() {
-        rounded_cube(r=thick*2, size=[x, y, thick]);
+        rounded_cube(r=thick*2, size=[x, y, thick*2]);
         union() {
             translate([mount/2,y/2,0]) hole();
             translate([x-mount/2,y/2,0]) hole();
