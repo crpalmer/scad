@@ -1,7 +1,7 @@
 include <utils.scad>
 
-function enclosure_define(size, thick=2.5, mount=9, lip=true, screw_d=2.5, screw_len=8) =
-    [ size[0], size[1], size[2], thick, mount, lip, screw_d, screw_len ];
+function enclosure_define(size, thick=2.5, mount=9, lip=true, screw_d=2.5, screw_len=8, has_lid=true) =
+    [ size[0], size[1], size[2], thick, mount, lip, screw_d, screw_len, has_lid ];
 
 function enclosure_x(obj) = obj[0];
 function enclosure_y(obj) = obj[1];
@@ -11,6 +11,7 @@ function enclosure_mount(obj) = obj[4];
 function enclosure_lip(obj) = obj[5];
 function enclosure_screw_d(obj) = obj[6];
 function enclosure_screw_len(obj) = obj[7];
+function enclosure_has_lid(obj) = obj[8];
 
 function enclosure_wall(str) = str == "front" ? 0 : str == "left" ? 1 : str == "right" ? 2 : str == "back"?  3 : -1;
 
@@ -27,10 +28,12 @@ module enclosure_box(obj)
     screw_d = enclosure_screw_d(obj);
 
     module mount() {
-        difference() {
-            cylinder(d=mount, h=z);
-            translate([0, 0, z-screw_len]) cylinder(d=screw_d, h=screw_len);
-        }
+        if (enclosure_has_lid(obj)) {
+	    difference() {
+		cylinder(d=mount, h=z);
+		translate([0, 0, z-screw_len]) cylinder(d=screw_d, h=screw_len);
+	    }
+	}
     }
 
     module box() {
@@ -45,10 +48,12 @@ module enclosure_box(obj)
     }
 
     module lip() {
-        if (enclosure_lip(obj)) {
-            translate([thick/2, thick/2, z-thick])
-            rounded_cube(size=[x - thick,y - thick, thick], r=thick*2);
-        }
+        if (enclosure_has_lid(obj)) {
+	    if (enclosure_lip(obj)) {
+		translate([thick/2, thick/2, z-thick])
+		rounded_cube(size=[x - thick,y - thick, thick], r=thick*2);
+	    }
+	}
     }
 
     difference() {
