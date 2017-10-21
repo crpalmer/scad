@@ -1,6 +1,6 @@
 action_len = 70;
 center_hole_d=3.5;
-screw_d = 2.5;
+screw_d = 3;
 mount_d = 28;
 string_d = 1;
 mount_offsets = [ 9, 10 ];
