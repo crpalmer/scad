@@ -13,7 +13,7 @@ servo_screw_d=2.5;       // M3 self tapping tap hole
 servo_hole_to_bottom=20; // distance from the mounting hole to bottom of servo
 
 mounting_screw_d=3.5;     // M3 self tapping through hole
-mounting_extra_len=6;
+mounting_extra_len=3;
 mounting_screw_len=15;
 servo_screw_len=5;
 
@@ -37,7 +37,7 @@ module mounting_screw_extra() {
 }
 
 module mounting_extra_body() {
-    translate([-mount[0]/2 + arm_thickness, mount[1] - wall*2 - mounting_screw_d, mount[2]/2]) cube([mount[0], mounting_screw_d + wall*2, mounting_extra_len]);
+    translate([-wall*1.5, mount[1] - wall*2 - mounting_screw_d, mount[2]/2]) cube([mount[0]/2 + arm_thickness + wall, mounting_screw_d + wall*2, mounting_extra_len]);
 }
 
 module servo_hole() {
