@@ -226,6 +226,7 @@ module enclosure_maestro_mount(obj) {
     union() {
 	translate([19.6, 3.5, 0]) self_tap_tube(obj);
 	translate([2.5, 17.9, 0]) self_tap_tube(obj);
+	translate([19.6, 17.9, 0]) tube(obj);
     }
 }
 
