@@ -1,11 +1,11 @@
 include <utils.scad>
 
-angle=152;
+angle=100;
 
 $fn=100;
 
 hole_d=4;
-arm_len=inch_to_mm(1);
+arm_len=inch_to_mm(1.5);
 arm_width=inch_to_mm(1);
 thickness=inch_to_mm(1/8);
 
@@ -21,5 +21,5 @@ difference() {
         translate([0, thickness, 0]) rotate([90, 0, 0]) arm();
         rotate([90, 0, 100]) arm();
     };
-    cylinder(h=arm_width*3, d=thickness, center=true);
+    cube([thickness/2, thickness/2, arm_width*10], center=true);
 };
