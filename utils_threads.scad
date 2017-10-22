@@ -152,6 +152,10 @@ module quarter_twenty_tube(length=8, D=8)
     e_tube(D=D, tpi=quarter_twenty_tpi(), d=quarter_twenty_d(), length=length);
 }
 
+function M3_tapping_hole_d() = 2.5;
+function M3_through_hole_d() = 3.5;
+function No6_through_hole_d() = 4;
+
 module threads_test() {
     translate([10, 0, 0]) No6_nut();
     translate([20, 0, 0]) No6_hex_bolt(length=10);
