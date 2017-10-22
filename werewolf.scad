@@ -4,9 +4,8 @@ include <servo-arm.scad>
 
 $fn=100;
 
-mount_screw_d=2.5;
 arm_len=inch_to_mm(6);
-screw_d=4;
+screw_d=No6_through_hole_d();
 hole_h=10;
 T=4;
 arm_T=T*2;
@@ -59,7 +58,7 @@ module push_arm() {
 }
 
 module servo_mount() {
-    mount= [servo[0]+2*(T+mount_screw_d/2+hole_delta[0]), servo[1]+2*T, T];
+    mount= [servo[0]+2*(T+M3_tapping_hole_d()/2+hole_delta[0]), servo[1]+2*T, T];
 
     module mount() {
         difference() {
@@ -67,7 +66,7 @@ module servo_mount() {
             cube([servo[0], servo[1], T] + clearance*2, center=true);
             for (i = [ [-1, -1], [-1, 1], [1, 1], [1, -1] ])
                 translate([(servo[0]/2 + hole_delta[0]) * i[0], hole_delta[1] * i[1], 0])
-                    cylinder(d=mount_screw_d, h=T, center=true);
+                    cylinder(d=M3_tapping_hole_d(), h=T, center=true);
         }
     }
 
@@ -107,5 +106,5 @@ module werewolf_servo_arm() {
 
 //bracket();
 //push_arm();
-//servo_mount();
-werewolf_servo_arm();
+servo_mount();
+//werewolf_servo_arm();
