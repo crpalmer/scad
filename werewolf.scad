@@ -12,7 +12,7 @@ arm_T=T*2;
 // Servo data
 servo = [40.4, 19.8, 27 ];
 hole_delta = [ 4.5, 5 ];
-clearance=[ 0.11, 0.1, 0 ];
+clearance=[ 0.15, 0.15, 0 ];
 attach_delta=18;
 attach_extra=4;
 
