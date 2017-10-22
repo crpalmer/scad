@@ -1,4 +1,6 @@
 include <utils.scad>
+include <utils_threads.scad>
+include <servo-arm.scad>
 
 $fn=100;
 
@@ -95,6 +97,15 @@ module servo_mount() {
     }
 }
 
+module werewolf_servo_arm() {
+    servo_arm(
+        action_len = inch_to_mm(2),
+        arm_thickness = T,
+        attachment_hole_d = No6_through_hole_d()
+    );
+}
+
 //bracket();
 //push_arm();
-servo_mount();
+//servo_mount();
+werewolf_servo_arm();
