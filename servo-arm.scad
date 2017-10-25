@@ -10,7 +10,7 @@ module servo_arm(
 {
     center_hole_d=6;
     mount_d = 28;
-    mount_offsets = [ 9.1, 9.95 ];
+    mount_offsets = [ 9.25, 9.95 ];
     infinity=1000;
 
     $fn = 100;
