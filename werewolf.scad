@@ -104,7 +104,54 @@ module werewolf_servo_arm() {
     );
 }
 
+module mounting_point(tube_h=inch_to_mm(1), screw_height = 8) {
+    inner_d = 27;
+    wall = 3;
+    screw_height = 8;
+    difference() {
+        cylinder(d=inner_d+wall*2, h=tube_h + screw_height);
+        translate([0, 0, screw_height]) cylinder(d=inner_d, h=tube_h);
+        translate([-8, 0, 0]) cylinder(d=M3_tapping_hole_d(), h=screw_height);
+        translate([8, 0, 0]) cylinder(d=M3_tapping_hole_d(), h=screw_height);
+        if (tube_h > M3_through_hole_d()) translate([0, 0, screw_height + tube_h / 2]) rotate([0, 90, 0]) cylinder(d=M3_through_hole_d(), h=infinity, center=true);
+    }
+}
+
+module mounting_point_drill_guide() {
+    mounting_point(tube_h = 0);
+}
+
+module coupler() {
+    difference() {
+        union() {
+            translate([0, 0, 0.1]) rotate([180, 0, 0]) mounting_point(screw_height=1);
+            mounting_point(screw_height=1);
+        }
+        cylinder(d=25, h=infinity, center=true);
+    }
+}
+
+module eye() {
+    $fn=100;
+    
+    points = [
+        [6, 8], [8, 10], [11, 14], [24, 18], [40, 19], [50, 14], [53, 12], [55, 0], [53, -12], [50, -14], [40, -17], [24, -16], [12, -11], [8, -11], [6, -8], [0, 0] ];
+
+    hull() {
+        translate([0, 0, 2]) linear_extrude(height=2, scale=0.01) polygon(points);
+        linear_extrude(height=2)
+            minkowski() {
+                polygon(points);
+                circle(d=10);
+            }
+    };
+}
+
 //bracket();
 //push_arm();
-servo_mount();
+//servo_mount();
 //werewolf_servo_arm();
+//eye();
+//mounting_point();
+mounting_point_drill_guide();
+//coupler();
