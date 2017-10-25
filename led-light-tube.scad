@@ -1,7 +1,7 @@
 include <utils.scad>
 include <utils_threads.scad>
 
-$fn=20;
+$fn=100;
 
 wall_thickness=2;
 tube_d=20;
@@ -87,10 +87,10 @@ module light_tube() {
     };
 }
 
-module mounting_arm() {
+module mounting_arm(mounting_len=mounting_len, mounting_h=wall_thickness) {
     union() {
         cube([mounting_w, mounting_len+wall_thickness, wall_thickness]);
-        translate([mounting_w/2, mounting_len+wall_thickness, 0]) cylinder(d=mounting_w, h=wall_thickness);
+        translate([mounting_w/2, mounting_len+wall_thickness, 0]) cylinder(d=mounting_w, h=mounting_h);
     }
 }
 
@@ -131,14 +131,14 @@ module cross_arm() {
     difference() {
         minkowski() {
             union() {
-                mounting_arm();
-                translate([mounting_w, 0, 0]) rotate([0, -90, -90]) mounting_arm();
-                cube([mounting_w, wall_thickness, mounting_w]);
+                mounting_arm(mounting_len = mounting_len + mounting_w, mounting_h=wall_thickness + nut_insert_height);
+                rotate([90, 0, 90]) mounting_arm();
             }
             sphere([1,1,1]);
         }
-        mounting_hole();
+        translate([0, mounting_w, 0]) mounting_hole();
         translate([mounting_w, 0, 0]) rotate([0, -90, -90]) mounting_hole();
+        translate([mounting_w/2, mounting_w+mounting_len+wall_thickness, nut_insert_height]) No6_nut_insert_cutout(h=nut_insert_height);
     }
 }
 
@@ -146,4 +146,3 @@ module cross_arm() {
 //mounting_bracket();
 //mounting_stake();
 cross_arm();
-
