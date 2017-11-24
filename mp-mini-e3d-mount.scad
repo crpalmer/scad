@@ -3,14 +3,14 @@ $fn = 64;
 module mount(){
     difference(){
         union(){    
-             translate([-15,0,0])   
-                cube([30, 27, 4]);
+             translate([-16,0,0])   
+                cube([32, 27, 4]);
              
-             translate([-15,27,0])
-             cube([30,12,19]);
+             translate([-16,27,0])
+             cube([32,12,19]);
             
-             translate([-15,-5,0])   
-                cube([30, 5, 4]);
+             translate([-16,-5,0])   
+                cube([32, 5, 4]);
              
         }
     translate([10,7,2])    
@@ -34,8 +34,8 @@ module mount(){
 module bracket(){
     
     difference(){
-        translate([-15,-20,0])
-            cube([30,12,12]);
+        translate([-16,-20,0])
+            cube([32,12,12]);
       
         translate([-11.5,-14,-1])
             cylinder(d=3.1,h=20);
