@@ -12,6 +12,8 @@ module mount(){
              translate([-16,-5,0])   
                 cube([32, 5, 4]);
              
+            translate([8,39,0])
+                cube([8, 4, 18.75]);
         }
     translate([10,7,2])    
         boltHole();
@@ -28,14 +30,20 @@ module mount(){
     translate([0,26,18.95])
         e3dMount();
 
+    translate([12,43.1,5.5]) rotate([90, 0, 0]) union() {
+        hexagon(6.5,0.25,3);
+        cylinder(d=3.1, h=4);
+    }
     }
 }
 
 module bracket(){
     
     difference(){
-        translate([-16,-20,0])
+        translate([-16,-20,0]) union() {
             cube([32,12,12]);
+            translate([24,-4,0]) cube([8, 4, 11.75]);
+        }
       
         translate([-11.5,-14,-1])
             cylinder(d=3.1,h=20);
@@ -51,6 +59,12 @@ module bracket(){
         
         translate([0,-21,11.95])
             e3dMount();
+
+        translate([12,-21,5.5]) rotate([90, 0, 0])
+            hexagon(6.5,0.25,3);
+
+        translate([12,-20.1,5.5]) rotate([90, 0, 0])
+            cylinder(d=3.1, h=4);
     }
 }
 
