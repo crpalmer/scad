@@ -22,7 +22,7 @@ board_w=outer_tube_d_top/sqrt(2);
 
 echo(board_w);
 
-module light_tube_shell() {
+module light_tube_shell(tube_len) {
     translate([0, 0, 1])
     minkowski() {
         difference() {
@@ -76,10 +76,10 @@ module light_tube_attachment() {
     };
 }
 
-module light_tube() {
+module light_tube(tube_len=tube_len) {
     difference() {
             union() {
-                light_tube_shell();
+                light_tube_shell(tube_len);
                 translate([board_w/2-wall_thickness, -mounting_w/2, tube_len+board_h+wall_thickness-light_tube_attachment_h()]) light_tube_attachment();
             };
             cylinder(d=tube_d, h=tube_len);
@@ -141,14 +141,14 @@ module cross_arm() {
             sphere([1,1,1]);
         }
         translate([0, mounting_w, 0]) mounting_hole();
-        translate([mounting_w, 0, 0]) rotate([0, -90, -90]) mounting_hole();
+        rotate([90, 0, 90]) mounting_hole();
         translate([mounting_w/2, mounting_w+mounting_len+wall_thickness, nut_insert_height]) No6_nut_insert_cutout(h=nut_insert_height);
     }
 }
 
-//light_tube();
+light_tube(10);
 //mounting_bracket();
 //mounting_bracket(M3_tapping_hole_d());
-drill_guide(M3_tapping_hole_d());
+//drill_guide(M3_tapping_hole_d());
 //mounting_stake();
 //cross_arm();
