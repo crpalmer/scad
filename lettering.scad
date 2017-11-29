@@ -8,6 +8,12 @@ module mytext(string) {
     linear_extrude(height=2.5) mytext2d(string);
 }
 
+module now_and_then_text(string) {
+    translate([-10, 10, 0])
+    resize([0, inch_to_mm(16)], auto=true)
+    text(string, font="Ubuntu Mono", size=inch_to_mm(16));
+}
+
 //mytext("LOWER");
 //mytext2d("LOWER");
 //mytext("SCHOOL");
@@ -73,4 +79,18 @@ module mytext(string) {
 //mytext("C. 2013");
 //mytext2d("C. 2013");
 //mytext("-TODAY");
-mytext2d("-TODAY");
+//mytext2d("-TODAY");
+
+//L=6;
+//W=1;
+
+difference() {
+    union() {
+        now_and_then_text("NOWTHEN"[L], $fn=100);
+        difference() {
+            square([inch_to_mm(11.6), inch_to_mm(18)]);
+            translate([1, 1, 0])     square([inch_to_mm(11.6)-2, inch_to_mm(18)-2]);
+        }
+    }
+    translate([0, inch_to_mm(11)*W, 0]) square([inch_to_mm(11.75), inch_to_mm(11)]);
+}
