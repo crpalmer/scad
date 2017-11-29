@@ -22,11 +22,11 @@ module print_head_mount() {
         translate([-15.5, -14+W, 0]) difference() {
             cube([31, 14, W]);
             translate([5.5, 4, 0]) union() {
-                cylinder(d=3.1,h=100);
+                cylinder(d=M3_through_hole_d(),h=100);
                 cylinder(d=6,h=W-2);
             }
             translate([31-5.5, 4, 0]) union() {
-                cylinder(d=3.1, h=100);
+                cylinder(d=M3_through_hole_d(), h=100);
                 cylinder(d=6,h=W-2);
             }
         }
