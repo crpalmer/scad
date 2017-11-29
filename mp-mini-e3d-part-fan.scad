@@ -36,20 +36,20 @@ module print_head_mount() {
 module fan_mount() {
     translate([0, W*2, 0])
         rotate([45, 0, 0])
-        translate([-15, 0, 0])
+        translate([-20, 0, 0])
         difference() {
-            cube([30, 30, W*sqrt(2)]);
-            translate([W, W, 0]) cube([30-2*W, 30-2*W, W*sqrt(2)]);
+            cube([40, 40, W*sqrt(2)]);
+            translate([1.25*W, 1.25*W, 0]) cube([40-2.5*W, 40-2.5*W, W*sqrt(2)]);
             for (delta = sides) {
-                translate([15, 15, 0] + 12*delta) cylinder(d=2, h=100, $fn=100);
+                translate([20, 20, 0] + 16*delta) cylinder(d=M3_tapping_hole_d(), h=100, $fn=100);
             }
         }
 }
 
 module fan_mount_joint() {
-    translate([15, W, 0])
+    translate([20, W, 0])
         rotate([0, -90, 0])
-        linear_extrude(height=30)
+        linear_extrude(height=40)
         hull() {
             point2d([0,0]);
             point2d([0, W]);
@@ -59,10 +59,10 @@ module fan_mount_joint() {
 
 module tube(d=0) {
     hull() {
-        for (x = [-15+d, 15-d]) {
-            point([x, d, W]);
-            point([x, W+d, W]);
-            point([x, W+(30-d)/sqrt(2)-.1, W+(30-d)/sqrt(2)-.1]);
+        for (x = [-20+d, 20-d]) {
+            for (y = [d, 40-d]) {
+                rotate([45, 0, 0]) point([x, y+W*sqrt(2), 0]);
+            }
         }
         for (x = [-exit_D/2+d, exit_D/2-d]) {
             point([x, d, W+H+d]);
