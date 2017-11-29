@@ -1,7 +1,9 @@
+include <utils_threads.scad>
+
 $fn=100;
 
 W=5;
-H=48;
+H=50;
 exit_D=10+W;
 exit_H=5+W;
 sides = [ [1,1,0], [1,-1,0], [-1,1,0], [-1,-1,0] ];
