@@ -19,8 +19,8 @@ module point(p) {
 
 module print_head_mount() {
     union() {
-        translate([-15.5, -16+W, 0]) difference() {
-            cube([31, 16, W]);
+        translate([-15.5, -14+W, 0]) difference() {
+            cube([31, 14, W]);
             translate([5.5, 4, 0]) union() {
                 cylinder(d=3.1,h=100);
                 cylinder(d=6,h=W-2);
