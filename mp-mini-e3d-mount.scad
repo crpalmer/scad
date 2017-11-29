@@ -39,7 +39,7 @@ module mount(){
     translate([0,26,18.95])
         e3dMount();
 
-    translate([12,-21,5.5]) rotate([90, 0, 0]) union() {
+    translate([13,43.1,5.5]) rotate([90, 0, 0]) union() {
         hexagon(6.5,0.25,3);
         cylinder(d=3.1, h=4);
     }
@@ -143,6 +143,6 @@ module e3dMount(){
 }
 
 
-bracket();
+//bracket();
 mount();
 
