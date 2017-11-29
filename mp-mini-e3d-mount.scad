@@ -3,18 +3,27 @@ $fn = 64;
 module mount(){
     difference(){
         union(){    
-             translate([-16,0,0])   
-                cube([32, 27, 4]);
-             
-             translate([-16,27,0])
-             cube([32,12,19]);
+             translate([-17,0,0])   
+                cube([34, 27, 4]);
+
+            translate([-17,27,0])
+             cube([34,12,19]);
             
-             translate([-16,-5,0])   
-                cube([32, 5, 4]);
+             translate([-17,-5,0])   
+                cube([34, 5, 4]);
              
-            translate([8,39,0])
+            translate([9,39,0])
                 cube([8, 4, 18.75]);
         }
+        translate([-17, -5, 0]) union() {
+            difference() {
+                cube([34, 100, 1]);
+                translate([2, 0, 0]) cube([30, 100, 1]);
+            }
+            translate([32, 0, 1]) rotate([0, 90, 90]) linear_extrude(height=100) polygon([ [0, 0], [-2, -2], [0, -2], [0, 0]]);
+            translate([2, 50, 1]) rotate([0, -90, 90]) linear_extrude(height=100) polygon([ [0, 0], [2, 2], [0, 2], [0, 0]]);
+        }
+        
     translate([10,7,2])    
         boltHole();
         
@@ -30,7 +39,7 @@ module mount(){
     translate([0,26,18.95])
         e3dMount();
 
-    translate([12,43.1,5.5]) rotate([90, 0, 0]) union() {
+    translate([12,-21,5.5]) rotate([90, 0, 0]) union() {
         hexagon(6.5,0.25,3);
         cylinder(d=3.1, h=4);
     }
@@ -40,9 +49,9 @@ module mount(){
 module bracket(){
     
     difference(){
-        translate([-16,-20,0]) union() {
-            cube([32,12,12]);
-            translate([24,-4,0]) cube([8, 4, 11.75]);
+        translate([-17,-20,0]) union() {
+            cube([34,12,12]);
+            translate([26,-4,0]) cube([8, 4, 11.75]);
         }
       
         translate([-11.5,-14,-1])
@@ -60,10 +69,10 @@ module bracket(){
         translate([0,-21,11.95])
             e3dMount();
 
-        translate([12,-21,5.5]) rotate([90, 0, 0])
+        translate([13,-21,5.5]) rotate([90, 0, 0])
             hexagon(6.5,0.25,3);
 
-        translate([12,-20.1,5.5]) rotate([90, 0, 0])
+        translate([13,-20.1,5.5]) rotate([90, 0, 0])
             cylinder(d=3.1, h=4);
     }
 }
@@ -135,5 +144,5 @@ module e3dMount(){
 
 
 bracket();
-
 mount();
+
