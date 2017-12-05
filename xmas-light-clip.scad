@@ -10,10 +10,10 @@ module clip() {
 
     linear_extrude(height=W*2)
         union() {
-            translate([0, -40+W/2, 0]) 2D_arc(w=W, r=55, deg=87);
-            translate([-27.75, -0.5, 0]) rotate([0, 0, 120]) 2D_arc(w=W, r=10, deg=90);
-            translate([27.75, -0.5, 0]) rotate([0, 0, -120]) 2D_arc(w=W, r=10, deg=90);
-            translate([0, 16, 0]) polygon(clip_points);
+            translate([0, -40+W/2, 0]) 2D_arc(w=W, r=57, deg=87);
+            translate([-30, -1.5, 0]) rotate([0, 0, 100]) 2D_arc(w=W, r=10, deg=80);
+            translate([30, -1.5, 0]) rotate([0, 0, -100]) 2D_arc(w=W, r=10, deg=80);
+            translate([0, 18.5, 0]) polygon(clip_points);
         }
 }
 
