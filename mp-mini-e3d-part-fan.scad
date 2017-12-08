@@ -83,7 +83,7 @@ module exit(d=0) {
         }
 }
 
-module it() {
+module 40mm_fan_version() {
     union() {
         print_head_mount();
         fan_mount();
@@ -99,5 +99,63 @@ module it() {
     }
 }
 
-rotate([-45, 0, 0])
-it();
+module 50mm_blower_shroud() {
+    module 50mm_blower_shroud_exit() {
+        module shroud_corner(d) {
+            rotate([0, -90, 0]) cylinder(d=d,h=30);
+            rotate([-90, 0, 0]) cylinder(d=d,h=30);
+            sphere(d=d);
+            translate([-30, 0, 0]) sphere(d=d);
+        }
+
+        difference() {
+            union() {
+                translate([15, -15, 0]) shroud_corner(4);
+                translate([-15, 15, 0]) rotate([0, 0, 180]) shroud_corner(4);
+            }
+            union() {
+                translate([15, -15, 0]) shroud_corner(2);
+                translate([-15, 15, 0]) rotate([0, 0, 180]) shroud_corner(2);
+            }
+            translate([0, 0, -1]) cube([30, 20, 2], center=true);
+            translate([0, 0, -1]) cube([20, 30, 2], center=true);
+            translate([15, -14, -1]) cube([2, 20, 2]);
+        }
+    }
+    module 50mm_blower_entry() {
+        module entry_ramp(D) {
+            hull() {
+                point([D, D, 2]);
+                point([D, 22-D, 2]);
+                point([17-D, 22-D, 2]);
+                point([17-D, D, 2]);
+                point([D, D, 10]);
+                point([D, 22-D, 10]);
+                point([4-D, D, 10]);
+                point([4-D, 22-D, 10]);
+            }
+        }
+                
+        union() {
+            translate([8.5, 11, 1]) difference() {
+                cube([17, 22, 2], center=true);
+                cube([15, 20, 2], center=true);
+            }
+            difference() {
+                entry_ramp(0);
+                entry_ramp(1);
+            }
+        }
+    }
+    
+    union() {
+        translate([14, 15, 2]) 50mm_blower_shroud_exit();
+        translate([40, 0, 0]) rotate([0, -90, 0]) 50mm_blower_entry();
+    }
+}
+
+//rotate([-45, 0, 0])
+//40mm_fan_version();
+
+50mm_blower_shroud();
+//shroud_corner();
