@@ -5,82 +5,44 @@ $fn = 64;
 module mount(){
     difference(){
         union(){    
-             translate([-15,0,0])   
-                cube([30, 27, 4]);
-
-            translate([-15,27,0])
-             cube([30,12,19]);
-            
-             translate([-15,-5,0])   
-                cube([30, 5, 4]);
+            translate([-15,0,0]) cube([30, 27, 4]);
+            translate([-15,27,0]) cube([30,12,19]);
+            translate([-15,-5,0]) cube([30, 5, 4]);
         }
-        translate([-17, -5, 0]) union() {
-            difference() {
-                cube([34, 100, 1]);
-                translate([2, 0, 0]) cube([30, 100, 1]);
-            }
-            translate([32, 0, 1]) rotate([0, 90, 90]) linear_extrude(height=100) polygon([ [0, 0], [-2, -2], [0, -2], [0, 0]]);
-            translate([2, 50, 1]) rotate([0, -90, 90]) linear_extrude(height=100) polygon([ [0, 0], [2, 2], [0, 2], [0, 0]]);
-        }
-        
-    translate([10,7,2])    
-        boltHole();
-        
-    translate([-10,7,2])    
-        boltHole();
     
-    translate([-11.5,33,0])    
-        longBoltHole();
-     
-    translate([11.5,33,0])    
-        longBoltHole();
-      
-    translate([0,26,18.95])
-        e3dMount();
+        for (x = [10, -10]) {
+            translate([x,7,0]) union() {
+                cylinder(d=M3_through_hole_d(), h=100);
+                translate([0, 0, 4-2.4]) nut_cutout();
+            }
+        }
+        for (x = [10.5, -10.5]) {
+            translate([x,33,0]) union() {
+                cylinder(d=M3_through_hole_d(), h=100);
+                nut_cutout();
+            }
+        }
+        translate([0,26,18.95]) e3dMount();
     }
 }
 
-module bracket(){
-    
+module bracket() {
     difference(){
         translate([-15,-20,0]) cube([30,12,12]);
       
-        translate([-11.5,-14,-1])
-            cylinder(d=M3_through_hole_d(),h=20);
+        for (x = [ -10.5, 10.5 ]) {
+            translate([x,-14,0]) union() {
+                cylinder(d=M3_through_hole_d(),h=20);
+                cylinder(d=6,h=9);
+            }
+        }
         
-        translate([11.5,-14,-1])
-            cylinder(d=M3_through_hole_d(),h=20);
-        
-        translate([11.5,-14,-0])
-            cylinder(d=6,h=9);
-        
-        translate([-11.5,-14,-0])
-            cylinder(d=6,h=9);
-        
-        translate([0,-21,11.95])
-            e3dMount();
+        translate([0,-21,11.95]) e3dMount();
     }
 }
 
-module boltHole(){
-    union(){
-        M3_nut_insert_cutout();
-        translate([0,0,-4])
-            cylinder(d=M3_through_hole_d(), h=5);
-        
-    }    
-    
-}
-
-module longBoltHole(){
-    union(){
-        translate([0,0,-.1])
-        M3_nut_insert_cutout();
-        translate([0,0,0])
-            cylinder(d=M3_through_hole_d(), h=20);
-        
-    }    
-    
+module nut_cutout() {
+    rotate([0, 0, 90]) M3_nut_insert_cutout(h=2.5);
 }
 
 module e3dMount(){
