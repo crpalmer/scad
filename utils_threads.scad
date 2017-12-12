@@ -7,6 +7,7 @@ function M2_5_pitch() = 0.45;
 function M6_pitch() = 1;
 
 function No6_d() = 0.13;
+function No6_through_hole_d() = inch_to_mm(0.1495);
 function No6_tpi() = 32;
 function quarter_twenty_d() = 0.25;
 function quarter_twenty_tpi() = 20;
@@ -154,7 +155,6 @@ module quarter_twenty_tube(length=8, D=8)
 
 function M3_tapping_hole_d() = 2.5;
 function M3_through_hole_d() = 3.5;
-function No6_through_hole_d() = 4;
 
 module threads_test() {
     translate([10, 0, 0]) No6_nut();
