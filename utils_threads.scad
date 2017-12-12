@@ -156,6 +156,14 @@ module quarter_twenty_tube(length=8, D=8)
 function M3_tapping_hole_d() = 2.5;
 function M3_through_hole_d() = 3.5;
 
+module M3_nut_insert_cutout(h=2.4)
+{
+    minkowski() {
+        cylinder(d=6.2, h=h-0.01, $fn=6);
+        cylinder(r=0.2, h=0.01);
+    };
+}
+
 module threads_test() {
     translate([10, 0, 0]) No6_nut();
     translate([20, 0, 0]) No6_hex_bolt(length=10);

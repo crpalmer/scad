@@ -1,3 +1,5 @@
+include <utils_threads.scad>
+
 $fn = 64;
 
 module mount(){
@@ -40,8 +42,8 @@ module mount(){
         e3dMount();
 
     translate([13,43.1,5.5]) rotate([90, 0, 0]) union() {
-        hexagon(6.5,0.25,3);
-        cylinder(d=3.1, h=4);
+        M3_nut_insert_cutout();
+        cylinder(d=M3_through_hole_d(), h=4);
     }
     }
 }
@@ -55,10 +57,10 @@ module bracket(){
         }
       
         translate([-11.5,-14,-1])
-            cylinder(d=3.1,h=20);
+            cylinder(d=M3_through_hole_d(),h=20);
         
         translate([11.5,-14,-1])
-            cylinder(d=3.1,h=20);
+            cylinder(d=M3_through_hole_d(),h=20);
         
         translate([11.5,-14,-0])
             cylinder(d=6,h=9);
@@ -70,47 +72,18 @@ module bracket(){
             e3dMount();
 
         translate([13,-21,5.5]) rotate([90, 0, 0])
-            hexagon(6.5,0.25,3);
+            M3_nut_insert_cutout();
 
         translate([13,-20.1,5.5]) rotate([90, 0, 0])
-            cylinder(d=3.1, h=4);
-    }
-}
-
-
-module hexagon(width, rad, height){
- hull(){
-  
-      translate([width/2-rad,0,0])
-        cylinder(r=rad,h=height);
-         
-      rotate([0,0,60])
-         translate([width/2-rad,0,0])
-            cylinder(r=rad,h=height);   
-        
-      rotate([0,0,120])
-         translate([width/2-rad,0,0])
-            cylinder(r=rad,h=height);
-         
-      rotate([0,0,180])
-         translate([width/2-rad,0,0])
-            cylinder(r=rad,h=height);
-         
-      rotate([0,0,240])
-         translate([width/2-rad,0,0])
-            cylinder(r=rad,h=height);
-         
-      rotate([0,0,300])
-         translate([width/2-rad,0,0])
-            cylinder(r=rad,h=height);
+            cylinder(d=M3_through_hole_d(), h=4);
     }
 }
 
 module boltHole(){
     union(){
-        hexagon(6.5,0.25,2.5);
+        M3_nut_insert_cutout();
         translate([0,0,-4])
-            cylinder(d=3.1, h=5);
+            cylinder(d=M3_through_hole_d(), h=5);
         
     }    
     
@@ -119,9 +92,9 @@ module boltHole(){
 module longBoltHole(){
     union(){
         translate([0,0,-.1])
-        hexagon(6.5,.25,2.5);
+        M3_nut_insert_cutout();
         translate([0,0,0])
-            cylinder(d=3.1, h=20);
+            cylinder(d=M3_through_hole_d(), h=20);
         
     }    
     
