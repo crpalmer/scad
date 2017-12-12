@@ -25,3 +25,12 @@ module tapered_cylinder(d0, d1, h, steps=20) {
 
 function inch_to_mm(inch) = inch * 25.4;
 function mm_to_inch(mm) = mm / 25.4;
+
+module point(p, d=0.01) {
+    if (len(p) == 2) {
+        translate(p) square([d,d]);
+    }
+    if (len(p) == 3) {
+        translate(p) cube([d,d,d]);
+    }
+}
