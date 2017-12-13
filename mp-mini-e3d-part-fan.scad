@@ -128,10 +128,15 @@ module 50mm_blower_shroud(tube_inner=6, tube_outer=8, wall=2) {
                 translate([tube_middle_delta_x/2, -tube_middle_delta_y/2, 0]) shroud_corner(tube_inner);
                 translate([-tube_middle_delta_x/2, tube_middle_delta_y/2, 0]) rotate([0, 0, 180]) shroud_corner(tube_inner);
             }
-            translate([0, -space_y/4, -tube_inner/2]) cube([tube_middle_delta_x, 10, tube_outer/2], center=true);
-            translate([0, space_y/4, -tube_inner/2]) cube([tube_middle_delta_x, 10, tube_outer/2], center=true);
+            // Hole opposite the fan
+            translate([-tube_middle_delta_x/2, -space_y/2+wall, -tube_outer/2]) cube([tube_outer, space_y-wall*2, tube_outer/4]);
+            // Two holes at the fan entry
+            translate([0, -space_y/2+wall, -tube_outer/2]) cube([tube_middle_delta_x/2, space_y/4, tube_outer/4]);
+            translate([0, space_y/2-wall-space_y/4, -tube_outer/2]) cube([tube_middle_delta_x/2, space_y/4, tube_outer/4]);
+            // Two holes on both of the other two sides
             translate([-space_x/4, 0, -tube_inner/2]) cube([10, tube_middle_delta_y, tube_outer/2], center=true);
             translate([space_x/4, 0, -tube_inner/2]) cube([10, tube_middle_delta_y, tube_outer/2], center=true);
+            // Hole for the fan entry itself
             translate([(tube_middle_delta_x)/2+tube_inner, 0, 0]) cube([tube_outer, 20, tube_outer], center=true);
         }
     }
