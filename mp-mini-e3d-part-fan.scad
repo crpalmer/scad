@@ -175,10 +175,6 @@ module 50mm_blower_shroud(tube_inner=6, tube_outer=8, wall=2) {
         union() {
             50mm_blower_entry();
             difference() {
-                translate([0, 0, -46]) cube([15, wall, 46]);
-                translate([5, 10, -43]) rotate([90, 0, 0]) cylinder(d=No6_through_hole_d(), h=wall*100);
-            }
-            difference() {
                 translate([0, 0, -10]) cube([57, wall, 10]);
                 translate([49, 10, -5]) rotate([90, 0, 0]) cylinder(d=No6_through_hole_d(), h=wall*100);
             }
