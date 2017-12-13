@@ -100,39 +100,39 @@ module 40mm_fan_version() {
 }
 
 module 50mm_blower_shroud(tube_inner=6, tube_outer=8, wall=2) {
-    tube_middle_delta=30+tube_outer;
-    tube_outer_delta=tube_middle_delta+tube_outer;
+    space_x = 30;
+    space_y = 24;
+    tube_middle_delta_x=space_x+tube_outer;
+    tube_middle_delta_y=space_y+tube_outer;
+    tube_outer_delta_x=tube_middle_delta_x+tube_outer;
+    tube_outer_delta_y=tube_middle_delta_y+tube_outer;
     entry_h=20+wall*2;
     entry_w=15.5+wall*2;
     entry_d=15;
     fan_entry_d=6;
     
     module 50mm_blower_shroud_exit() {
-        module shroud_corner(d) {
-            rotate([0, -90, 0]) cylinder(d=d,h=tube_middle_delta);
-            rotate([-90, 0, 0]) cylinder(d=d,h=tube_middle_delta);
+        module shroud_corner(d,delta) {
+            rotate([0, -90, 0]) cylinder(d=d,h=tube_middle_delta_x);
+            rotate([-90, 0, 0]) cylinder(d=d,h=tube_middle_delta_y);
             sphere(d=d);
-            translate([-tube_middle_delta, 0, 0]) sphere(d=d);
+            translate([-tube_middle_delta_x, 0, 0]) sphere(d=d);
         }
 
         difference() {
             union() {
-//                difference() {
-//                    translate([0, 0, -1]) cube([30, 30, wall*2], center=true);
-//                    translate([0, 0, -1]) cube([26, 26, wall(2], center=true);
-//                }
-                translate([tube_middle_delta/2, -tube_middle_delta/2, 0]) shroud_corner(tube_outer);
-                translate([-tube_middle_delta/2, tube_middle_delta/2, 0]) rotate([0, 0, 180]) shroud_corner(tube_outer);
+                translate([tube_middle_delta_x/2, -tube_middle_delta_y/2, 0]) shroud_corner(tube_outer);
+                translate([-tube_middle_delta_x/2, tube_middle_delta_y/2, 0]) rotate([0, 0, 180]) shroud_corner(tube_outer);
             }
             union() {
-                translate([tube_middle_delta/2, -tube_middle_delta/2, 0]) shroud_corner(tube_inner);
-                translate([-tube_middle_delta/2, tube_middle_delta/2, 0]) rotate([0, 0, 180]) shroud_corner(tube_inner);
+                translate([tube_middle_delta_x/2, -tube_middle_delta_y/2, 0]) shroud_corner(tube_inner);
+                translate([-tube_middle_delta_x/2, tube_middle_delta_y/2, 0]) rotate([0, 0, 180]) shroud_corner(tube_inner);
             }
-            translate([0, -7.5, -tube_inner/2]) cube([tube_middle_delta, 10, tube_outer/2], center=true);
-            translate([0, 7.5, -tube_inner/2]) cube([tube_middle_delta, 10, tube_outer/2], center=true);
-            translate([7.5, 0, -tube_inner/2]) cube([10, tube_middle_delta, tube_outer/2], center=true);
-            translate([-7.5, 0, -tube_inner/2]) cube([10, tube_middle_delta, tube_outer/2], center=true);
-            translate([(tube_middle_delta)/2+tube_inner, 0, 0]) cube([tube_outer, 20, tube_outer], center=true);
+            translate([0, -space_y/4, -tube_inner/2]) cube([tube_middle_delta_x, 10, tube_outer/2], center=true);
+            translate([0, space_y/4, -tube_inner/2]) cube([tube_middle_delta_x, 10, tube_outer/2], center=true);
+            translate([-space_x/4, 0, -tube_inner/2]) cube([10, tube_middle_delta_y, tube_outer/2], center=true);
+            translate([space_x/4, 0, -tube_inner/2]) cube([10, tube_middle_delta_y, tube_outer/2], center=true);
+            translate([(tube_middle_delta_x)/2+tube_inner, 0, 0]) cube([tube_outer, 20, tube_outer], center=true);
         }
     }
     
@@ -188,8 +188,8 @@ module 50mm_blower_shroud(tube_inner=6, tube_outer=8, wall=2) {
     }
 
     union() {
-        translate([tube_outer_delta/2, tube_outer_delta/2, tube_outer/2]) 50mm_blower_shroud_exit();
-        translate([tube_middle_delta+tube_outer/2+entry_d, tube_outer_delta/2-entry_w/2, 0]) rotate([0, -90, 0]) 50mm_blower_entry_and_mount();
+        translate([tube_outer_delta_x/2, tube_outer_delta_y/2, tube_outer/2]) 50mm_blower_shroud_exit();
+        translate([tube_middle_delta_x+tube_outer/2+entry_d, tube_outer_delta_y/2-entry_w/2, 0]) rotate([0, -90, 0]) 50mm_blower_entry_and_mount();
     }
 }
 
