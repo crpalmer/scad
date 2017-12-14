@@ -20,7 +20,7 @@ module mount(){
         for (x = [10.5, -10.5]) {
             translate([x,33,0]) union() {
                 cylinder(d=M3_through_hole_d(), h=100);
-                nut_cutout();
+                nut_cutout(h=7);
             }
         }
         translate([0,26,18.95]) e3dMount();
@@ -46,11 +46,15 @@ module bracket() {
         }
         
         translate([0,-21,11.95]) e3dMount();
+        translate([15.9,-28+3.5,12-19.5/4]) rotate([0, 90, 0]) union() {
+            M3_nut_insert_cutout(h=2.5);
+            cylinder(d=M3_through_hole_d(), h=100);
+        }
     }
 }
 
-module nut_cutout() {
-    rotate([0, 0, 90]) M3_nut_insert_cutout(h=2.5);
+module nut_cutout(h=2.5) {
+    rotate([0, 0, 90]) M3_nut_insert_cutout(h);
 }
 
 module e3dMount(){
