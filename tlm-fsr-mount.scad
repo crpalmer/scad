@@ -4,21 +4,20 @@ corner_H=10;
 corner_L=20;
 corner_W=4;
 screw_mount_W=15;
-screw_mount_L=corner_W+24+M5_through_hole_d()*1.5;
+screw_mount_L=corner_W+23.7+M5_through_hole_d()*1.5;
 H=6;
 
 module corner() {
     arm = [corner_L*sin(60), corner_L*cos(60)];
     arm2 = [-arm[0], arm[1] ];
-    corner_delta = corner_W*cos(30);
     
     points = [
-        [0, 0],
+        [0, -corner_W],
+        arm+[corner_W, -corner_W],
         arm,
-        arm+[-corner_delta, corner_delta],
-        [0, corner_W],
-        arm2+[corner_delta,
-        corner_delta], arm2
+        [0, 0],
+        arm2,
+        arm2-[corner_W, corner_W]
     ];
      
     linear_extrude(height=corner_H+H) polygon(points);
@@ -40,7 +39,7 @@ module screw_mount(screw_H=4) {
         linear_extrude(height=H) polygon(points);
         echo(L-M5_through_hole_d()*1.5);
         translate([0, L-M5_through_hole_d()*1.5, 0]) cylinder(d=M5_through_hole_d(), h=H, $fn=64);
-        translate([0, L-M5_through_hole_d()*1.5, H-screw_H]) cylinder(d=M5_through_hole_d()*1.5, h=H, $fn=64);
+        translate([0, L-M5_through_hole_d()*1.5, H-screw_H]) cylinder(d=10, h=H, $fn=64);
     }
 }
 
@@ -63,7 +62,8 @@ module fsr_mount() {
 }
 
 union() {
-    corner();
+    translate([0, corner_W, 0]) corner();
     screw_mount();
-    translate([0, screw_mount_L, 0]) fsr_mount();
+    # If I don't include the -.1 the slicer thinks they aren't attached
+    translate([0, screw_mount_L-.1, 0]) fsr_mount();
 }
