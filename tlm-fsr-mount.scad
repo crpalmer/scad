@@ -61,9 +61,32 @@ module fsr_mount() {
     }
 }
 
-union() {
-    translate([0, corner_W, 0]) corner();
-    screw_mount();
-    # If I don't include the -.1 the slicer thinks they aren't attached
-    translate([0, screw_mount_L-.1, 0]) fsr_mount();
+module corner_mount_for_fsr() {
+    union() {
+        translate([0, corner_W, 0]) corner();
+        screw_mount();
+        // If I don't include the -.1 the slicer thinks they aren't attached
+        translate([0, screw_mount_L-.1, 0]) fsr_mount();
+    }
 }
+
+module board_mount() {
+    screw_delta=3.3/2+1.1;
+    board_W=30.5;
+    mounting_delta=7.5;
+    difference() {
+        union() {
+            cube([board_W, 14, 5]);
+            cube([board_W, 3.2, 20]);
+            translate([0, 14-2.5, 0]) cube([board_W, 2.5, 20]);
+        }
+        $fn=64;
+        translate([screw_delta, mounting_delta, 0]) cylinder(d=M3_tapping_hole_d(), h=1000);
+        translate([board_W-screw_delta, mounting_delta, 0]) cylinder(d=M3_tapping_hole_d(), h=1000);
+        translate([5, -5, 10]) rotate([-90, 0, 0]) cylinder(d=M3_tapping_hole_d(), h=10);
+        translate([board_W-5, -5, 10]) rotate([-90, 0, 0]) cylinder(d=M3_tapping_hole_d(), h=10);
+    }
+}
+
+//corner_mount_for_fsr();
+board_mount();
