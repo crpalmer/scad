@@ -3,7 +3,7 @@ include <utils.scad>
 $fn=64;
 
 arm_mount_radius=34;
-arm_spacing=47;
+arm_spacing=45;
 arm_taper_len=8;
 arm_taper=[6.5, 8];
 T=8;
@@ -58,9 +58,29 @@ module blank_effector() {
     }
 }
 
-module effector() {
-    blank_effector();
+module chimera_top_mounting_holes(d=M3_through_hole_d()) {
+    union() {
+        translate([-8.5, 9, -50]) cylinder(d=d, h=100);
+        translate([8.5, 9, -50]) cylinder(d=d, h=100);
+        translate([0, -3, -50]) cylinder(d=d, h=100);
+    }
 }
 
+module chimera_boden_holes(d=5) {
+    union() {
+        translate([-9, 0, -50]) cylinder(d=d, h=100);
+        translate([9, 0, -50]) cylinder(d=d, h=100);
+        translate([-9, 0, T/2]) cylinder(d=12, h=100);
+        translate([9, 0, T/2]) cylinder(d=12, h=100);
+    };
+}
 
-effector();
+module chimera_effector() {
+    difference() {
+        blank_effector();
+        chimera_top_mounting_holes();
+        chimera_boden_holes();
+    }
+}
+
+chimera_effector();
