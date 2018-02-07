@@ -165,6 +165,11 @@ module M3_nut_insert_cutout(h=2.4)
     };
 }
 
+function M4_tapping_hole_d() = 3.375;
+function M4_through_hole_d() = 4.4;
+
+function M5_through_hole_d() = 5.5;
+
 module threads_test() {
     translate([10, 0, 0]) No6_nut();
     translate([20, 0, 0]) No6_hex_bolt(length=10);
