@@ -2,7 +2,7 @@ include <utils_threads.scad>
 
 $fn=64;
 
-plate = [44, 40, 5];
+plate = [44, 39, 5];
 
 module chimera_holes(recess_h=0) {
     for (at = [ [-4.5, 10], [4.5, 10], [0, 20]]) {
@@ -24,8 +24,8 @@ shroud_z = 20+3+plate[2];
 module shroud_body(dx, dy, dz) {
     hull() {
         point([0+dx, 0, dz]);
-        point([0+dx, 9-dy, dz]);
-        point([plate[0]-dx, 9-dy, dz]);
+        point([0+dx, 10-dy, dz]);
+        point([plate[0]-dx, 10-dy, dz]);
         point([plate[0]-dx, 0, dz]);
         point([dx, 0, shroud_z-dz]);
         point([dx, 4, shroud_z-dz]);
@@ -39,21 +39,24 @@ module shroud_outside() {
 }
 
 module shroud_inside() {
-    shroud_body(3, 2, 3);
+    shroud_body(2.5, 2, 3);
 }
 
 module shroud() {
-    union() {
-        difference() {
-            shroud_outside();
-            shroud_inside();
+    difference() {
+        union() {
+            difference() {
+                shroud_outside();
+                shroud_inside();
+            }
+            cube([plate[0]-33, 3, shroud_z]);
         }
-        cube([plate[0]-33, 2, shroud_z]);
+        translate([0, 0, plate[2]]) cube([7, 2, 14]);
     }
 }
 
 module tusk_holes() {
-    for (at = [ [-18, 3.5], [0, 3.5], [18, 3.5] ]) {
+    for (at = [ [-16, 4.5], [0, 4.5], [16, 4.5] ]) {
         translate(at) cylinder(d=3, h=plate[2]);
     }
 }
@@ -77,4 +80,5 @@ module spacer() {
     }
 }
 
-spacer();
+mount();
+//spacer();
