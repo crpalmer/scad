@@ -60,9 +60,11 @@ module blank_effector() {
 
 module chimera_top_mounting_holes(d=M3_through_hole_d()) {
     union() {
-        translate([-8.5, 9, -50]) cylinder(d=d, h=100);
-        translate([8.5, 9, -50]) cylinder(d=d, h=100);
-        translate([0, -3, -50]) cylinder(d=d, h=100);
+        for (dz = [ [d, -50], [6, T]]) {
+            translate([-8.5, 9, dz[1]]) cylinder(d=dz[0], h=100);
+            translate([8.5, 9, dz[1]]) cylinder(d=dz[0], h=100);
+            translate([0, -3, dz[1]]) cylinder(d=dz[0], h=100);
+        }
     }
 }
 
@@ -70,8 +72,8 @@ module chimera_boden_holes(d=5) {
     union() {
         translate([-9, 0, -50]) cylinder(d=d, h=100);
         translate([9, 0, -50]) cylinder(d=d, h=100);
-        translate([-9, 0, T/2]) cylinder(d=12, h=100);
-        translate([9, 0, T/2]) cylinder(d=12, h=100);
+        translate([-9, 0, 0]) cylinder(d=12, h=T/2);
+        translate([9, 0, 0]) cylinder(d=12, h=T/2);
     };
 }
 
@@ -79,8 +81,38 @@ module chimera_effector() {
     difference() {
         blank_effector();
         chimera_top_mounting_holes();
-        chimera_boden_holes();
+        rotate([0, 0, 180]) chimera_boden_holes();
     }
 }
 
-chimera_effector();
+module nimble_mount() {
+    union() {
+        translate([-5.732, -3, 0]) cube([11.8, 16.427, 3.7]);
+        translate([-3.531, -3.073, 3.7]) cube([7.130, 5.065+3.073, 2.614]);
+        translate([-5.73, -0.225, 3.7]) cube([11.8, 2.490, 2.5]);
+    }
+}
+
+module nimble_holes() {
+    union() {
+        translate([8.3, -16, -4]) cylinder(d=10, h=100);
+        translate([-2, -15, -50]) cylinder(d=M3_tapping_hole_d(), h=100);
+        translate([14, 2, -50]) cylinder(d=M3_tapping_hole_d(), h=100);
+    }
+}
+    
+module chimera_dual_nimble_effector() {
+    difference() {
+        union() {
+            blank_effector();
+            translate([9, 0, T]) nimble_mount();
+            translate([-9, 0, T]) mirror([1, 0, 0]) nimble_mount();
+        }
+        chimera_top_mounting_holes(d=4);
+        chimera_boden_holes(d=3.5);
+        translate([9, 0, T]) nimble_holes();
+        translate([-9, 0, T]) mirror([1, 0, 0]) nimble_holes();
+    }
+}
+
+chimera_dual_nimble_effector();
