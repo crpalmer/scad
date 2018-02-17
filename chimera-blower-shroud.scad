@@ -6,42 +6,39 @@ plate = [44, 5, 39];
 fan_hole = [31, 20.5, 10];
 fan_hole_offset = 3.5;
 
-module chimera_holes(recess_h=0) {
-    for (at = [ [-4.5, 10], [4.5, 10], [0, 20]]) {
-        translate(at) cylinder(d=M3_through_hole_d(), h=100);
-        if (recess_h > 0) {
-            translate([at[0], at[1],recess_h]) cylinder(d=6, h=100-recess_h);
+layer_height = 0.08;
+
+module spacer() {
+    T=4.5;
+    translate([-7, plate[1], 31]) rotate([-90, 0, 0]) for (i = [ 0:layer_height:T ]) {
+        translate([0, 0, i]) cube([14, 21-i, layer_height]);
+    }
+}
+
+module chimera_holes() {
+    for (at = [ [-4.5, -0.1, 29], [4.5, -0.1, 29], [0, -0.1, 19]]) {
+        translate(at) rotate([-90, 0, 0]) union() {
+            cylinder(d=M3_through_hole_d(), h=100);
+            cylinder(d=6, h=4);
         }
     }
 }
 
 module fan_holes() {
-    for (at = [ [-17.5, 2.5], [17.5, 2.5]]) {
-        translate(at) cylinder(d=M3_tapping_hole_d(), h=100);
+    for (at = [ [-17.5, -5, 35], [17.5, -5, 35]]) {
+        translate(at) rotate([-90, 0, 0]) cylinder(d=M3_tapping_hole_d(), h=100);
     }
 }
 
-shroud_z = 20+3+plate[2];
-
-module shroud_body(dx, dy, dz) {
-    hull() {
-        point([0+dx, 0, dz]);
-        point([0+dx, 10-dy, dz]);
-        point([plate[0]-dx, 10-dy, dz]);
-        point([plate[0]-dx, 0, dz]);
-        point([dx, 0, shroud_z-dz]);
-        point([dx, 4, shroud_z-dz]);
-        point([plate[0]-dx, 0, shroud_z-dz]);
-        point([plate[0]-dx, 4, shroud_z-dz]);
+module mount() {
+    difference() {
+        union() {
+            translate([-plate[0]/2, 0, 0]) cube(plate);
+            spacer();
+        }
+        chimera_holes();
+        translate([0, 1, 0]) fan_holes();
     }
-}
-
-module shroud_outside() {
-    shroud_body(0,0,0);
-}
-
-module shroud_inside() {
-    shroud_body(2.5, 2, 3);
 }
 
 module tube(d_out, d_in, len) {
@@ -75,8 +72,9 @@ module shroud() {
     x_len=55;
     y_len=36;
     hole_angle=15;
-    x_hole_len=(x_len - d_out*2)/2 - 4;
-    y_hole_len=(y_len - d_out*2) - 8;
+    x_hole_len=(x_len - d_out*2)/2 - 2;
+    y_hole_len=(y_len - d_out*2) - 2;
+    W=2;
     
     module corner() {
         difference() {
@@ -126,15 +124,16 @@ module shroud() {
     }
 
     module fan_entry() {
-        W=2;
         z=(d_out-d_in)/2;
         translate([-plate[0]/2-W+fan_hole_offset, -y_len/2-W*2-fan_hole[1], -d_out/2]) difference() {
             cube(fan_hole + [W*2, W*2, z]);
-            translate([W, W, z]) cube(fan_hole);
+            translate([W, W, z]) cube(fan_hole+[0,0,1]);
+            translate([W+fan_hole[0], W, fan_hole[2]+z-2]) cube([W, fan_hole[1], 2]);
             translate([0, W+fan_hole[1], z]) cube([fan_hole[0]+W*2, 100, d_in]);
         }
     }
     
+    translate([0, y_len/2 + W, -d_out/2])
     union() {
         difference() {
             body();
@@ -145,32 +144,7 @@ module shroud() {
     }
 }
 
-module tusk_holes() {
-    for (at = [ [-16, 4.5], [0, 4.5], [16, 4.5] ]) {
-        translate(at) cylinder(d=3, h=plate[2]);
-    }
-}
-
-module mount() {
-    difference() {
-        translate([-plate[0]/2, 0, 0]) union() {
-            cube(plate);
-//            translate([0, plate[1], 0]) shroud();
-        }
-//        translate([0, 1, 0]) chimera_holes(plate[2]-3);
-//        translate([0, 1, 0]) fan_holes();
-//        translate([0, plate[1], 0]) tusk_holes();
-    }
-}
-
-module spacer() {
-    difference() {
-        translate([-7.5, 7.5, 0]) cube([15, 15, 10]);
-        chimera_holes();
-    }
-}
-
 union() {
-//    mount();
+    mount();
     shroud();
 }
