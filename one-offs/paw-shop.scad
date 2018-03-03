@@ -1,14 +1,23 @@
 $fn=64;
 
-module letter(L, is_stripe, height, size) {
-    difference() {
-        linear_extrude(height=height) text(text=L, size=size, font="College Block 2.0");
-        a = size*1.25;
+module letter(L, is_stripe, height, size, scale) {
+    font = "College Block 2.0";
+    solid_h = 1;
+//    rotate([180, 0, 180])
+    union() {
         difference() {
-            if (is_stripe != 0) {
-                cube([a, a, height]);
+            linear_extrude(height=height-solid_h) text(text=L, size=size, font=font);
+            difference() {
+                h = size * 1.2;  // why does it do this?
+                w = size * scale;
+                if (is_stripe != 0) {
+                    cube([w, h, height]);
+                }
+                translate([h/2, w/2, 0]) resize([h, w, height]) import("paw-shop-stripes.stl");
             }
-            translate([a/2, a/2, 0]) resize([a, a, height]) import("paw-shop-stripes.stl");
+        }
+        if (is_stripe != 0) {
+//            translate([0, 0, -solid_h]) linear_extrude(height=solid_h) text(text=L, size=size, font=font);
         }
     }
 }
@@ -21,9 +30,9 @@ module small_letters(is_stripe) {
 
     union() {
         for (i = [0:len(text)-1]) {
-            translate(at[i]) letter(text[i], is_stripe=is_stripe, height=5, size=size);
+            translate(at[i]) letter(text[i], is_stripe=is_stripe, height=5, size=size, scale=i==2?1.25 : 1.1);
         }
     }
 }
 
-small_letters(0);
+small_letters(1);
