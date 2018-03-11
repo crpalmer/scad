@@ -170,6 +170,14 @@ function M4_through_hole_d() = 4.4;
 
 function M5_through_hole_d() = 5.5;
 
+module M3_recessed_through_hole(h=100)
+{
+    union() {
+	cylinder(d=6.25, h=3.25);
+	cylinder(d=M3_through_hole_d(), h=h);
+    }
+}
+
 module threads_test() {
     translate([10, 0, 0]) No6_nut();
     translate([20, 0, 0]) No6_hex_bolt(length=10);
