@@ -43,21 +43,20 @@ module screw_mount(screw_H=4) {
     }
 }
 
-module fsr_mount() {
+module fsr_mount(H=6, lip_H=3) {
     fsr_D=19;
-    fsr_H=3.0 - 0.5;
+    fsr_H=H - lip_H;
     lead_W=6;
     lead_L=30;
     W=fsr_D+4;
     L=2+fsr_D+lead_L;
-    H=4;
     gateway_W=9;
     gateway_L=7;
     difference() {
-        translate([-W/2, 0, 0]) cube([W, L, 6]);
-        translate([0, 2+fsr_D/2, 3]) cylinder(d=fsr_D, h=1000);
-        translate([-lead_W/2, 2+fsr_D/2, 3]) cube([lead_W, lead_L+fsr_D/2, 1000]);
-        translate([-gateway_W/2, 2+fsr_D/2, 3]) cube([gateway_W, gateway_L+fsr_D/2, 1000]);
+        translate([-W/2, 0, 0]) cube([W, L, H]);
+        translate([0, 2+fsr_D/2, fsr_H]) cylinder(d=fsr_D, h=1000);
+        translate([-lead_W/2, 2+fsr_D/2, fsr_H]) cube([lead_W, lead_L+fsr_D/2, 1000]);
+        translate([-gateway_W/2, 2+fsr_D/2, fsr_H]) cube([gateway_W, gateway_L+fsr_D/2, 1000]);
     }
 }
 
@@ -89,4 +88,6 @@ module board_mount() {
 }
 
 //corner_mount_for_fsr();
-board_mount();
+//board_mount();
+
+fsr_mount(9, 1);
