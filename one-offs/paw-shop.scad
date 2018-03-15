@@ -1,11 +1,19 @@
+// Command line arguments for generation:
+is_big=0;
+which=0;
+letter="P";
+
 $fn=64;
 
-fancy_w=1;
+nozzle_d=0.4;
+layer_h=0.2;
 
-//height=20;
-//size=8*25.4;
-height=5;
-size=2*25.4;
+fancy_w=4*nozzle_d;
+fancy_h=3*layer_h;
+solid_h=fancy_h;
+
+height = is_big ? 20 : 5;
+size = (is_big ? 8 : 2) *25.4;
 
 module T2D(L) {
     font = "College Block 2.0";
@@ -17,7 +25,7 @@ module T(L, height=height) {
 }
 
 module core(L) {
-    linear_extrude(height=height-fancy_w) offset(delta=-fancy_w) T2D(L);
+    linear_extrude(height=height-fancy_h) offset(delta=-fancy_w) T2D(L);
 }
 
 module stripes(L, negative=0) {
@@ -26,7 +34,7 @@ module stripes(L, negative=0) {
         h = size * scale;
         w = size * scale;
         if (negative != 0) {
-            cube([w, h, height*2], center=true);
+            translate([0, 0, height/2]) cube([w, h, height], center=true);
         }
         resize([h, w, height]) import("paw-shop-stripes.stl");
     }
@@ -36,7 +44,7 @@ module dark(L) {
     union() {
         difference() {
             T(L);
-            stripes(L, negative=1);
+            translate([0, 0, solid_h]) stripes(L, negative=1);
         }
         core(L);
     }
@@ -44,7 +52,7 @@ module dark(L) {
 
 module light(L) {
     difference() {
-        T(L);
+        translate([0, 0, solid_h]) T(L, height=height-solid_h);
         stripes(L);
         core(L);
     }
@@ -73,8 +81,7 @@ module all_letters(is_light) {
     }
 }
 
-rotate([180, 0, 180])
-all_letters(1);
+//rotate([0, 180, 0]) 
+//all_letters(0);
 
-//rotate([180, 0, 180])
-//letter("P", 1);
+letter(letter, which);
