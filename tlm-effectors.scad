@@ -95,7 +95,6 @@ module nimble_mount() {
 
 module nimble_holes() {
     union() {
-        translate([8.3, -16, -4]) cylinder(d=10, h=100);
         translate([-2, -15, -50]) cylinder(d=M3_tapping_hole_d(), h=100);
         translate([14, 2, -50]) cylinder(d=M3_tapping_hole_d(), h=100);
     }
@@ -109,10 +108,11 @@ module chimera_dual_nimble_effector() {
             translate([-9, 0, T]) mirror([1, 0, 0]) nimble_mount();
         }
         chimera_top_mounting_holes(d=4);
-        chimera_boden_holes(d=3.5);
+        chimera_boden_holes();
         translate([9, 0, T]) nimble_holes();
         translate([-9, 0, T]) mirror([1, 0, 0]) nimble_holes();
     }
 }
 
+//chimera_effector();
 chimera_dual_nimble_effector();
