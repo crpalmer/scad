@@ -1,7 +1,11 @@
 include <utils_threads.scad>
 
 $fn=64;
+
+full_height = 48.5;
+fan_wall = 1;
 fan_hole_offset = [20-1.5, 8, 8];
+full = [42, full_height - fan_hole_offset[2], 14.25 + fan_hole_offset[1]];
 
 module chimera_holes() {
     for (at = [ [-4.5, 10, 0], [4.5, 10, 0]]) {
@@ -18,19 +22,41 @@ module fan_holes() {
     }
 }
 
+module connectors() {
+    W=5;
+    translate([-plate[0]/2, 0, fan_hole_offset[2]]) 
+    union() {
+        h = full_height - fan_hole_offset[2] - plate[1];
+        cube([plate[0], W, h]);
+        linear_extrude(height=h, scale=[1, plate[2]-fan_hole_offset[1] + fan_wall]) square([plate[0], 1]);
+        translate([plate[0], 0, 0]) rotate([0, 0, 180]) linear_extrude(height=h, scale=[1, fan_hole_offset[1] + fan_wall - 2]) square([plate[0], 1]);
+    }
+}
+
 module mount() {
-    plate = [44, 14, 14.25 + fan_hole_offset[1]];
-    difference() {
-        union() {
-            translate([-plate[0]/2, 0, 0]) cube(plate);
+    module cutout(w) {
+        h = full[1] - 5;
+        translate([-full[0], 0, 0]) difference() {
+            cube([full[0]*2, w, h]);
+            linear_extrude(height=h, scale=[1, w*10]) square([full[0]*2, 0.1]);
         }
-        chimera_holes();
-        fan_holes();
+    }
+    
+    difference() {
+        translate([0, full[2] - fan_hole_offset[1] + fan_wall, full[1]])
+        rotate([-90, 0, 180])
+        difference() {
+            translate([-full[0]/2, 0, 0]) cube(full);
+            chimera_holes();
+            fan_holes();
+        }
+        translate([0, 2, 0]) cutout(full[2] + fan_wall - 2);
+        translate([0, -2, 0]) mirror([0, 1, 0]) cutout(fan_hole_offset[1] + fan_wall - 2);
     }
 }
 
 module profile() {
-    points = [ [0, 0], [12, 0], [12, 4], [4, 12], [0, 12] ];
+    points = [ [0, 0], [12, 0], [12, 2], [6, 12], [0, 12] ];
 
     difference() {
         polygon(points);
@@ -41,7 +67,7 @@ module profile() {
 module tube(len) {
     // The -7.5 and -4.5 are to get it aligned with the older version tube
     // This should be cleaned up!
-    translate([len/2, -7.5, -4.5]) rotate([0, -90, 0]) 
+    translate([-len/2, -7.5, -4.5]) rotate([90, 0, 90]) 
     difference() {
         linear_extrude(height=len+2) profile();
         translate([0, 0, -2]) cube([100, 100, 2]);
@@ -88,22 +114,19 @@ module shroud() {
     }
     
     module hole(len) {
-        translate([-len/2, 0, 0]) union() {
-            rotate([hole_angle, 0, 0]) cube([len, 8, 4]);
-            cube([len, 3, 4]);
-        }
+        translate([-len/2, 0, -5]) cube([len, 3, 2]);
     }
 
     module x_holes() {
         union() {
-            translate([-x_hole_len/2-2, y_len/2-5, -5]) hole(x_hole_len);
-            translate([x_hole_len/2+2, y_len/2-5, -5]) hole(x_hole_len);
+            translate([-x_hole_len/2-2, y_len/2-5, 0]) hole(x_hole_len);
+            translate([x_hole_len/2+2, y_len/2-5, 0]) hole(x_hole_len);
         }
     }
     
     module y_holes() {
         union() {
-            translate([x_len/2-5, 0, -5]) rotate([0, 0, -90]) hole(x_hole_len);
+            translate([x_len/2-5, 0, 0]) rotate([0, 0, -90]) hole(x_hole_len);
         }
     }
     
@@ -153,13 +176,13 @@ module shroud() {
     
     module mounting_point() {
         D = 7;
-        M = [D, fan_hole_offset[1]-1, D+fan_hole_offset[2]];
+        M = [D, fan_hole_offset[1]-fan_wall, D+fan_hole_offset[2]];
         translate([(17.5 - M[0]/2), -M[1], 0]) difference() {
             cube(M);
             translate([M[0]/2, -M[1]*2, fan_hole_offset[2] + 2.5]) rotate([-90, 0, 0]) cylinder(d=M3_tapping_hole_d(), h=100);
         }
     }
-    
+
     union() {
         difference() {
             translate([0, y_len/2 + 7.25, 4.5]) difference() {
@@ -173,5 +196,8 @@ module shroud() {
     }
 }
 
-//mount();
-shroud();
+union() {
+    translate([0, 0, fan_hole_offset[2]])
+        mount();
+    shroud();
+}
