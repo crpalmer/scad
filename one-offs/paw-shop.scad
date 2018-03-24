@@ -8,12 +8,10 @@ $fn=64;
 nozzle_d=0.4;
 layer_h=0.2;
 
-fancy_w=4*nozzle_d;
-fancy_h=3*layer_h;
-solid_h=fancy_h;
-
 height = is_big ? 20 : 5;
 size = (is_big ? 8 : 2) *25.4;
+
+solid_h=height - 1;
 
 module T2D(L) {
     font = "College Block 2.0";
@@ -25,7 +23,7 @@ module T(L, height=height) {
 }
 
 module core(L) {
-    linear_extrude(height=height-fancy_h) offset(delta=-fancy_w) T2D(L);
+    linear_extrude(height=solid_h) T2D(L);
 }
 
 module stripes(L, negative=0) {
