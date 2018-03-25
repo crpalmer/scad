@@ -2,72 +2,37 @@ include <utils_threads.scad>
 
 $fn=64;
 
-full_height = 48.5;
-fan_wall = 1;
-fan_hole_offset = [20-1.5, 8, 8];
-full = [42, full_height - fan_hole_offset[2], 14.25 + fan_hole_offset[1]];
+wall = 1.2;
 
-module chimera_holes() {
-    for (at = [ [-4.5, 10, 0], [4.5, 10, 0]]) {
-        translate(at) union() {
-            cylinder(d=M3_through_hole_d(), h=100);
-            translate([0, 0, 5]) cylinder(d=6, h=100);
-        }
-    }
-}
+shroud_h = 12 + wall*2;  // Just a little more than the fan entry hole size of 14.1411`
 
-module fan_holes() {
-    for (at = [ [-17.5, 2.5, 0], [17.5, 2.5, 0]]) {
-        translate(at) cylinder(d=M3_tapping_hole_d(), h=100);
-    }
-}
+chimera_hole_x = 4.5;
+chimera_hole_h = 36.5;
 
-module connectors() {
-    W=5;
-    translate([-plate[0]/2, 0, fan_hole_offset[2]]) 
-    union() {
-        h = full_height - fan_hole_offset[2] - plate[1];
-        cube([plate[0], W, h]);
-        linear_extrude(height=h, scale=[1, plate[2]-fan_hole_offset[1] + fan_wall]) square([plate[0], 1]);
-        translate([plate[0], 0, 0]) rotate([0, 0, 180]) linear_extrude(height=h, scale=[1, fan_hole_offset[1] + fan_wall - 2]) square([plate[0], 1]);
-    }
-}
+fan_hole = [25, 16.1, 2.5];
 
-module mount() {
-    module cutout(w) {
-        h = full[1] - 5;
-        translate([-full[0], 0, 0]) difference() {
-            cube([full[0]*2, w, h]);
-            linear_extrude(height=h, scale=[1, w*10]) square([full[0]*2, 0.1]);
-        }
-    }
-    
-    difference() {
-        translate([0, full[2] - fan_hole_offset[1] + fan_wall, full[1]])
-        rotate([-90, 0, 180])
-        difference() {
-            translate([-full[0]/2, 0, 0]) cube(full);
-            chimera_holes();
-            fan_holes();
-        }
-        translate([0, 2, 0]) cutout(full[2] + fan_wall - 2);
-        translate([0, -2, 0]) mirror([0, 1, 0]) cutout(fan_hole_offset[1] + fan_wall - 2);
-    }
-}
+entry_h = 9;
+x_len=48;
+y_len=28;
+x_hole_len = x_len/2 - wall*4;
+y_hole_len = y_len - wall*2;
+
+exit_hole_d = 4;
+exit_hole_h = 2;
+
+ir_probe_holes = [ 18, 8, 15.2 ];
+
+points = [ [0, 0], [0, shroud_h], [shroud_h, shroud_h], [shroud_h, shroud_h - 4], [4, 0] ];
 
 module profile() {
-    points = [ [0, 0], [12, 0], [12, 2], [6, 12], [0, 12] ];
-
     difference() {
         polygon(points);
-        offset(delta=-1) polygon(points);
+        offset(delta=-wall) polygon(points);
     }
 }
 
 module tube(len) {
-    // The -7.5 and -4.5 are to get it aligned with the older version tube
-    // This should be cleaned up!
-    translate([-len/2, -7.5, -4.5]) rotate([90, 0, 90]) 
+    translate([len, 0, 0]) rotate([0, -90, 0]) 
     difference() {
         linear_extrude(height=len+2) profile();
         translate([0, 0, -2]) cube([100, 100, 2]);
@@ -75,129 +40,201 @@ module tube(len) {
     }
 }
 
-module shroud() {
-    fan_hole = [25, 16.1, 2];
+module x_tube() {
+    translate([-x_len/2, y_len/2, 0]) tube(x_len);
+}
 
-    corner_len=9;
-    entry_h = 9;
-    x_len=55;
-    y_len=36;
-    hole_angle=30;
-    x_hole_len=(x_len - corner_len*2)/2 - 2;
-    y_hole_len=(y_len - corner_len*2) - 2;
-    W=2;
-    
-    module corner(which) {
-        deltas = [ [-100, 0], [0, 0], [-100, -100], [0, -100] ];
-        
-        translate([0, 0, -4.5]) difference() {
-            rotate_extrude() translate([-16.5, 0, 0]) profile();
-            difference() {
-                translate([-100, -100, 0]) cube([200, 200, 100]);
-                translate(deltas[which]) cube([100, 100, 100]);
-            }
-        }
-    }
-    
-    module body() {
-        union() {
-            translate([0, y_len/2, 0]) mirror([0, 1, 0]) tube(x_len-corner_len*2);
-            translate([0, -y_len/2, 0]) tube(x_len-corner_len*2);
-            translate([-x_len/2, 0, 0]) rotate([0, 0, -90]) tube(y_len-corner_len*2);
-            translate([x_len/2, 0, 0]) rotate([0, 0, 90]) tube(y_len-corner_len*2);
-            
-            translate([-x_len/2+corner_len, y_len/2-corner_len, 0]) corner(0);
-            translate([x_len/2-corner_len, y_len/2-corner_len, 0]) corner(1);
-            translate([-x_len/2+corner_len, -y_len/2+corner_len, 0]) corner(2);
-            translate([x_len/2-corner_len, -y_len/2+corner_len, 0]) corner(3);
-        }
-    }
-    
-    module hole(len) {
-        translate([-len/2, 0, -5]) cube([len, 3, 2]);
-    }
+module y_tube() {
+    rotate([0, 0, 90]) translate([-y_len/2, x_len/2, 0]) tube(y_len);
+}
 
-    module x_holes() {
-        union() {
-            translate([-x_hole_len/2-2, y_len/2-5, 0]) hole(x_hole_len);
-            translate([x_hole_len/2+2, y_len/2-5, 0]) hole(x_hole_len);
-        }
-    }
+module corner(which) {
+    deltas = [ [-100, 0], [0, 0], [-100, -100], [0, -100] ];
     
-    module y_holes() {
-        union() {
-            translate([x_len/2-5, 0, 0]) rotate([0, 0, -90]) hole(x_hole_len);
-        }
-    }
-    
-    module entry_hole() {
-        translate([-fan_hole_offset[0], -1, 1]) 
-            cube([fan_hole[0], 1*2, fan_hole_offset[2]-1*2]);
-    }
-    
-    module exit_holes() {
-        union() {
-            x_holes();
-            rotate([0, 0, 180]) x_holes();
-            y_holes();
-            rotate([0, 0, 180]) y_holes();
-        }
-    }
-
-    module fan_entry() {
-        lip=2;
-
-        module fan_entry_shaft() {
-            translate([-fan_hole_offset[0], -fan_hole_offset[1], 0])
-            difference() {
-                C = [ fan_hole[0], fan_hole_offset[1], fan_hole_offset[2]];
-                translate([-lip, 0, 0]) cube(C + [lip*2, 0, 0]);
-                translate([1, 0, 1]) cube(C - [ 2, 0, 2]);
-            }
-        }
-
-        module fan_entry_insert() {
-            translate([-fan_hole_offset[0], -fan_hole_offset[1]-fan_hole[1], 0])
-            difference() {
-                union() {
-                    cube(fan_hole + [0, 0, fan_hole_offset[2]]);
-                    translate([-lip, -lip, 0]) cube([fan_hole[0] + lip*2, fan_hole[1] + lip, fan_hole_offset[2]]);
-                }
-                translate([1, 1, 1]) cube(fan_hole + [-2, -2, fan_hole_offset[2]]);
-                translate([1, fan_hole[1]-1, 1]) cube([fan_hole[0]-2, 1, fan_hole_offset[2]-2]);
-            }
-        }
-
-        union() {
-            fan_entry_shaft();
-            fan_entry_insert();
-        }
-    }
-    
-    module mounting_point() {
-        D = 7;
-        M = [D, fan_hole_offset[1]-fan_wall, D+fan_hole_offset[2]];
-        translate([(17.5 - M[0]/2), -M[1], 0]) difference() {
-            cube(M);
-            translate([M[0]/2, -M[1]*2, fan_hole_offset[2] + 2.5]) rotate([-90, 0, 0]) cylinder(d=M3_tapping_hole_d(), h=100);
-        }
-    }
-
-    union() {
+    difference() {
+        rotate_extrude() rotate([0, 0, 90]) mirror([0, 1, 0]) profile();
         difference() {
-            translate([0, y_len/2 + 7.25, 4.5]) difference() {
-                body();
-                exit_holes();
-            }
-            entry_hole();
+            translate([-100, -100, 0]) cube([200, 200, 100]);
+            translate(deltas[which]) cube([100, 100, 100]);
         }
-        mounting_point();
-        fan_entry();
+    }
+}
+
+module ir_probe_mount() {
+    spacer = 2.5;
+    translate([0, y_len/2+shroud_h-ir_probe_holes[1] + spacer, ir_probe_holes[2] - 3]) 
+    union() {
+        for (dir = [ -1, 1]) {
+            translate([dir * ir_probe_holes[0]/2 - 3, 0, 0]) union() {
+                cube([6, ir_probe_holes[1] + spacer, 6]);
+                translate([0, 0, -spacer]) linear_extrude(height = spacer, scale=[1, 100]) square([6, 0.1]);
+            }       
+        }
+    }
+}
+
+module ir_probe_mount_holes() {
+    translate([0, y_len/2+shroud_h-ir_probe_holes[1]-25, ir_probe_holes[2]]) 
+    union(){
+        translate([ir_probe_holes[0]/2, 0, 0]) rotate([-90, 0, 0]) cylinder(d=M3_tapping_hole_d(), h=50);
+        translate([-ir_probe_holes[0]/2, 0, 0]) rotate([-90, 0, 0]) cylinder(d=M3_tapping_hole_d(), h=50);
+    }
+}
+
+module chimera_mount() {
+    w=wall*3.5;
+    chimera_w = 30;
+    chimera_h = chimera_hole_h + wall*3;
+    chimera_d = shroud_h + (y_len - 18) / 2;
+
+    module chimera_holes() {
+        hole = [ chimera_hole_x, -0.1, chimera_hole_h-3 ];
+        for (dir = [-1, 1]) {
+            translate([hole[0]*dir, hole[1], hole[2]]) rotate([-90, 0, 0]) union() {
+                cylinder(d=M3_through_hole_d(), h=100);
+                cylinder(d=6, h=chimera_d-3);
+            }
+        }
+    }
+
+    translate([0, -y_len/2-shroud_h, 0]) difference() {
+        translate([-chimera_w/2, 0, 0]) union() {
+            translate([0, 0, shroud_h]) cube([chimera_w, w, chimera_h - shroud_h]);
+            offset = chimera_d - w;
+            start_h = chimera_hole_h - offset - wall*5;
+            translate([0, w, start_h]) linear_extrude(height=offset, scale=[1, offset*100]) square([chimera_w, 0.01]);
+            translate([0, w, start_h + offset]) cube([chimera_w, offset, chimera_h - (start_h + offset)]);
+        }
+        chimera_holes();
+    }
+}
+
+module body() {
+    union() {
+        rotate([0, 0, 180]) x_tube();
+        x_tube();
+        y_tube();
+        rotate([0, 0, 180]) y_tube();
+
+        translate([-x_len/2, y_len/2, 0]) corner(0);
+        translate([x_len/2, y_len/2, 0]) corner(1);
+        translate([-x_len/2, -y_len/2, 0]) corner(2);
+        translate([x_len/2, -y_len/2, 0]) corner(3);
+        
+        ir_probe_mount();
+        chimera_mount();
+    }
+}
+
+module hole(len) {
+    translate([0, 0, -1]) cube([len, exit_hole_d+1, exit_hole_h+1]);
+}
+
+module x_holes() {
+    union() {
+        translate([-x_hole_len - wall, -y_len/2-exit_hole_d, 0]) hole(x_hole_len);
+        translate([wall, -y_len/2-exit_hole_d, 0]) hole(x_hole_len);
+    }
+}
+
+module y_holes() {
+    union() {
+        translate([x_len/2-1, y_hole_len/2, 0]) rotate([0, 0, -90]) hole(y_hole_len);
+    }
+}
+
+module exit_holes() {
+    union() {
+        x_holes();
+        rotate([0, 0, 180]) x_holes();
+        y_holes();
+        rotate([0, 0, 180]) y_holes();
+    }
+}
+
+module entry_hole() {
+    translate([-fan_hole[0]/2, -y_len/2 - shroud_h, wall]) 
+        cube([fan_hole[0], wall*2, shroud_h - wall*2]);
+}
+
+module fan_entry() {
+    l = sin(45)*fan_hole[1] + wall*2;
+    tube_len = 5;
+
+    module fan_entry_tube() {
+        difference() {
+            cube([fan_hole[0]+wall*4, tube_len, shroud_h]);
+            translate([wall*2, 0, wall]) cube([fan_hole[0], tube_len, l-wall*2]);
+        }
+    }
+    
+    module fan_entry_45() {
+        difference() {
+            cube([fan_hole[0]+wall*4, l, l]);
+            translate([wall*2, wall, wall]) cube([fan_hole[0], l-wall, l-wall*2]);
+            rotate([45, 0, 0]) cube([fan_hole[0]+wall*4, l*10, l]);
+        }
+    }
+
+    fan_hole_offset = 14;
+    
+    module fan_mount() {
+        extension = 5;
+        
+        module fan_seat() {
+            translate([fan_hole_offset, 0, 0]) union() {
+                difference(){
+                    translate([-wall*2, 0,  0]) cube([fan_hole[0]+wall*4, fan_hole[1]+wall*4+wall*2, extension]);
+                    translate([0, wall*2, 0]) cube([fan_hole[0], fan_hole[1], extension]);
+                }
+                translate([-wall, wall, extension])
+                difference() {
+                    cube(fan_hole+[wall*2, wall*2, 0]);
+                    translate([wall, wall, 0]) cube(fan_hole);
+                }
+            }
+        }
+
+        module fan_mount_holes() {
+            for (at = [ [-17.5, -10, 37], [17.5, -10, 37]]) {
+                translate(at) rotate([-90, 0, 0]) cylinder(d=M3_tapping_hole_d(), h=100);
+            }
+        }
+
+        translate([-fan_hole_offset+wall*2, 0, 0]) difference(){
+            connector = 10;
+            union() {
+                translate([0, fan_hole[1] + wall*4, extension-connector]) union() {
+                    cube([40+wall, wall*2, 40+wall+connector]);
+                    translate([0, 0, 40+wall+connector-6]) cube([6, 6, 6]);
+                    translate([40+wall-6, 0, 40+wall+connector-6]) cube([6, 6, 6]);
+                }
+                fan_seat();
+            }
+            translate([(40+wall)/2, 0, extension]) fan_mount_holes();
+            translate([-100, -100, -100]) cube([200, 100, 200]);
+        }
+    }
+
+    difference() {
+        translate([-(fan_hole[0]+wall*2)/2, -y_len/2-shroud_h, 0]) union() {
+            translate([0, -tube_len, 0]) fan_entry_tube();
+            translate([0, -(tube_len + l), 0]) fan_entry_45();
+            translate([0, -(tube_len + l), 0]) rotate([45, 0, 0]) fan_mount();
+        }
+        translate([0, -100, chimera_hole_h]) union() {
+            translate([-chimera_hole_x, 0, 0]) rotate([-90, 0, 0]) cylinder(d=6, h=200);
+            translate([chimera_hole_x, 0, 0]) rotate([-90, 0, 0]) cylinder(d=6, h=200);
+        }
     }
 }
 
 union() {
-    translate([0, 0, fan_hole_offset[2]])
-        mount();
-    shroud();
+    difference() {
+        body();
+        entry_hole();
+        exit_holes();
+        ir_probe_mount_holes();
+    }
+    fan_entry();
 }
