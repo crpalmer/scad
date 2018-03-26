@@ -1,49 +1,42 @@
 include <utils_threads.scad>
 
-corner_H=10;
+$fn=64;
+
+H=6;
+corner_H=10 + H;
 corner_L=20;
 corner_W=4;
-screw_mount_W=15;
-screw_mount_L=corner_W+23.7+M5_through_hole_d()*1.5;
-H=6;
+screw_mount_W=23;
+screw_mount_L=23.7+M5_through_hole_d()*1.5;
 
-module corner() {
-    arm = [corner_L*sin(60), corner_L*cos(60)];
+module corner(H) {
+    arm = [corner_L*cos(30), corner_L*sin(30)];
     arm2 = [-arm[0], arm[1] ];
     
     points = [
-        [0, -corner_W],
-        arm+[corner_W, -corner_W],
-        arm,
         [0, 0],
-        arm2,
-        arm2-[corner_W, corner_W]
+        arm,
+        arm2
     ];
      
-    linear_extrude(height=corner_H+H) polygon(points);
-}
-
-module screw_mount(screw_H=4) {
-    W=screw_mount_W;
-    L=screw_mount_L;
-    
-    points = [
-        [ 0, 0 ],
-        [ W/2*sin(60), W/2*cos(60) ],
-        [ W/2, L],
-        [ -W/2, L],
-        [ -W/2*sin(60), W/2*cos(60) ]
-    ];
 
     difference() {
-        linear_extrude(height=H) polygon(points);
-        echo(L-M5_through_hole_d()*1.5);
-        translate([0, L-M5_through_hole_d()*1.5, 0]) cylinder(d=M5_through_hole_d(), h=H, $fn=64);
-        translate([0, L-M5_through_hole_d()*1.5, H-screw_H]) cylinder(d=10, h=H, $fn=64);
+        translate([0, -corner_W, 0]) linear_extrude(height=corner_H) polygon(points);
+        translate([0, 0, H]) linear_extrude(height=corner_H) polygon(points);
     }
 }
 
-module fsr_mount(H=6, lip_H=3) {
+module screw_mount() {
+    W=screw_mount_W;
+    L=screw_mount_L;
+    
+    difference() {
+        translate([-W/2, 2, 0]) cube([W, L, H]);
+        translate([0, L-M5_through_hole_d()*1.5, 0]) M5_recessed_through_hole(H);
+    }
+}
+
+module fsr_mount(H=6, lip_H=3, extra=0) {
     fsr_D=19;
     fsr_H=H - lip_H;
     lead_W=6;
@@ -52,20 +45,50 @@ module fsr_mount(H=6, lip_H=3) {
     L=2+fsr_D+lead_L;
     gateway_W=9;
     gateway_L=7;
-    difference() {
-        translate([-W/2, 0, 0]) cube([W, L, H]);
-        translate([0, 2+fsr_D/2, fsr_H]) cylinder(d=fsr_D, h=1000);
-        translate([-lead_W/2, 2+fsr_D/2, fsr_H]) cube([lead_W, lead_L+fsr_D/2, 1000]);
-        translate([-gateway_W/2, 2+fsr_D/2, fsr_H]) cube([gateway_W, gateway_L+fsr_D/2, 1000]);
+    union() {
+        difference() {
+            translate([-W/2, 0, 0]) cube([W, L+extra, H]);
+            translate([0, extra+2+fsr_D/2, fsr_H]) cylinder(d=fsr_D, h=1000);
+            translate([-lead_W/2, extra+2+fsr_D/2, fsr_H]) cube([lead_W, lead_L+fsr_D/2, 1000]);
+            translate([-gateway_W/2, extra+2+fsr_D/2, fsr_H
+]) cube([gateway_W, gateway_L+fsr_D/2, 1000]);
+        }
     }
 }
 
 module corner_mount_for_fsr() {
     union() {
-        translate([0, corner_W, 0]) corner();
+        corner(H=6);
         screw_mount();
-        // If I don't include the -.1 the slicer thinks they aren't attached
-        translate([0, screw_mount_L-.1, 0]) fsr_mount();
+        translate([0, screw_mount_L, 0]) fsr_mount(H=6, lip_H=1, extra = 90 - screw_mount_L);
+    }
+}
+
+module pillar_mount_for_fsr() {
+    base = [240, 8, 8];
+    brace = [(base[0]-100)/2, 4, 25];
+    screw_offset = [11, 19];
+    slot_len = 5 + M5_through_hole_d();
+    screw_base = [ base[1] + M5_through_hole_d(), screw_offset[1] + slot_len + 3, base[2]];
+    L=245;
+    W=4;
+    
+    gap=100;
+    
+    module screw_mount() {
+        difference() {
+            cube(screw_base);
+            translate([screw_base[0]/2, screw_offset[1], 0]) M5_recessed_through_slot(len=slot_len, h=screw_base[2]);
+        }
+    }
+    
+    union() {
+        translate([-base[0]/2, 0, 0]) cube(base);
+        translate([-base[0]/2, -brace[1], 0]) cube(brace);
+        translate([base[0]/2-brace[0], -brace[1], 0]) cube(brace);
+        translate([0, base[1], 0]) fsr_mount(base[2], 2, 35);
+        translate([-base[0]/2+screw_offset[0]-screw_base[0]/2, 0, 0]) screw_mount();
+        translate([base[0]/2-screw_offset[0]-screw_base[0]/2, 0, 0]) screw_mount();
     }
 }
 
@@ -87,7 +110,7 @@ module board_mount() {
     }
 }
 
-//corner_mount_for_fsr();
+corner_mount_for_fsr();
 //board_mount();
-
-fsr_mount(9, 1);
+//fsr_mount(9, 1);
+//rotate([0, 0, 90]) pillar_mount_for_fsr();
