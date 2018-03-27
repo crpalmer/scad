@@ -9,12 +9,11 @@ full_h = 47.5;
 shroud_h = 12 + wall*2;  // Just a little more than the fan entry hole size of 14.1411`
 
 chimera_hole_x = 4.5;
-chimera_hole_h = 37.5;
+chimera_hole_h = 38;
 
 fan_offset = 2.1;
 fan_hole = [25, 16, 2.5];
 
-entry_h = 9;
 x_len=48;
 y_len=28;
 x_hole_len = x_len/2 - wall*4;
