@@ -8,6 +8,9 @@
 // bltouch needs M3 x 12mm brass standoff and M3 x 10mm screw with lock-nut or nut
 $fn = 116;     // if you have issues getting the J head into the cutout increase this
 
+module blank_effector()
+{
+    
 edist_flats = 54;
 edist_across = 80;
 e_thickness = 8;
@@ -32,25 +35,25 @@ bltouch_hole_space = 18;        // distance between bltouch screws
 rod_screw_base_d1 = e_thickness;
 rod_screw_base_d2 = e_thickness-1;
 rod_screw_base_h = 8;       // I measured 7mm but 8 seems to give a better "bite" for the m4 screw
-rod_screw = 4;
+rod_screw = 3.375; // 4;
 
 // make a big square we can cut material from
 module base_plate() {
     // make a square centered around origin to cut out pieces of
     difference() {
         translate([-edist_across*1.2/2,-edist_across*1.2/2,0]) cube([edist_across*1.2,edist_across*1.2,e_thickness]);
-        // back right hole
-        translate([sflat_wide/2+bar_w,edist_across/2-sflat_deep-fan_shroud_hole_off,0]) cylinder(h=e_thickness,r=1.5);
-        // front right hole
-        translate([sflat_wide/2+bar_w,-1*(edist_across/2-sflat_deep-fan_shroud_hole_off),0]) cylinder(h=e_thickness,r=1.5);        
-        // back left hole
-        translate([-1*(sflat_wide/2+bar_w),edist_across/2-sflat_deep-fan_shroud_hole_off,0]) cylinder(h=e_thickness,r=1.5);
-        // front left hole
-        translate([-1*(sflat_wide/2+bar_w),-1*(edist_across/2-sflat_deep-fan_shroud_hole_off),0]) cylinder(h=e_thickness,r=1.5);
-        // bltouch back right hole
-        translate([bltouch_hole_space/2,edist_across/2-sflat_deep-bltouch_hole_off,0]) cylinder(h=e_thickness,r=1.5);
-        // bltouch back left hole
-        translate([-1*(bltouch_hole_space/2),edist_across/2-sflat_deep-bltouch_hole_off,0]) cylinder(h=e_thickness,r=1.5);
+//        // back right hole
+//        translate([sflat_wide/2+bar_w,edist_across/2-sflat_deep-fan_shroud_hole_off,0]) cylinder(h=e_thickness,r=1.5);
+//        // front right hole
+//        translate([sflat_wide/2+bar_w,-1*(edist_across/2-sflat_deep-fan_shroud_hole_off),0]) cylinder(h=e_thickness,r=1.5);        
+//        // back left hole
+//        translate([-1*(sflat_wide/2+bar_w),edist_across/2-sflat_deep-fan_shroud_hole_off,0]) cylinder(h=e_thickness,r=1.5);
+//        // front left hole
+//        translate([-1*(sflat_wide/2+bar_w),-1*(edist_across/2-sflat_deep-fan_shroud_hole_off),0]) cylinder(h=e_thickness,r=1.5);
+//        // bltouch back right hole
+//        translate([bltouch_hole_space/2,edist_across/2-sflat_deep-bltouch_hole_off,0]) cylinder(h=e_thickness,r=1.5);
+//        // bltouch back left hole
+//        translate([-1*(bltouch_hole_space/2),edist_across/2-sflat_deep-bltouch_hole_off,0]) cylinder(h=e_thickness,r=1.5);
     }
 }
 
@@ -126,7 +129,7 @@ module cut_out_plate() {
         cuts_outer();
         rotate(a=120,v=[0,0,1]) cuts_outer();
         rotate(a=240,v=[0,0,1]) cuts_outer();
-        cuts_inner();
+//        cuts_inner();
     }
 }
 module jhead_clamp() {
@@ -182,4 +185,5 @@ module effector() {
 }
  
 effector();
-translate([65,jhead_round/2,0]) v6_clamp();
+//translate([65,jhead_round/2,0]) v6_clamp();
+}
