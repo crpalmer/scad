@@ -58,6 +58,16 @@ module blank_effector() {
     }
 }
 
+module chimera_orientation_tabs()
+{
+    w=1.2;
+    h=1.2;
+
+    for (x = [-15.05-w, 15.05]) {
+        translate([x, -5, -h]) cube([w, 16, h]);
+    }
+}
+
 module chimera_top_mounting_holes(d=M3_through_hole_d()) {
     union() {
         for (dz = [ [d, -50], [6, T]]) {
@@ -80,6 +90,7 @@ module chimera_boden_holes(d=5) {
 module chimera_effector() {
     difference() {
         blank_effector();
+        chimera_orientation_tabs();
         chimera_top_mounting_holes();
         rotate([0, 0, 180]) chimera_boden_holes();
     }
@@ -104,6 +115,7 @@ module chimera_dual_nimble_effector() {
     difference() {
         union() {
             blank_effector();
+            chimera_orientation_tabs();
             translate([9, 0, T]) nimble_mount();
             translate([-9, 0, T]) mirror([1, 0, 0]) nimble_mount();
         }
