@@ -1,6 +1,22 @@
 use <utils.scad>
 use <threads.scad>
 
+module recessed_screw_slot(d1, d2, h1, h2, len)
+{
+    module doit(d, h, len) {
+	union() {
+	    translate([0, 0, h/2]) cube([d, len-d, h], center=true);
+	    translate([0, -len/2+d/2, 0]) cylinder(d=d, h=h);
+	    translate([0, len/2-d/2, 0]) cylinder(d=d, h=h);
+	}
+    }
+    
+    union() {
+	doit(d1, h1, len);
+	translate([0, 0, h1]) doit(d2, h2-h1, len+d2-d1);
+    }
+}
+
 function thread_d_delta() = +.1;
 function internal_d_delta() = +.65;
 
@@ -157,17 +173,37 @@ module quarter_twenty_tube(length=8, D=8)
 function M3_tapping_hole_d() = 2.5;
 function M3_through_hole_d() = 3.5;
 
+module M3_through_hole(h=100)
+{
+    cylinder(d=M3_through_hole_d(), h=h);
+}
+
+module M3_heat_set_hole()
+{
+    d = 5.1;
+    h = 3.9;
+    c = 0.2;
+    c_d  = d + c;
+
+    union() {
+	cylinder(d=5.1, h=h);
+	linear_extrude(height=c, scale=d / c_d) circle(d=c_d);
+	translate([0, 0, h-c]) linear_extrude(height=c, scale=c_d/d) circle(d=d);
+    }
+}
+
 module M3_nut_insert_cutout(h=2.4)
 {
     minkowski() {
-        cylinder(d=6.2, h=h-0.01, $fn=6);
-        cylinder(r=0.2, h=0.01);
+	cylinder(d=6.2, h=h-0.01, $fn=6);
+	cylinder(r=0.2, h=0.01);
     };
 }
 
 function M4_tapping_hole_d() = 3.375;
 function M4_through_hole_d() = 4.4;
 
+function M5_tapping_hole_d() = 4.2;
 function M5_through_hole_d() = 5.5;
 
 module M3_recessed_through_hole(h=100)
@@ -176,6 +212,19 @@ module M3_recessed_through_hole(h=100)
 	cylinder(d=6.25, h=3.25);
 	cylinder(d=M3_through_hole_d(), h=h);
     }
+}
+
+module M5_recessed_through_hole(h=100)
+{
+    union() {
+	cylinder(d=M5_through_hole_d(), h=h);
+	translate([0, 0, h-4]) cylinder(d=10, h=h);
+    }
+}
+
+module M5_recessed_through_slot(len, h)
+{
+    recessed_screw_slot(d1=M5_through_hole_d(), d2=10, h1=h-4, h2=h, len=len);
 }
 
 module threads_test() {
