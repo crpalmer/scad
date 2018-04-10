@@ -34,3 +34,7 @@ module point(p, d=0.01) {
         translate(p) cube([d,d,d]);
     }
 }
+
+function rotate_around(angle, point2d, origin = [0, 0]) =
+   [ cos(angle) * (point2d[0] - origin[0]) - sin(angle) * (point2d[1] - origin[1]),
+     sin(angle) * (point2d[0] - origin[0]) + cos(angle) * (point2d[1] - origin[1]) ];
