@@ -8,12 +8,12 @@
 // bltouch needs M3 x 12mm brass standoff and M3 x 10mm screw with lock-nut or nut
 $fn = 116;     // if you have issues getting the J head into the cutout increase this
 
-module blank_effector()
+module blank_effector(T=8)
 {
     
 edist_flats = 54;
 edist_across = 80;
-e_thickness = 8;
+e_thickness = T;
 sflat_wide = 16;
 sflat_deep = 12;
 bflat_wide = 33.5;
@@ -32,8 +32,8 @@ fan_shroud_hole_off = 14;     // the 2 holes at back of effector (offset from ba
 fan_shroud_hole_space = 32;   // from back to shroud holes to front two
 bltouch_hole_off = 5;           // from back small cutout inside wall to bltouch hole (y dist)
 bltouch_hole_space = 18;        // distance between bltouch screws
-rod_screw_base_d1 = e_thickness;
-rod_screw_base_d2 = e_thickness-1;
+rod_screw_base_d1 = 8;
+rod_screw_base_d2 = rod_screw_base_d1 - 1;
 rod_screw_base_h = 8;       // I measured 7mm but 8 seems to give a better "bite" for the m4 screw
 rod_screw = 3.375; // 4;
 
