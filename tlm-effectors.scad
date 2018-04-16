@@ -2,6 +2,13 @@ include <utils_threads.scad>
 include <tlm-effector-blank.scad>
 
 $fn=64;
+//util_threads_fake_heat_set_holes = true;
+
+module our_blank_effector(T=8)
+{
+//    blank_effector(arm_spacing=60, arm_offset = 30, arm_mount_len = M4_long_heat_set_h(), T=T);
+    blank_effector();
+}
 
 module chimera_orientation_tabs()
 {
@@ -9,18 +16,14 @@ module chimera_orientation_tabs()
     h=1.2;
 
     for (x = [-15.05-w, 15.05]) {
-        translate([x, -5, -h]) cube([w, 16, h]);
+        translate([x, -11, -h]) cube([w, 16, h]);
     }
 }
 
-module chimera_top_mounting_holes(d=M3_through_hole_d(), inset_h=8) {
-    union() {
-        for (dz = [ [d, -50], [6, inset_h]]) {
-            translate([-8.5, -9, dz[1]]) cylinder(d=dz[0], h=100);
-            translate([8.5, -9, dz[1]]) cylinder(d=dz[0], h=100);
-            translate([0, 3, dz[1]]) cylinder(d=dz[0], h=100);
-        }
-    }
+module chimera_top_mounting_holes(d=M3_through_hole_d()) {
+    translate([-8.5, -9, -50]) cylinder(d=d, h=100);
+    translate([8.5, -9, -50]) cylinder(d=d, h=100);
+    translate([0, 3, -50]) cylinder(d=d, h=100);
 }
 
 module chimera_boden_holes(d=5) {
@@ -34,7 +37,7 @@ module chimera_boden_holes(d=5) {
 
 module chimera_effector() {
     difference() {
-        blank_effector();
+        our_blank_effector();
         chimera_orientation_tabs();
         chimera_top_mounting_holes();
         chimera_boden_holes();
@@ -50,18 +53,15 @@ module nimble_mount() {
     }
 }
 
-nimble_plate = [27, 40, 4];
+nimble_plate = [27, 40, 5];
 nimble_plate_offset = [-8, -15, 0];
 
 nimble_plate_holes = [ [-5, 20, 0], [12, -10, 0]];
 nimble_holes = [ [-2, 15, 0], [14, -2, 0]];
 
-module nimble_mounting_holes() {
+module nimble_mounting_holes(d = M3_heat_set_hole_d()) {
     for (h = nimble_holes) {
-        union() {
-            translate(h) M3_heat_set_hole();
-            translate(h) M3_through_hole();
-        }
+        translate(h) cylinder(d=d, h=100);
     }
 }
 
@@ -83,85 +83,121 @@ module nimble_plate() {
         for (hole = nimble_plate_holes) {
             translate(hole) M3_through_hole();
         }
+        translate([-9, 0, 0]) chimera_top_mounting_holes(d=6);
     }
 }
 
 module nimble_plate_mounting_holes()
 {
     for (h = nimble_plate_holes) {
-        translate(h) M3_heat_set_hole();
-        translate(h) M3_through_hole();
+        translate(h) M3_heat_set_hole(h=100);
     }
 }
 
 module chimera_dual_nimble_effector() {
+    module nimble_holes() {
+        nimble_plate_mounting_holes();
+        nimble_mounting_holes(d = M3_through_hole_d());
+    }
+
     difference() {
         union() {
-            blank_effector(T=10);
+            our_blank_effector(T=10);
             chimera_orientation_tabs();
         }
-        chimera_top_mounting_holes(d=4, inset_h=6);
+        chimera_top_mounting_holes();
         chimera_boden_holes();
-        translate([9, 0, 0]) nimble_plate_mounting_holes();
-        translate([-9, 0, 0]) mirror([1, 0, 0]) nimble_plate_mounting_holes();
+        translate([9, 0, 0]) nimble_holes();
+        translate([-9, 0, 0]) mirror([1, 0, 0]) nimble_holes();
     }
 }
 
-module e3d_nimble_effector(do_effector) {
-    clip_d = 34;
-    clip_h = 5.9;
-    e3d_throat_d = 12;
-    
-    clip_body_w = (clip_d - e3d_throat_d)/2;
-    hole_offset = clip_body_w / 2 + e3d_throat_d/2;
-    
-    clip_holes = [ [-hole_offset, 0, 0],
-                   [ 0, -hole_offset, 0],
-                   [ 0, hole_offset, 0]];
-    
-    module e3d_clip_body() {
-        difference() {
-            intersection() {
-                cylinder(d=clip_d, h=clip_h);
-                translate([-clip_d/2, -clip_d/2, 0]) cube([clip_d*0.75, clip_d, 100]);
-            }
-            cylinder(d=e3d_throat_d, h=100);
-            translate([0, -e3d_throat_d/2, 0]) cube([100, e3d_throat_d, 100]);
+clip_d = 34;
+clip_h = 5.9;
+e3d_throat_d = 12;
+
+clip_body_w = (clip_d - e3d_throat_d)/2;
+hole_offset = clip_body_w / 2 + e3d_throat_d/2;
+
+clip_holes = [ [-hole_offset, 0, 0],
+               [ 0, -hole_offset, 0],
+               [ 0, hole_offset, 0]];
+
+module clip_blank() {
+    difference() {
+        intersection() {
+            cylinder(d=clip_d, h=clip_h);
+            translate([-clip_d/2, -clip_d/2, 0]) cube([clip_d*0.75, clip_d, 100]);
         }
+        cylinder(d=e3d_throat_d, h=100);
+        translate([0, -e3d_throat_d/2, 0]) cube([100, e3d_throat_d, 100]);
     }
+}
     
+module clip_effector_blank()
+{
     module e3d_top_hole() {
-        cylinder(d=16.1, h=100);
+        cylinder(d=17, h=100);
+    }
+
+    difference() {
+        our_blank_effector();
+        linear_extrude(height=4) offset(delta=0.1) projection() clip_blank();
+        e3d_top_hole();
+        for (hole = clip_holes) {
+            translate(hole) cylinder(d=M3_through_hole_d(), h=100);
+        }
+    }
+}
+        
+module e3d_nimble_effector() {
+    difference() {
+        clip_effector_blank();
+        nimble_plate_mounting_holes();
+    }
+}
+    
+module e3d_clip() {
+    difference() {
+        clip_blank();
+        for (hole = clip_holes) {
+            translate(hole) M3_heat_set_hole(h=100);
+        }
+    }
+}
+
+module stock_effector() {
+    module bl_touch_holes() {
+        translate([-9, 30, 0]) M3_heat_set_hole(h=100);
+        translate([9, 30, 0]) M3_heat_set_hole(h=100);
     }
     
-    module effector() {
-        difference() {
-            blank_effector();
-            linear_extrude(height=4) offset(delta=0.1) projection() e3d_clip_body();
-            e3d_top_hole();
-            for (hole = clip_holes) {
-                translate(hole) cylinder(d=M3_through_hole_d(), h=100);
+    module fan_holes() {
+        for (x = [-1, 1]) {
+            for (y = [-1, 1]) {
+                rotate([0, 0, -30]) translate([x*16, y*16, 0]) cylinder(d=M3_through_hole_d(), h=100);
             }
-            nimble_plate_mounting_holes();
         }
     }
     
-    module clip() {
-        difference() {
-            e3d_clip_body();
-            for (hole = clip_holes) {
-                translate(hole) M3_heat_set_hole();
-                translate(hole) cylinder(d=M3_through_hole_d(), h=100);
-            }
+        
+    difference() {
+        clip_effector_blank();
+        bl_touch_holes();
+        fan_holes();
+    }
+}
+
+module carriage_adaptor(arm_spacing = 60) {
+    hsh = M4_long_heat_set_h();
+    difference() {
+        union() {
+            cube([arm_spacing-hsh*2, 10, 10], center=true);
+            translate([-22, -5, 5]) cube([5, 10, 10]);
+            translate([22-5, -5, 5]) cube([5, 10, 10]);
+            translate([arm_spacing/2 - hsh, 0, 0]) rotate([0, 90, 0]) cylinder(d=10, h=hsh-2);
+            translate([-arm_spacing/2 + hsh, 0, 0]) rotate([0, -90, 0]) cylinder(d=10, h=hsh-2);
         }
-    }
-    
-    if (do_effector) {
-        effector();
-    }
-    
-    if (do_effector == false) {
-        clip();
     }
 }
 
@@ -169,11 +205,14 @@ module e3d_nimble_effector(do_effector) {
 // ----------
 //blank_effector();
 //chimera_effector();
-chimera_dual_nimble_effector();
-//e3d_nimble_effector(true);
-//e3d_nimble_effector(false);
+rotate([0, 180, 0]) chimera_dual_nimble_effector();
+//rotate([0, 180, 0]) e3d_nimble_effector();
+//rotate([0, 180, 0]) stock_effector();
+//rotate([0, 180, 0]) e3d_clip();
 
 // Right hand plate
 //nimble_plate();
 // Left hand plate
 //mirror([1, 0, 0]) nimble_plate();
+
+//carriage_adaptor();
