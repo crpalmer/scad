@@ -4,12 +4,6 @@ include <tlm-effector-blank.scad>
 $fn=64;
 //util_threads_fake_heat_set_holes = true;
 
-module our_blank_effector(T=8)
-{
-//    blank_effector(arm_spacing=60, arm_offset = 30, arm_mount_len = M4_long_heat_set_h(), T=T);
-    blank_effector();
-}
-
 module chimera_orientation_tabs()
 {
     w=1.2;
@@ -37,7 +31,7 @@ module chimera_boden_holes(d=5) {
 
 module chimera_effector() {
     difference() {
-        our_blank_effector();
+        blank_effector();
         chimera_orientation_tabs();
         chimera_top_mounting_holes();
         chimera_boden_holes();
@@ -102,7 +96,7 @@ module chimera_dual_nimble_effector() {
 
     difference() {
         union() {
-            our_blank_effector(T=10);
+            blank_effector(arm_offset = 25);
             chimera_orientation_tabs();
         }
         chimera_top_mounting_holes();
@@ -141,7 +135,7 @@ module clip_effector_blank()
     }
 
     difference() {
-        our_blank_effector();
+        blank_effector(arm_offset=22);
         linear_extrude(height=4) offset(delta=0.1) projection() clip_blank();
         e3d_top_hole();
         for (hole = clip_holes) {
