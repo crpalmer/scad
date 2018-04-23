@@ -1,7 +1,7 @@
 include <utils_threads.scad>
 include <tlm-effector-blank.scad>
 
-$fn=64;
+$fn=128;
 //util_threads_fake_heat_set_holes = true;
 
 module chimera_orientation_tabs()
@@ -148,6 +148,8 @@ module clip_effector_blank()
 {
     arm_offset = 25;
     arm_extension = 10;
+    arm_mount_len = 5;
+    fan_bumpout = 5;
     T=10;
     
     module e3d_top_hole() {
@@ -155,14 +157,14 @@ module clip_effector_blank()
     }
     
     module fan_mounting_holes() {
-        translate([0, arm_offset + arm_extension/2 + 0.01, T/2]) rotate([90, 0, 0]) union() {
+        translate([0, arm_offset + arm_extension/2 + fan_bumpout + 0.01, T/2]) rotate([90, 0, 0]) union() {
             translate([-7, 0, 0]) M3_heat_set_hole();
             translate([7, 0, 0]) M3_heat_set_hole();
         }
     }
 
     difference() {
-        blank_effector(T=T, arm_offset = arm_offset, arm_extension = arm_extension);
+        blank_effector(T=T, arm_offset = arm_offset, arm_extension = arm_extension, arm_mount_len = arm_mount_len, fan_bumpout = fan_bumpout);
         linear_extrude(height=6) offset(delta=0.1) projection() clip_blank();
         e3d_top_hole();
         for (hole = clip_holes) {
