@@ -146,9 +146,10 @@ module clip_blank() {
     
 module clip_effector_blank()
 {
+    arm_spacing = 40;
     arm_offset = 25;
     arm_extension = 10;
-    arm_mount_len = 5;
+    arm_mount_len = 10;
     fan_bumpout = 5;
     T=10;
     
@@ -164,7 +165,7 @@ module clip_effector_blank()
     }
 
     difference() {
-        blank_effector(T=T, arm_offset = arm_offset, arm_extension = arm_extension, arm_mount_len = arm_mount_len, fan_bumpout = fan_bumpout);
+        blank_effector(T=T, arm_spacing = arm_spacing, arm_offset = arm_offset, arm_extension = arm_extension, arm_mount_len = arm_mount_len, fan_bumpout = fan_bumpout);
         linear_extrude(height=6) offset(delta=0.1) projection() clip_blank();
         e3d_top_hole();
         for (hole = clip_holes) {
@@ -212,19 +213,6 @@ module stock_effector() {
     }
 }
 
-module carriage_adaptor(arm_spacing = 60) {
-    hsh = M4_long_heat_set_h();
-    difference() {
-        union() {
-            cube([arm_spacing-hsh*2, 10, 10], center=true);
-            translate([-22, -5, 5]) cube([5, 10, 10]);
-            translate([22-5, -5, 5]) cube([5, 10, 10]);
-            translate([arm_spacing/2 - hsh, 0, 0]) rotate([0, 90, 0]) cylinder(d=10, h=hsh-2);
-            translate([-arm_spacing/2 + hsh, 0, 0]) rotate([0, -90, 0]) cylinder(d=10, h=hsh-2);
-        }
-    }
-}
-
 // Effectors
 // ----------
 //blank_effector();
@@ -242,3 +230,5 @@ rotate([0, 180, 0]) e3d_nimble_effector();
 //mirror([1, 0, 0]) chimera_nimble_plate();
 
 //carriage_adaptor();
+
+//rotate([90, 0, 0])  blank_effector_carriage_adaptor(arm_spacing = 40);
