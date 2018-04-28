@@ -150,7 +150,7 @@ module clip_effector_blank()
     arm_offset = 25;
     arm_extension = 10;
     arm_mount_len = 10;
-    fan_bumpout = 5;
+    fan_bumpout = 0 ;
     T=10;
     
     module e3d_top_hole() {
