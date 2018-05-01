@@ -16,7 +16,7 @@ module rounded_square(size, r=1) {
 }
 
 module rounded_cube(size, r=1) {
-    linear_extrude(height=size[2]) rounded_square(size);
+    linear_extrude(height=size[2]) rounded_square(size=size, r=r);
 }
 
 module tapered_cylinder(d0, d1, h, steps=20) {
