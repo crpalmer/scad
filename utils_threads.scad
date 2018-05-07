@@ -1,6 +1,8 @@
 use <utils.scad>
 use <threads.scad>
 
+util_threads_fake_heat_set_holes = false;
+
 module recessed_screw_slot(d1, d2, h1, h2, len)
 {
     module doit(d, h, len) {
@@ -14,6 +16,22 @@ module recessed_screw_slot(d1, d2, h1, h2, len)
     union() {
 	doit(d1, h1, len);
 	translate([0, 0, h1]) doit(d2, h2-h1, len+d2-d1);
+    }
+}
+
+module threaded_heat_set_hole(d, alt_d, h, hole_h, hole_d)
+{
+    d = util_threads_fake_heat_set_holes ? alt_d : d;
+    c = 0.5;
+    c_d  = d + c;
+
+    union() {
+	cylinder(d=d, h=h);
+	linear_extrude(height=c, scale=d / c_d) circle(d=c_d);
+	translate([0, 0, h-c]) linear_extrude(height=c, scale=c_d/d) circle(d=d);
+	if (hole_h > h) {
+	    translate([0, 0, h]) cylinder(d=hole_d, h = hole_h - h);
+	}
     }
 }
 
@@ -172,24 +190,17 @@ module quarter_twenty_tube(length=8, D=8)
 
 function M3_tapping_hole_d() = 2.5;
 function M3_through_hole_d() = 3.5;
+function M3_heat_set_hole_d() = 5.25;
+function M3_heat_set_h() = 3.9;
 
 module M3_through_hole(h=100)
 {
     cylinder(d=M3_through_hole_d(), h=h);
 }
 
-module M3_heat_set_hole()
+module M3_heat_set_hole(h = 0)
 {
-    d = 5.1;
-    h = 3.9;
-    c = 0.2;
-    c_d  = d + c;
-
-    union() {
-	cylinder(d=5.1, h=h);
-	linear_extrude(height=c, scale=d / c_d) circle(d=c_d);
-	translate([0, 0, h-c]) linear_extrude(height=c, scale=c_d/d) circle(d=d);
-    }
+    threaded_heat_set_hole(d = M3_heat_set_hole_d(), alt_d = M3_tapping_hole_d(), h = M3_heat_set_h(), hole_h = h, hole_d = M3_through_hole_d());
 }
 
 module M3_nut_insert_cutout(h=2.4)
@@ -202,6 +213,28 @@ module M3_nut_insert_cutout(h=2.4)
 
 function M4_tapping_hole_d() = 3.375;
 function M4_through_hole_d() = 4.4;
+function M4_heat_set_hole_d() = 6.3;
+function M4_heat_set_h() = 4.8;
+function M4_long_heat_set_h() = 8.0;
+
+module M4_heat_set_hole(h = 0)
+{
+    threaded_heat_set_hole(d = M4_heat_set_hole_d(), alt_d = M4_tapping_hole_d(), h = M4_heat_set_h(), hole_h = h, hole_d = M4_through_hole_d());
+}
+
+module M4_long_heat_set_hole(h = 0)
+{
+    threaded_heat_set_hole(d = M4_heat_set_hole_d(), alt_d = M4_tapping_hole_d(), h = 4, hole_h = h, hole_d = M4_through_hole_d());
+    translate([0, 0, 4]) threaded_heat_set_hole(d = 5.3, alt_d = M4_tapping_hole_d(), h = M4_long_heat_set_h() - 4);
+}
+
+module M4_nut_insert_cutout(h=3)
+{
+    minkowski() {
+	cylinder(d=8.0, h=h-0.01, $fn=6);
+	cylinder(r=0.2, h=0.01);
+    };
+}
 
 function M5_tapping_hole_d() = 4.2;
 function M5_through_hole_d() = 5.5;
