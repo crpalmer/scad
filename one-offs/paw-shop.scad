@@ -33,7 +33,7 @@ module stripes(L, negative=0) {
         if (negative != 0) {
             translate([0, 0, height/2]) cube([w, h, height], center=true);
         }
-        resize([h, w, height]) import("paw-shop-stripes.stl");
+        resize([h, w, height]) import("stl/paw-shop-stripes.stl");
     }
 }
 
