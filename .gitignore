@@ -1,3 +1,4 @@
 Round-Anything
 *.stl
 *.gcode
+!stl/*.stl
