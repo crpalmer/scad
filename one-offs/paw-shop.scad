@@ -13,7 +13,7 @@ layer_h=0.2;
 height = is_big ? 20 : 5;
 size = (is_big ? 8 : 2) *25.4;
 
-solid_h=height-1;
+solid_h=height-5;
 outer_w=1.2;
 
 module T2D(L) {
@@ -74,6 +74,14 @@ module letter(L, which) {
     if (which == 3){
         // light stripes, upper
         translate([0, 0, solid_h]) light(L, height - solid_h);
+    }
+    if (which == 10) {
+        // full dark
+        dark(L, height);
+    }
+    if (which == 11) {
+        // full light
+        light(L, height);
     }
 }
 
