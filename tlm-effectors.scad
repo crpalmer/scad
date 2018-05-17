@@ -30,9 +30,15 @@ module chimera_boden_holes(d=5) {
 }
 
 module chimera_effector() {
+    arm_spacing = 40;
+    arm_offset = 25;
+    arm_extension = 10;
+    arm_mount_len = 10;
+    fan_bumpout = 0 ;
+    T=10;
+
     difference() {
-        blank_effector();
-        chimera_orientation_tabs();
+        blank_effector(T=T, arm_spacing = arm_spacing, arm_offset = arm_offset, arm_extension = arm_extension, arm_mount_len = arm_mount_len, fan_bumpout = fan_bumpout);
         chimera_top_mounting_holes();
         chimera_boden_holes();
     }
@@ -216,10 +222,10 @@ module stock_effector() {
 // Effectors
 // ----------
 //blank_effector();
-//chimera_effector();
+rotate([0, 180, 0]) chimera_effector();
 //rotate([0, 180, 0]) stock_effector();
 
-rotate([0, 180, 0]) e3d_nimble_effector();
+//rotate([0, 180, 0]) e3d_nimble_effector();
 //rotate([0, 180, 0]) e3d_clip();
 //e3dv6_nimble_plate();
 
