@@ -102,6 +102,22 @@ module e3dv6_nimble_plate() {
     }
 }
 
+module e3dv6_bowden_plate() {
+    coupler_thread_len = 4.5;
+    inner_tube_len = 12;
+    difference() {
+        union() {
+            cylinder(d=34, h=4);
+            cylinder(d=M5_tapping_hole_d()+8, h=inner_tube_len + coupler_thread_len);
+        }
+        cylinder(d1=5, d2 = M5_tapping_hole_d(), h=inner_tube_len+coupler_thread_len/4);
+        cylinder(d=M5_tapping_hole_d(), h=100);
+        for (hole = clip_holes) {
+            translate(hole) M3_through_hole();
+        }
+    }
+}
+
 module nimble_plate_mounting_holes()
 {
     for (h = nimble_plate_holes) {
@@ -228,6 +244,7 @@ rotate([0, 180, 0]) chimera_effector();
 //rotate([0, 180, 0]) e3d_nimble_effector();
 //rotate([0, 180, 0]) e3d_clip();
 //e3dv6_nimble_plate();
+//e3dv6_bowden_plate();
 
 //rotate([0, 180, 0]) chimera_dual_nimble_effector();
 // Right hand plate
