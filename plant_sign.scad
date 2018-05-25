@@ -5,7 +5,7 @@ text="Example Text";
 size=4;
 
 // Font to use (any font.google.com should work and other common ones too)
-font="Oswald";
+font="OptimusPrinceps";
 
 module rounded_square(size, r=1) {
     x=size[0];
