@@ -25,7 +25,7 @@ module circle_square(d, s) {
 }
 
 module top() {
-    angles = [ 0, 45, 90, -270, 135, 180, -135, -90, 270, -45];
+    angles = [ 0, 45, 90, 135, 180, -135, -90, -45];
 
     module mount_translate(angle) {
         translate([0, abs(angle) == 90 ? mount_d : abs(angle) == 270 ? -mount_d : 0, 0]) children();
