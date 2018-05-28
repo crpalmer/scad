@@ -68,7 +68,7 @@ module extrusion_groove(mm, len=20) {
     translate([-mm/2, 0, 0]) cube([mm-0.1, len, mm]);
 }
 
-module taz6() {
+module extrusion_mount() {
     difference() {
         union() {
             translate([-bottom_square[0]/2, -bottom_square[1]/2, 0]) cube(bottom_square);
@@ -81,5 +81,19 @@ module taz6() {
     }
 }
 
-rotate([0, 180, 0]) top();
-//rotate([0, 180, 0]) taz6();
+module screw_mount(mm=M3_through_hole_d()) {
+    difference() {
+        translate([-bottom_square[0]/2, -bottom_square[1]/2, 0]) cube(bottom_square);
+        for (angle = [0, 180]) {
+            rotate([0, 0, angle]) translate(spacer_hole) M3_recessed_through_hole();
+        }
+        for (dir = [-1, 0, 1]) {
+            translate([0, dir*bottom_square[1]/5, 0]) cylinder(d=mm, h=100);
+        }
+    }
+}
+
+//rotate([0, 180, 0]) top();
+//rotate([0, 180, 0]) extrusion_mount();
+rotate([0, 180, 0]) screw_mount();
+//rotate([0, 180, 0]) screw_mount(6);
