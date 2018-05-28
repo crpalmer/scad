@@ -1,21 +1,22 @@
 include <utils.scad>
 
-//$fn=128;
+$fn=128;
 
 top_h = 4;
-mount_h = 5;
+top_d = 39;
+mount_h = 4;
+mount_d = 10;
+bottom_h = 4;
 
 top_square = [39, 47, top_h];
-top_d = 39;
-mount_h = 10;
-mount_d = 10;
 inner_square = [14, 14, top_h];
 inner_d = 14;
 
-scroll_wheel_holes = [ [0, 18], [-12, -14], [12, -14]];
-spacer_holes = [ [0, -top_square[1]/2 - mount_d], [0, top_square[1]/2 + mount_d] ];
+clearance_holes = [[-13.5, 11], [13.5, 11]];
+scroll_wheel_holes = [ [0, 18], [-13, -13], [13, -13]];
+spacer_hole = [0, -top_square[1]/2 - mount_d];
 
-bottom_square = [ 40, top_square[1] + mount_d*4, top_h];
+bottom_square = [ 20, top_square[1] + mount_d*4, bottom_h];
 
 module circle_square(d, s) {
     translate([-s[0]/2, -s[1]/2, 0]) cube(s);
@@ -24,44 +25,61 @@ module circle_square(d, s) {
 }
 
 module top() {
+    angles = [ 0, 45, 90, -270, 135, 180, -135, -90, 270, -45];
+
+    module mount_translate(angle) {
+        translate([0, abs(angle) == 90 ? mount_d : abs(angle) == 270 ? -mount_d : 0, 0]) children();
+    }
+
     module plate() {
         module mount() {
-            translate([0, 0, mount_h]) cube([mount_d, mount_d, top_h]);
+            translate([0, -mount_d*.5, mount_h]) cube([mount_d, mount_d*1.5, top_h]);
             translate([mount_d/2, mount_d, 0]) cylinder(d=mount_d, h=mount_h+top_h);
         }
-            
+        
         translate([-top_square[0]/2, -top_square[1]/2, mount_h]) rounded_cube(top_square, r=10);
-        translate([-mount_d/2, top_square[1]/2, 0]) mount();
-        translate([-mount_d/2, -top_square[1]/2, 0]) mirror([0, 1, 0]) mount();
+        for (angle = angles) {
+            mount_translate(angle)
+            rotate([0, 0, angle])
+            translate([-mount_d/2, top_square[1]/2, 0])
+            mount();
+        }
     }
     
     difference() {
         plate();
-        for (hole = spacer_holes) {
-            translate(hole) cylinder(d = M3_through_hole_d(), h=100);
+        for (angle = angles) {
+            mount_translate(angle)
+            rotate([0, 0, angle])
+            translate(spacer_hole)
+            cylinder(d = M3_through_hole_d(), h=100);
         }
         translate([0, -2.5, mount_h]) circle_square(inner_d, inner_square);
         for (hole = scroll_wheel_holes) {
             translate(hole) cylinder(d = M3_through_hole_d(), h=100);
         }
+        for (hole = clearance_holes) {
+            translate(hole) cylinder(d = 7, h=100);
+        }
     }
 }
 
 module extrusion_groove(mm, len=20) {
-    translate([0, -mm/2, 0]) cube([len, mm-0.4, mm]);
+    translate([-mm/2, 0, 0]) cube([mm-0.1, len, mm]);
 }
 
 module taz6() {
     difference() {
         union() {
             translate([-bottom_square[0]/2, -bottom_square[1]/2, 0]) cube(bottom_square);
-            translate([-bottom_square[0]/2, 0, -5]) extrusion_groove(5, bottom_square[0]/2);
+            translate([0, -top_square[1]/2, -5]) extrusion_groove(5, top_square[1]*.75);
         }
-        for (hole = spacer_holes) {
-            translate(hole) M3_recessed_through_hole();
+        for (angle = [0, 180]) {
+            rotate([0, 0, angle]) translate(spacer_hole) M3_recessed_through_hole();
         }
+        translate([0, bottom_square[1]/4, 0]) cylinder(d=M3_through_hole_d(), h=100);
     }
 }
-        
-//rotate([0, 180, 0]) top();
-taz6();
+
+rotate([0, 180, 0]) top();
+//rotate([0, 180, 0]) taz6();
