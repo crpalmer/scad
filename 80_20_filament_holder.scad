@@ -69,5 +69,17 @@ module left_hang() {
     rotate([0, 180, 0]) mirror([0, 0, 1]) right_hang();
 }
 
-right_hang();
+module taz() {
+    difference() {
+        union() {
+            arm();
+            translate([-4, -10, 0]) cube([4, 20, 60]);
+            translate([0, -(5-.1)/2, 0]) cube([5, 5-.1, arm_d]);
+        }
+        translate([0, 0, 50]) rotate([0, -90, 0]) cylinder(d=M3_through_hole_d(), h=100);
+    }
+}
+
+//right_hang();
 //left_hang();
+taz();
