@@ -2,3 +2,4 @@ Round-Anything
 *.stl
 *.gcode
 !stl/*.stl
+openscad-[0-9\.]*
