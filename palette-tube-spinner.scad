@@ -20,7 +20,7 @@ module tube_gripper() {
     }
     
     module zip_tie_slot() {
-        translate([0, 0, gripper_l - 10]) difference() {
+        translate([0, 0, 5]) difference() {
             cylinder(d = tube_d + wall*2, h=5);
             cylinder(d = tube_d + wall, h=5);
             translate([0, 0, 4]) cylinder(d1=tube_d + wall, d2 = tube_d + wall*2, h=1);
@@ -44,9 +44,12 @@ module tube_extension() {
 }
 
 module tube_filament() {
+    transition_l = (real_tube_d - 2)/2;
     difference() {
         cylinder(d = tube_d + wall*2, h=filament_l);
-        cylinder(d1 = 2, d2 = real_tube_d, h = filament_l);
+        cylinder(d1 = real_tube_d, d2 = 2, h = transition_l);
+        translate([0, 0, filament_l - transition_l]) cylinder(d1 = 2, d2 = real_tube_d, h = transition_l);
+        cylinder(d = 2, h=filament_l);
     }
 }
 
@@ -72,10 +75,10 @@ module tube_clip() {
 }
 
 module tube() {
-    translate([0, 0, tube_extension_l+filament_l]) tube_gripper();
-    translate([0, 0, filament_l]) tube_extension();
-    tube_filament();
     tube_clip();
+    tube_gripper();
+    translate([0, 0, gripper_l]) tube_extension();
+    translate([0, 0, gripper_l + tube_extension_l]) tube_filament();
 }
 
 module mount_ring() {
@@ -100,5 +103,5 @@ module mount() {
     mount_screw_plate();
 }
 
-//tube();
-rotate([0, 90, 0]) mount();
+tube();
+//rotate([0, 90, 0]) mount();
