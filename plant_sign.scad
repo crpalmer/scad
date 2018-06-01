@@ -1,8 +1,8 @@
 // Text to put on the plant sign
-text="Example Text";
+text="cilantro";
 
 // Font size (mm): The generated text will have approximately an ascent of the given value (height above the baseline).  Note that specific fonts will vary somewhat and may not fill the size specified exactly, usually slightly smaller.
-size=4;
+size=5;
 
 // Font to use (any font.google.com should work and other common ones too)
 font="OptimusPrinceps";
