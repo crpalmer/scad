@@ -6,7 +6,8 @@ H=6;
 corner_H=10 + H;
 corner_L=20;
 corner_W=4;
-screw_mount_W=23;
+screw_mount_offset= - 5;
+screw_mount_W=45;
 screw_mount_L=23.7+M5_through_hole_d()*1.5;
 
 module corner(H) {
@@ -31,64 +32,41 @@ module screw_mount() {
     L=screw_mount_L;
     
     difference() {
-        translate([-W/2, 2, 0]) cube([W, L, H]);
+        translate([-W/2 + screw_mount_offset, 2, 0]) cube([W, L, H]);
         translate([0, L-M5_through_hole_d()*1.5, 0]) M5_recessed_through_hole(H);
     }
 }
 
-module fsr_mount(H=6, lip_H=3, extra=0) {
+module fsr2d() {
     fsr_D=19;
-    fsr_H=H - lip_H;
     lead_W=6;
     lead_L=30;
-    W=fsr_D+4;
-    L=2+fsr_D+lead_L;
     gateway_W=9;
     gateway_L=7;
     union() {
+        circle(d=fsr_D);
+        translate([-lead_W/2, 0, 0]) square([lead_W, lead_L + fsr_D/2]);
+        translate([-gateway_W/2, 0, 0]) square([gateway_W, gateway_L + fsr_D/2]);
+    }
+}
+
+module fsr_mount(H=6, lip_H=3, extra=0) {
+    fsr_H=H - lip_H;
+    union() {
         difference() {
-            translate([-W/2, 0, 0]) cube([W, L+extra, H]);
-            translate([0, extra+2+fsr_D/2, fsr_H]) cylinder(d=fsr_D, h=1000);
-            translate([-lead_W/2, extra+2+fsr_D/2, fsr_H]) cube([lead_W, lead_L+fsr_D/2, 1000]);
-            translate([-gateway_W/2, extra+2+fsr_D/2, fsr_H
-]) cube([gateway_W, gateway_L+fsr_D/2, 1000]);
+            linear_extrude(height=H) offset(delta=2) fsr2d(); 
+            translate([0, 0, fsr_H]) linear_extrude() fsr2d();
         }
     }
 }
 
 module corner_mount_for_fsr() {
-    union() {
-        corner(H=6);
-        screw_mount();
-        translate([0, screw_mount_L, 0]) fsr_mount(H=6, lip_H=1, extra = 90 - screw_mount_L);
-    }
-}
-
-module pillar_mount_for_fsr() {
-    base = [240, 8, 8];
-    brace = [(base[0]-100)/2, 4, 25];
-    screw_offset = [11, 19];
-    slot_len = 5 + M5_through_hole_d();
-    screw_base = [ base[1] + M5_through_hole_d(), screw_offset[1] + slot_len + 3, base[2]];
-    L=245;
-    W=4;
-    
-    gap=100;
-    
-    module screw_mount() {
-        difference() {
-            cube(screw_base);
-            translate([screw_base[0]/2, screw_offset[1], 0]) M5_recessed_through_slot(len=slot_len, h=screw_base[2]);
+    difference() {
+        union() {
+            corner(H=6);
+            screw_mount();
         }
-    }
-    
-    union() {
-        translate([-base[0]/2, 0, 0]) cube(base);
-        translate([-base[0]/2, -brace[1], 0]) cube(brace);
-        translate([base[0]/2-brace[0], -brace[1], 0]) cube(brace);
-        translate([0, base[1], 0]) fsr_mount(base[2], 2, 35);
-        translate([-base[0]/2+screw_offset[0]-screw_base[0]/2, 0, 0]) screw_mount();
-        translate([base[0]/2-screw_offset[0]-screw_base[0]/2, 0, 0]) screw_mount();
+        translate([0, 11, 6-1.2]) rotate([0, 0, 60]) linear_extrude() fsr2d();
     }
 }
 
