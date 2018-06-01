@@ -15,17 +15,19 @@ module chimera_orientation_tabs()
 }
 
 module chimera_top_mounting_holes(d=M3_through_hole_d()) {
-    translate([-8.5, -9, -50]) cylinder(d=d, h=100);
-    translate([8.5, -9, -50]) cylinder(d=d, h=100);
-    translate([0, 3, -50]) cylinder(d=d, h=100);
+    for (dz = [[d, -50], [d*2, 4]]) {
+        union() {
+            translate([-8.5, -9, dz[1]]) cylinder(d=dz[0], h=100);
+            translate([8.5, -9, dz[1]]) cylinder(d=dz[0], h=100);
+            translate([0, 3, dz[1]]) cylinder(d=dz[0], h=100);
+        }
+    }
 }
 
 module chimera_boden_holes(d=5) {
     union() {
-        translate([-9, 0, -50]) cylinder(d=d, h=100);
-        translate([9, 0, -50]) cylinder(d=d, h=100);
-        translate([-9, 0, 0]) cylinder(d=10, h=3);
-        translate([9, 0, 0]) cylinder(d=10, h=3);
+        translate([-9, 0, -50]) cylinder(d=11, h=100);
+        translate([9, 0, -50]) cylinder(d=11, h=100);
     };
 }
 
@@ -38,7 +40,7 @@ module chimera_effector() {
     T=10;
 
     difference() {
-        blank_effector(T=T, arm_spacing = arm_spacing, arm_offset = arm_offset, arm_extension = arm_extension, arm_mount_len = arm_mount_len, fan_bumpout = fan_bumpout);
+        translate([0, 0, T]) rotate([0, 180, 0]) blank_effector(T=T, arm_spacing = arm_spacing, arm_offset = arm_offset, arm_extension = arm_extension, arm_mount_len = arm_mount_len, fan_bumpout = fan_bumpout);
         chimera_top_mounting_holes();
         chimera_boden_holes();
     }
@@ -238,7 +240,7 @@ module stock_effector() {
 // Effectors
 // ----------
 //blank_effector();
-rotate([0, 180, 0]) chimera_effector();
+chimera_effector();
 //rotate([0, 180, 0]) stock_effector();
 
 //rotate([0, 180, 0]) e3d_nimble_effector();
