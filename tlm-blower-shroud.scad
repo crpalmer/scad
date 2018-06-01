@@ -3,11 +3,11 @@ include <utils_threads.scad>
 $fn=64;
 
 wall = 1.2;
-full_h = 61;
+full_h = 59;
 
 fan_hole = [25, 16, 2.5];
 
-shroud_h = 12 + wall*2;
+shroud_h = 10 + wall*2;
 shroud_flat = 4;
 
 points = [ [0, 0], [0, shroud_h], [shroud_h, shroud_h], [shroud_h, shroud_h - shroud_flat]];
@@ -29,7 +29,7 @@ module exit_holes() {
 }
 
 
-shroud_d = 30;
+shroud_d = 35;
 fan_mount_d = 22+12/2;
 effector_T = 10;
 mounting_wall_T = 5;
@@ -51,7 +51,11 @@ module full_shroud() {
 }
 
 module mounting_wall() {
-    translate([-fan_mount_wall[0]/2, -fan_mount_d - fan_mount_wall[1], fan_entry_box[2]]) cube(fan_mount_wall);
+    extra = fan_mount_d - (shroud_d / 2 + (shroud_h - shroud_flat));
+    extra_h = 3*extra;
+    translate([-fan_mount_wall[0]/2, -fan_mount_d - fan_mount_wall[1], fan_entry_box[2]]) union() {    translate([0, fan_mount_wall[1], 0]) linear_extrude(height=extra_h, scale=[1, .4 / extra_h]) square([fan_mount_wall[0], extra]);
+        cube(fan_mount_wall);
+    }
 }
     
 module fan_lip() {
@@ -81,7 +85,7 @@ module entry_box_hole() {
 }
 
 module fan_mounting_hole() {
-    translate([-fan_hole[0]/2 - 0.4, 0, 37.5 + fan_entry_box[2]]) rotate([90, 0, 0]) cylinder(d = M3_through_hole_d(), h=100);
+    translate([-fan_hole[0]/2 - 0.4, 0, 37.5 + fan_entry_box[2]]) rotate([90, 0, 0]) cylinder(d = M3_tapping_hole_d(), h=100);
 }
 
 module effector_mounting_holes() {
