@@ -16,7 +16,7 @@ module blank_effector_rod_arm_mount_cutout(r_or_l, T, x, y)
 	union() {
 	    cylinder(d=3.1, h=hole_len);
 	    translate([0, 0, nut_h]) rotate([0, 0, 30]) M3_nut_insert_cutout(h=1.9);
-	    rotate([0, 0, r_or_l > 0 ? 180 : 0]) translate([0, -3.30, nut_h]) cube([100, 6.5, 1.9]);
+	    rotate([0, 0, r_or_l > 0 ? 180 : 0]) translate([0, -3.25, nut_h]) cube([100, 6.5, 1.9]);
 	}
 }
 
