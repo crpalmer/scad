@@ -22,9 +22,10 @@ y_hole_len = y_len - wall*2;
 exit_hole_d = 4;
 exit_hole_h = 2;
 
-ir_probe_holes = [ 18, 8, 15.2 ];
+ir_probe_holes = [ 18, 6, 11.2 ];
 
-points = [ [0, 0], [0, shroud_h], [shroud_h, shroud_h], [shroud_h, shroud_h - 4], [4, 0] ];
+shroud_flat = 4;
+points = [ [0, 0], [0, shroud_h], [shroud_h, shroud_h], [shroud_h, shroud_h - shroud_flat], [shroud_flat, 0] ];
 
 module profile() {
     difference() {
@@ -63,15 +64,22 @@ module corner(which) {
 }
 
 module ir_probe_mount() {
-    spacer = 2.5;
-    translate([0, y_len/2+shroud_h-ir_probe_holes[1] + spacer, ir_probe_holes[2] - 3]) 
+    tab = 6;
+    
+    module side() {
+        difference() {
+            translate([-x_len/2, 0, 0]) linear_extrude(height=shroud_h, scale=[shroud_h / cos(35), 1]) square([1, tab]);
+        }
+    }
+    
+    translate([0, y_len/2 + shroud_h - tab, 0]) 
     union() {
         for (dir = [ -1, 1]) {
-            translate([dir * ir_probe_holes[0]/2 - 3, 0, 0]) union() {
-                cube([6, ir_probe_holes[1] + spacer, 6]);
-                translate([0, 0, -spacer]) linear_extrude(height = spacer, scale=[1, 100]) square([6, 0.1]);
-            }       
+            translate([dir * ir_probe_holes[0]/2 - 3, -(ir_probe_holes[1]-tab)/2, ir_probe_holes[2] - tab/2]) cube([tab, ir_probe_holes[1], tab]);
         }
+        translate([-x_len/2, 0, shroud_h - tab - 2]) cube([x_len, tab, tab+2]);
+        side();
+        mirror([1, 0, 0]) side();
     }
 }
 
@@ -117,10 +125,14 @@ module chimera_mount() {
     }
 }
 
+module end_cap()
+{
+    rotate([0, -90, 0]) linear_extrude(height=wall) polygon(points);
+}
+
 module body() {
     union() {
         rotate([0, 0, 180]) x_tube();
-        x_tube();
         y_tube();
         rotate([0, 0, 180]) y_tube();
 
@@ -128,8 +140,11 @@ module body() {
         translate([x_len/2, y_len/2, 0]) corner(1);
         translate([-x_len/2, -y_len/2, 0]) corner(2);
         translate([x_len/2, -y_len/2, 0]) corner(3);
-        
-        ir_probe_mount();
+
+        translate([x_len/2, y_len/2, 0]) end_cap();
+        translate([-x_len/2, y_len/2, 0]) end_cap();
+
+//        ir_probe_mount();
         chimera_mount();
     }
 }
@@ -154,7 +169,6 @@ module y_holes() {
 module exit_holes() {
     union() {
         x_holes();
-        rotate([0, 0, 180]) x_holes();
         y_holes();
         rotate([0, 0, 180]) y_holes();
     }
@@ -169,8 +183,14 @@ module fan_entry() {
     fan_hole_start = [ 20 - fan_offset, fan_hole[1] + 1.5, full_h - 40 ];
     module air_box() {
         translate([-x_len/2, -fan_hole_start[1] - wall*2, 0]) difference() {
-            cube([x_len, fan_hole_start[1] + wall*2, fan_hole_start[2]]);
+            cube([x_len, fan_hole_start[1] + wall*3, fan_hole_start[2]]);
             translate([wall, wall, wall]) cube([x_len - wall*2, 100, fan_hole_start[2] - wall*2]);
+        }
+    }
+
+    module support_posts() {
+        for (xy = [ [ 0, 0 ], [ fan_hole[0], 0], [ fan_hole[0], fan_hole[1] ], [0, fan_hole[1]], [fan_hole[0]/2, 0], [fan_hole[0]/2, fan_hole[1]] ]) {
+            translate([-fan_hole_start[0] + xy[0], -fan_hole_start[1] + xy[1], 0]) cube([1.2, 1.2,  fan_hole_start[2]]);
         }
     }
     
@@ -184,6 +204,7 @@ module fan_entry() {
     translate([0, -y_len/2 - shroud_h, 0]) difference() {
         union() {
             air_box();
+            support_posts();
             lip();
         }
         translate([-fan_hole_start[0]+wall, -fan_hole_start[1]+wall, wall]) cube([fan_hole[0]-wall*2, fan_hole[1]-wall*2, 100]);
@@ -195,7 +216,7 @@ union() {
         body();
         entry_hole();
         exit_holes();
-        ir_probe_mount_holes();
+//        ir_probe_mount_holes();
     }
     fan_entry();
 }
