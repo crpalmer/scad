@@ -228,10 +228,10 @@ module M4_long_heat_set_hole(h = 0)
     translate([0, 0, 4]) threaded_heat_set_hole(d = 5.3, alt_d = M4_tapping_hole_d(), h = M4_long_heat_set_h() - 4);
 }
 
-module M4_nut_insert_cutout(h=3)
+module M4_nut_insert_cutout(h=3, d_delta=0)
 {
     minkowski() {
-	cylinder(d=8.0, h=h-0.01, $fn=6);
+	cylinder(d=8.0+d_delta, h=h-0.01, $fn=6);
 	cylinder(r=0.2, h=0.01);
     };
 }
