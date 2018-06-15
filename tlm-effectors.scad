@@ -237,14 +237,32 @@ module stock_effector() {
     }
 }
 
+module carriage_adaptor(arm_spacing = 40) {
+    wall=5;
+    T=12;
+    ext=15;
+    union() {
+        difference() {
+            cube([45+wall*2, 10+wall*2, T], center=true);
+            cube([45, 10, T], center=true);
+            translate([-100, 0, 0]) rotate([0, 90, 0]) cylinder(d=M4_through_hole_d(), h=200);
+        }
+        translate([0, 10/2+wall + ext/2, 0]) difference() {
+            cube([arm_spacing, ext, T], center=true);
+            cube([arm_spacing-7*2, ext, T], center=true);
+            translate([-100, ext/2-5, 0]) rotate([0, 90, 0]) cylinder(d=3, h=200);
+        }
+    }
+}
+
 // Effectors
 // ----------
 //blank_effector();
-chimera_effector();
+//chimera_effector();
 //rotate([0, 180, 0]) stock_effector();
 
 //rotate([0, 180, 0]) e3d_nimble_effector();
-//rotate([0, 180, 0]) e3d_clip();
+rotate([0, 180, 0]) e3d_clip();
 //e3dv6_nimble_plate();
 //e3dv6_bowden_plate();
 
@@ -255,5 +273,7 @@ chimera_effector();
 //mirror([1, 0, 0]) chimera_nimble_plate();
 
 //carriage_adaptor();
+
+//clip_effector_blank();
 
 //rotate([90, 0, 0])  blank_effector_carriage_adaptor(arm_spacing = 40);
