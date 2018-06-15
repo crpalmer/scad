@@ -4,9 +4,9 @@ $fn = 128;
 
 tube_d = 6.5;
 real_tube_d = 6;
-wall = 1.5;
-gripper_l = 25;
-tube_extension_l = 10;
+wall = 2;
+gripper_l = 15;
+tube_extension_l = 5;
 filament_l = 10;
 clip_d = 10;
 clip_l = 25;
@@ -70,7 +70,7 @@ module tube_clip() {
         }
         cylinder(d = tube_d + wall*2, h = clip_d);
         translate([-50, -50, -50]) cube([100, 100, 50]);
-        translate([0, -wall, 0]) cube([100, wall*2, 100]);
+        translate([0, -wall/2, 0]) cube([100, wall, 100]);
     }
 }
 
