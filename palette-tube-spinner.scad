@@ -45,11 +45,12 @@ module tube_extension() {
 
 module tube_filament() {
     transition_l = (real_tube_d - 2)/2;
+    filament_d = 3.5;
     difference() {
         cylinder(d = tube_d + wall*2, h=filament_l);
-        cylinder(d1 = real_tube_d, d2 = 2, h = transition_l);
-        translate([0, 0, filament_l - transition_l]) cylinder(d1 = 2, d2 = real_tube_d, h = transition_l);
-        cylinder(d = 2, h=filament_l);
+        cylinder(d1 = real_tube_d, d2 = filament_d, h = transition_l);
+        translate([0, 0, filament_l - transition_l]) cylinder(d1 = filament_d, d2 = real_tube_d, h = transition_l);
+        cylinder(d = filament_d, h=filament_l);
     }
 }
 
@@ -94,6 +95,8 @@ module mount_screw_plate() {
     difference() {
         cube([screw_plate_len, ring_d, wall*2]);
         translate([screw_plate_len/2+wall, ring_d/2, 0]) cylinder(d = M3_through_hole_d(), h=100);
+        translate([0, ring_d - 5, 0]) rotate([0, 0, 45]) cube([10, 10, wall*2]);
+        translate([-10, 0, 0]) rotate([0, 0, -45]) cube([10, 10, wall*2]);
     }
 }
 
@@ -103,5 +106,5 @@ module mount() {
     mount_screw_plate();
 }
 
-tube();
-//rotate([0, 90, 0]) mount();
+//tube();
+rotate([0, 90, 0]) mount();
