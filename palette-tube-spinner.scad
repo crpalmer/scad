@@ -7,6 +7,7 @@ real_tube_d = 6;
 wall = 2;
 gripper_l = 15;
 tube_extension_l = 5;
+tube_extension_block_l = 1;
 filament_l = 10;
 clip_d = 10;
 clip_l = 25;
@@ -40,6 +41,13 @@ module tube_extension() {
     difference() {
         cylinder(d = tube_d + wall*2, h = tube_extension_l);
         cylinder(d = real_tube_d, h = tube_extension_l);
+    }
+}
+
+module tube_extension_block() {
+    difference() {
+        cylinder(d = tube_d+wall*2, h= tube_extension_block_l);
+        cylinder(d1 = 3.5, d2 = real_tube_d, h = tube_extension_block_l);
     }
 }
 
@@ -77,9 +85,10 @@ module tube_clip() {
 
 module tube() {
     tube_clip();
-    tube_gripper();
-    translate([0, 0, gripper_l]) tube_extension();
-    translate([0, 0, gripper_l + tube_extension_l]) tube_filament();
+    tube_extension_block();
+    translate([0, 0, tube_extension_block_l]) tube_extension();
+    translate([0, 0, tube_extension_block_l + tube_extension_l]) tube_gripper();
+//    translate([0, 0, gripper_l + tube_extension_l]) tube_filament();
 }
 
 module mount_ring() {
@@ -106,5 +115,5 @@ module mount() {
     mount_screw_plate();
 }
 
-//tube();
-rotate([0, 90, 0]) mount();
+tube();
+//rotate([0, 90, 0]) mount();
