@@ -6,8 +6,10 @@ wall = 5;
 void_w = 78 - wall*2;
 full_void_h = 60;
 void_h = full_void_h - void_w/2;
+mount_dim = [30, 30, 50];
+base_dim = [mount_dim[0] + wall*2 + 4, mount_dim[1] + wall*2 + 4, 65 + wall];
 
-module bolt_cutout(d=5, l=5) {
+module bolt_cutout(d=M4_through_hole_d()+0.2, l=10) {
     translate([250, 0, 0]) rotate([0, -90, 0]) union() {
         cylinder(d=d, h=500);
         translate([l, 0, 0]) cylinder(d=d, h=500);
@@ -42,7 +44,7 @@ module mount() {
         M4_nut_insert_cutout(d_delta=-0.1);
     }
 
-    dim = [30, 30, 50];
+    dim = mount_dim;
     
     difference() {
         cube(dim);
@@ -55,5 +57,32 @@ module mount() {
     }
 }
 
-cutouts();
+module alignment_grooves(delta = 0) {
+    dim = [20+delta/2, 20+delta/4, 5+delta];
+    translate([-dim[0]/2, -dim[1]/2, 0])
+    difference() {
+        cube(dim); 
+        translate([2, 2, 0]) cube(dim - [4+delta, 2+delta, 0]);
+    }
+}
+
+module base() {
+    module shell() {
+        translate([-base_dim[0]/2, -base_dim[1]/2, 0]) difference() {
+            cube(base_dim);
+            translate([wall, wall, 0]) cube(base_dim - [wall*2, wall*2, wall*2]);
+            translate([base_dim[0]/2, base_dim[1]/2, 0]) cylinder(d=12,h=base_dim[2]-wall);
+        }
+    }
+    
+    difference() {
+        union() {
+            shell();
+//            translate([0, 0, base_dim[2]]) alignment_grooves();
+        }
+        translate([0, 0, 12]) bolt_cutouts();
+    }
+}
+
+rotate([0, 180, 0]) base();
 //rotate([0, 90, 0]) mount();
