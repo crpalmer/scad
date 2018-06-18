@@ -39,9 +39,9 @@ module cutouts() {
 }
 
 module mount() {
-    module nut_cutout() {
-        cylinder(d=M4_through_hole_d(), h=100);
-        M4_nut_insert_cutout(d_delta=-0.1);
+    module nut_cutout(d_delta=0) {
+        translate([0, 0, -50]) cylinder(d=M4_through_hole_d(), h=100);
+        M4_nut_insert_cutout(d_delta=d_delta, h=10);
     }
 
     dim = mount_dim;
@@ -51,9 +51,9 @@ module mount() {
         translate([0, wall, wall]) cube(dim-[wall, wall*2, wall*2]);
         translate([dim[0]/2, dim[1]/2, wall]) cylinder(d=12, h=dim[2]);
         translate([dim[0]/2, dim[1]/2, 0]) cylinder(d=8, h=wall);
-        translate([dim[0]/2, wall+0.001, 12.5]) rotate([90, 0, 0]) nut_cutout();
-        translate([dim[0]/2, dim[1]-wall-0.001, 12.5]) rotate([-90, 0, 0]) nut_cutout();
-        translate([dim[0]-wall-0.001, dim[1]/2, 12.5]) rotate([0, 90, 0]) nut_cutout();
+        translate([dim[0]/2, 1, 12.5]) rotate([-90, 0, 0]) nut_cutout(-.35);
+        translate([dim[0]/2, dim[1]-1, 12.5]) rotate([90, 0, 0]) nut_cutout(-.35);
+        translate([dim[0]-1, dim[1]/2, 12.5]) rotate([0, -90, 0]) nut_cutout(-.1);
     }
 }
 
