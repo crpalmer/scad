@@ -8,6 +8,7 @@ full_void_h = 60;
 void_h = full_void_h - void_w/2;
 mount_dim = [30, 30, 50];
 base_dim = [mount_dim[0] + wall*2 + 4, mount_dim[1] + wall*2 + 4, 65 + wall];
+wire_d = 4;
 
 module bolt_cutout(d=M4_through_hole_d()+0.2, l=10) {
     translate([250, 0, 0]) rotate([0, -90, 0]) union() {
@@ -39,13 +40,18 @@ module cutouts() {
 }
 
 module mount() {
+    dim = mount_dim;
+    
     module nut_cutout(d_delta=0) {
         translate([0, 0, -50]) cylinder(d=M4_through_hole_d(), h=100);
         M4_nut_insert_cutout(d_delta=d_delta, h=10);
     }
-
-    dim = mount_dim;
     
+    module wire_cutout() {
+        translate([wire_d, dim[1]/2, 0]) cylinder(d=wire_d, h=wall);
+        translate([0, dim[1]/2 - wire_d/2, 0]) cube([wire_d, wire_d, wall]);
+    }
+
     difference() {
         cube(dim);
         translate([0, wall, wall]) cube(dim-[wall, wall*2, wall*2]);
@@ -54,6 +60,7 @@ module mount() {
         translate([dim[0]/2, 1, 12.5]) rotate([-90, 0, 0]) nut_cutout(-.35);
         translate([dim[0]/2, dim[1]-1, 12.5]) rotate([90, 0, 0]) nut_cutout(-.35);
         translate([dim[0]-1, dim[1]/2, 12.5]) rotate([0, -90, 0]) nut_cutout(-.1);
+        wire_cutout();
     }
 }
 
