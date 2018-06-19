@@ -58,12 +58,16 @@ module mount() {
 }
 
 module alignment_grooves(delta = 0) {
-    dim = [20+delta/2, 20+delta/4, 5+delta];
+    dim = [20+delta, 20+delta/2, 5+delta];
     translate([-dim[0]/2, -dim[1]/2, 0])
     difference() {
         cube(dim); 
-        translate([2, 2, 0]) cube(dim - [4+delta, 2+delta, 0]);
+        translate([2+delta/2, 2+delta/2, 0]) cube(dim - [4+delta, 2+delta/2, 0]);
     }
+}
+
+module alignment_grooves_cutout() {
+    alignment_grooves(0.2);
 }
 
 module base() {
@@ -76,13 +80,13 @@ module base() {
     }
     
     difference() {
-        union() {
-            shell();
-//            translate([0, 0, base_dim[2]]) alignment_grooves();
-        }
+        shell();
+        translate([0, 0, base_dim[2]+0.001]) rotate([0, 180, 0]) alignment_grooves(delta=0.6);
         translate([0, 0, 12]) bolt_cutouts();
     }
 }
 
-rotate([0, 180, 0]) base();
-//rotate([0, 90, 0]) mount();
+//rotate([0, 180, 0]) base();
+rotate([0, 90, 0]) mount();
+//alignment_grooves_cutout();
+//alignment_grooves();
