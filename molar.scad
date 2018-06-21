@@ -93,7 +93,56 @@ module base() {
     }
 }
 
+module mallet_top() {
+    d=inch_to_mm(5);
+    wall=5;
+    pole_d = 27.5;  // 3/4" thin wall pvc + glue space
+    pole_ext = 30;
+
+    difference() {
+        union() {
+            difference() {
+                minkowski() {
+                    cube([d/2, d/2, d/2], center=true);
+                    sphere(d=d/2);
+                }
+                sphere(d=d-wall*2);
+            }
+            translate([0, 0, -d/2-pole_ext]) cylinder(d=pole_d+wall*2, h=d-wall+pole_ext);
+        }
+        translate([0, 0, -d/2-pole_ext]) cylinder(d=pole_d, h=d-wall+pole_ext);
+    }
+}
+
+module mallet_bottom() {
+    d=50;
+    wall=5;
+    pole_d = 27.5;
+    h = 50;
+    
+    module base(h=10) {
+        translate([-(d-5)/2, -(d-5)/2, 2.5]) minkowski() {
+            cube([d-5, d-5, h]);
+            sphere(d=5);
+        }
+    }
+        
+    difference() {
+        union() {
+            base();
+            translate([0, 0, 10]) intersection() {
+                base(h);
+                cylinder(d1=d*1.5, d2=pole_d+wall*2, h=20);
+            }
+            cylinder(d=pole_d+wall*2, h=h);
+        }
+        translate([0, 0, wall]) cylinder(d=pole_d, h=h);
+    }
+}
+
 //rotate([0, 180, 0]) base();
-rotate([0, 90, 0]) mount();
+//rotate([0, 90, 0]) mount();
 //alignment_grooves_cutout();
 //alignment_grooves();
+//rotate([0, 180, 0]) mallet_top();
+mallet_bottom();
