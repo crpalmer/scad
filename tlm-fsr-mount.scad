@@ -1,6 +1,6 @@
 include <utils_threads.scad>
 
-$fn=64;
+$fn=128;
 
 H=6;
 corner_H=10 + H;
@@ -37,16 +37,20 @@ module screw_mount() {
     }
 }
 
-module fsr2d() {
+module fsr2d(probe=1, lead=1) {
     fsr_D=19;
     lead_W=6;
     lead_L=30;
     gateway_W=9;
     gateway_L=7;
     union() {
-        circle(d=fsr_D);
-        translate([-lead_W/2, 0, 0]) square([lead_W, lead_L + fsr_D/2]);
-        translate([-gateway_W/2, 0, 0]) square([gateway_W, gateway_L + fsr_D/2]);
+        if (probe != 0) {
+            circle(d=fsr_D);
+        }
+        if (lead != 0) {
+            translate([-gateway_W/2, fsr_D/2 -2 , 0]) square([gateway_W, gateway_L + 2]);
+            translate([-lead_W/2, fsr_D/2 - 2, 0]) square([lead_W, lead_L + 2]);
+        }
     }
 }
 
@@ -70,6 +74,34 @@ module corner_mount_for_fsr() {
     }
 }
 
+module glass_bed_mount() {
+    edge_h = 9;
+    mount = [22, 68, 6];
+    
+    module bed_edge() {
+        translate([0, 15, 0]) intersection() {
+            translate([0, 160, mount[2]]) difference() {
+                cylinder(d=354, h=edge_h);
+                cylinder(d=350, h=edge_h);
+            }
+            translate([-20, -20, 0]) cube([40, 40, 40]);
+        }
+    }
+    
+    module mount() {
+        translate([-mount[0]/2, -53+mount[0]/2, 0]) cube(mount-[0, mount[0]/2, 0]);
+        translate([0, -53+mount[0]/2, 0]) cylinder(d=mount[0], h=mount[2]);
+        bed_edge();
+        translate([-20, -2, 0]) cube([40, 4, mount[2]]);
+    }
+    
+    difference() {
+        mount();
+        translate([0, 9.5, mount[2]-1.2]) linear_extrude() fsr2d();
+        translate([0, 9.5, 1]) linear_extrude() fsr2d(probe = 0);
+        translate([0, -43, 0]) screw_slot(d=M5_through_hole_d(), len=10);
+    }
+}
 module board_mount() {
     screw_delta=3.3/2+1.1;
     board_W=30.5;
@@ -88,7 +120,8 @@ module board_mount() {
     }
 }
 
-corner_mount_for_fsr();
+//corner_mount_for_fsr();
 //board_mount();
 //fsr_mount(9, 1);
 //rotate([0, 0, 90]) pillar_mount_for_fsr();
+glass_bed_mount();
