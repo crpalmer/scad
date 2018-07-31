@@ -41,9 +41,23 @@ module cutouts() {
 
 module mount() {
     dim = mount_dim;
+
+    module shell() {
+        union() {
+            difference() {
+                cube(dim);
+                translate([0, wall, wall]) cube(dim-[wall, wall*2, wall*2]);
+            }
+            translate([dim[0]-wall, dim[1]/2, 12.5]) rotate([0, -90, 0]) cylinder(d=14, h=4);
+        }
+    }
+
+    module M4_cutout() {
+        translate([0, 0, -50]) cylinder(d=M4_through_hole_d(), h=100);
+    }
     
     module nut_cutout(d_delta=0) {
-        translate([0, 0, -50]) cylinder(d=M4_through_hole_d(), h=100);
+        M4_cutout();
         M4_nut_insert_cutout(d_delta=d_delta, h=10);
     }
     
@@ -53,12 +67,11 @@ module mount() {
     }
 
     difference() {
-        cube(dim);
-        translate([0, wall, wall]) cube(dim-[wall, wall*2, wall*2]);
-        translate([dim[0]/2, dim[1]/2, wall]) cylinder(d=12, h=dim[2]);
+        shell();
+        translate([dim[0]/2, dim[1]/2, dim[2]-wall]) cylinder(d=12, h=wall);
         translate([dim[0]/2, dim[1]/2, 0]) cylinder(d=8, h=wall);
-        translate([dim[0]/2, 1, 12.5]) rotate([-90, 0, 0]) nut_cutout(-.35);
-        translate([dim[0]/2, dim[1]-1, 12.5]) rotate([90, 0, 0]) nut_cutout(-.35);
+        translate([dim[0]/2, 1, 12.5]) rotate([-90, 0, 0]) M4_cutout();
+        translate([dim[0]/2, dim[1]-1, 12.5]) rotate([90, 0, 0]) M4_cutout();
         translate([dim[0]-1, dim[1]/2, 12.5]) rotate([0, -90, 0]) nut_cutout(-.1);
         wire_cutout();
     }
@@ -141,8 +154,8 @@ module mallet_bottom() {
 }
 
 //rotate([0, 180, 0]) base();
-//rotate([0, 90, 0]) mount();
+rotate([0, 90, 0]) mount();
 //alignment_grooves_cutout();
 //alignment_grooves();
 //rotate([0, 180, 0]) mallet_top();
-mallet_bottom();
+//mallet_bottom();
