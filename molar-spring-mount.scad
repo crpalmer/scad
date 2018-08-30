@@ -20,7 +20,8 @@ button_hole_d = 7;
 button_h = 12.5 - wall;
 
 // component heights
-plate_h = screw_slot_h2 + wall + M4_through_hole_d()/2;
+plate_h = screw_slot_h2 + M4_through_hole_d()/2 + 15;
+plate_mounting_screw_h = 20;
 top_bottom_h = (h - plate_h - top_bottom_gap) / 2;
 button_mount_h = top_bottom_h - button_h;
 spring_pole_h = top_bottom_h - top_bottom_gap;
@@ -34,7 +35,7 @@ module plate() {
     module box() {
         translate([-w/2, -w/2, 0]) difference() {
             cube([w, w, plate_h]);
-            translate([wall, wall, wall]) cube(w-wall*2, w-wall*2, plate_h - wall);
+            translate([wall, wall, wall]) cube([w-wall*2, w-wall*2, plate_h-wall]);
         }
     }
     
@@ -42,7 +43,7 @@ module plate() {
         d=plate_to_bottom_screw_at;
         translate([dirs[0]*d, dirs[1]*d, 0]) difference() {
             cylinder(d = M3_tapping_hole_d() + wall*2, h=plate_h);
-            translate([0, 0, wall]) cylinder(d = M3_tapping_hole_d(), h = 1000);
+            translate([0, 0, plate_h - plate_mounting_screw_h]) cylinder(d = M3_tapping_hole_d(), h = 1000);
         }
     }
     
@@ -135,7 +136,8 @@ module bottom() {
 }
 
 module pusher() {
-    cylinder(d = button_hole_d, h=top_bottom_h);
+    extra = button_mount_h < wall ? wall - button_mount_h : 0;
+    cylinder(d = button_hole_d, h=top_bottom_h - extra);
 }
 
 module top() {
@@ -144,6 +146,6 @@ module top() {
     pusher();
 }
 
-//plate();
-bottom();
+plate();
+//bottom();
 //top();
