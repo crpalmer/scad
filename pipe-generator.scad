@@ -1,10 +1,10 @@
 include <utils.scad>
 
-//$fa=1;
-//$fs=1;
+$fa=1;
+$fs=1;
 
 base_od=20;
-global_od=inch_to_mm(3);
+global_od=inch_to_mm(2.5);
 scale=global_od / base_od;
 
 wall=1.2;
@@ -35,10 +35,10 @@ module connector_male_of(delta=global_od/4, h=10, tolerance=0.5) {
         }    
 }
 
-module connector_insert_of(delta=global_od/4, h=10, tolerance=0.5) {
+module connector_insert_of(delta=global_od/4, h=global_od*.5, tolerance=0.5) {
     difference() {
         union() {
-            linear_extrude(height=wall) offset(delta=-delta + 4) projection() children();
+//            linear_extrude(height=wall) offset(delta=-delta + 4) projection() children();
             linear_extrude(height=h) offset(delta=-delta-tolerance) projection() children();
         }
         linear_extrude(height=h) offset(delta=-delta-tolerance-wall*2) projection() children();
@@ -80,7 +80,7 @@ module pipe(len, od=global_od, id=-1, rivets, bolts) {
                 rotate([0, 0, bolt[1]]) translate([0, od/2, bolt[0]]) bolt_sphere();
             }
         }
-        cylinder(d=id(od), h=len);
+        cylinder(d=id, h=len);
     }
 }
 
@@ -103,17 +103,18 @@ module half_ring(od=global_od, top=true) {
     }
 }
 
-module flange(len, od=global_od*1.25) {
-    d=.2*od;
+module flange(len, od=global_od, factor=1.25) {
+    id=id(od);
+    od=od*factor;
     w=.1*od;
     difference() {
         union() {
             ring(od=od);
             translate([0, 0, len]) ring(od=od);
-            translate([0, 0, -ring_h(od)/2]) pipe(len=len+ring_h(od), od=od, id=id(od));
+            translate([0, 0, -ring_h(od)/2]) pipe(len=len+ring_h(od), od=od, id=id);
         }
         for (angle = [0:60:359]) {
-            rotate([0, 0, angle]) translate([od/2 - d+0.1, -w/2, len/6]) cube([d, w, len/3*2]);
+            rotate([0, 0, angle]) translate([(id + (od-id)/2)/2+0.1, -w/2, len/6]) cube([od-id, w, len/3*2]);
         }
     }
 }
@@ -200,7 +201,7 @@ module part1() {
 
 module part2() {
     part12(90);
-    connector_female_of() part12(-90);
+    connector_female_of() part12(90);
 }
 
 module part34() {
@@ -218,7 +219,7 @@ module part3() {
     connector_female();
 }
 
-connector_insert_of() part1();
-translate([0, 0, 11]) part1();
-
+//connector_insert_of() part1();
+part1();
+//part2();
 //part3();
