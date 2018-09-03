@@ -19,6 +19,11 @@ module recessed_screw_slot(d1, d2, h1, h2, len)
     }
 }
 
+module screw_slot(d, h=100, len)
+{
+    recessed_screw_slot(d1=d, d2=d, h1=h, h2=h, len=len);
+}
+
 module threaded_heat_set_hole(d, alt_d, h, hole_h, hole_d)
 {
     d = util_threads_fake_heat_set_holes ? alt_d : d;
