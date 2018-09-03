@@ -1,7 +1,7 @@
 include <utils.scad>
 
-$fa=1;
-$fs=1;
+//$fa = 1;
+//$fs = 1;
 
 base_od=20;
 global_od=inch_to_mm(0.75);
@@ -17,6 +17,7 @@ function id(od=global_od) = od - wall*2;
 function street_elbow_offset(od=global_od) = od/2 + od;
 function bulb_cutoff(od=global_od, factor=1.5) = od*factor/2 - sqrt(od/2*od/2*factor*factor - od/2*od/2);
 function bulb_h(od=global_od, factor=1.5) = od*factor - 2*bulb_cutoff(od, factor);
+function valve_h() = 20*scale+bulb_h();
 
 module connector_female_of(delta=global_od/4) {
     linear_extrude(height=wall)
@@ -53,13 +54,17 @@ module connector_female(od=global_od) {
     connector_female_of() cylinder(d=od, h=1);
 }
 
-module rivet_sphere(d=global_od/5, h=global_od/20) {
+module rivet_sphere(d=global_od/5, h=global_od/20, factor=1) {
+    d=d*factor;
+    h=h*factor;
     r = (d/2*d/2 + h*h) / (2*h);
     sd = (r + h)*2;
     translate([0, -(sd/2-h), 0]) sphere(d=sd);
 }
 
-module bolt_sphere(d=global_od/4, h=global_od/10) {
+module bolt_sphere(d=global_od/4, h=global_od/10, factor=1) {
+    d=d*factor;
+    h=h*factor;
     r = (d/2*d/2 + h*h) / (2*h);
     sd = (r + h)*2;
     difference() {
@@ -155,6 +160,48 @@ module crown(od=global_od, h=global_od*1.25) {
     }
 }
 
+module valve() {
+    h=valve_h();
+    
+    module mounting_stem() {
+        stem_h = 15
+        *scale;
+        difference() {
+            union() {
+                linear_extrude(height=stem_h) union() {
+                    square([7*scale, 0.5*scale], center=true);
+                    square([0.5*scale, 7*scale], center=true);
+                }
+                cylinder(d=3*scale, h=stem_h);
+            }
+            cylinder(d=M3_tapping_hole_d(), h=stem_h);
+        }
+    }
+
+    module mount() {
+        ring();
+        translate([0, 0, ring_h()]) union() {
+            ring();
+            translate([0, 0, ring_h()/2]) for (angle = [0:40:359]) {
+                rotate([0, 0, angle]) translate([0, global_od/2, 0]) bolt_sphere(factor=0.5);
+            }
+            cube([7.5*scale, 7.5*scale, 2.5*scale], center=true);
+            translate([0, 0, 2.5*scale]) union() {
+                for (angle = [45:90:359]) {
+                    rotate([0, 0, angle]) translate([0, 4*scale, 0]) rivet_sphere(factor=0.35);
+                }
+                mounting_stem();
+            }
+        }
+    }
+        
+    ring();
+    pipe(h);
+    translate([0, 0, 10*scale]) bulb();
+    translate([0, 0, h]) ring();
+    translate([0, bulb_h()/2, h/2]) rotate([-90, 0, 0]) mount();
+}
+
 module smoke_stack() {
     module full_pipe0() {
         translate([0, street_elbow_offset(), -street_elbow_offset()]) union() {
@@ -225,3 +272,24 @@ module smoke_stack() {
     //part2();
     //part3();
 }
+
+module valve_pipe() {
+    module side_pipe() {
+        translate([0, -street_elbow_offset(), -street_elbow_offset()]) half_ring();
+        translate([0, 0, -street_elbow_offset()]) street_elbow();
+        rotate([-90, 0, 0]) union() {
+            pipe(60*scale);
+            ring();
+        }
+    }
+
+    module left_side_pipe() {
+        translate([0, -60*scale -valve_h()/2, 0]) side_pipe();
+    }
+    
+    left_side_pipe();
+    translate([0, -valve_h()/2, 0]) rotate([-90, 0, 0]) rotate([0, 0, 180]) valve();
+    rotate([0, 0, 180]) left_side_pipe();
+}
+
+valve_pipe();
