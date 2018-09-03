@@ -39,4 +39,18 @@ function rotate_around(angle, point2d, origin = [0, 0]) =
    [ cos(angle) * (point2d[0] - origin[0]) - sin(angle) * (point2d[1] - origin[1]),
      sin(angle) * (point2d[0] - origin[0]) + cos(angle) * (point2d[1] - origin[1]) ];
 
+
 function hyp_of(x, y) = sqrt(x*x + y*y);
+
+function triangle_angle_adj_hyp(adj, hyp) = acos(adj / hyp);
+function triangle_angle_opp_hyp(opp, hyp) = asin(opp / hyp);
+function triangle_angle_opp_adj(opp, adj) = atan(opp / adj);
+
+function triangle_hyp_length_angle_adj(angle, adj) = adj / cos(angle);
+function triangle_hyp_length_angle_opp(angle, opp) = opp / sin(angle);
+function triangle_opp_length_angle_hyp(angle, hyp) = hyp * sin(angle);
+function triangle_opp_length_angle_adj(angle, adj) = adj * tan(angle);
+function triangle_adj_length_angle_hyp(angle, hyp) = hyp * cos(angle);
+function triangle_adj_length_angle_opp(angle, opp) = opp / tan(angle);
+
+function triangle_side_length(hyp, side) = sqrt(hyp*hyp - side*side);
