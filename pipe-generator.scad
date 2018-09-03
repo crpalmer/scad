@@ -4,7 +4,7 @@ $fa=1;
 $fs=1;
 
 base_od=20;
-global_od=inch_to_mm(2.5);
+global_od=inch_to_mm(0.75);
 scale=global_od / base_od;
 
 wall=1.2;
@@ -155,71 +155,73 @@ module crown(od=global_od, h=global_od*1.25) {
     }
 }
 
-module full_pipe0() {
-    translate([0, street_elbow_offset(), -street_elbow_offset()]) union() {
-        translate([0, 40*scale, 0]) rotate([-90, 0, 0]) half_ring(top=false);
-        translate([0, 20*scale, 0]) rotate([-90, 0, 0]) pipe(20*scale);
-        translate([0, 20*scale, 0]) rotate([-90, 0, 0]) ring();
-        rotate([-90, 0, 0]) flange(20*scale);
-        translate([0, 0, street_elbow_offset()]) rotate([90, 0, 0]) street_elbow();
+module smoke_stack() {
+    module full_pipe0() {
+        translate([0, street_elbow_offset(), -street_elbow_offset()]) union() {
+            translate([0, 40*scale, 0]) rotate([-90, 0, 0]) half_ring(top=false);
+            translate([0, 20*scale, 0]) rotate([-90, 0, 0]) pipe(20*scale);
+            translate([0, 20*scale, 0]) rotate([-90, 0, 0]) ring();
+            rotate([-90, 0, 0]) flange(20*scale);
+            translate([0, 0, street_elbow_offset()]) rotate([90, 0, 0]) street_elbow();
+        }
+        ring();
+        rivets = [ for (h = [20, 30, 40]) for (angle = [0, 90, 180, 270]) [h*scale, angle] ];
+        bolts = [ for (angle = [45:90:360]) [65*scale, angle] ];
+        pipe(80*scale, rivets=rivets, bolts=bolts);
+        translate([0, 0, 10*scale]) ring();
+        translate([0, 0, 50*scale]) ring();
+        translate([0, 0, 80*scale]) ring();
+        translate([0, 0, 80*scale]) bulb();
+        translate([0, 0, 80*scale+bulb_h()]) crown();
     }
-    ring();
-    rivets = [ for (h = [20, 30, 40]) for (angle = [0, 90, 180, 270]) [h*scale, angle] ];
-    bolts = [ for (angle = [45:90:360]) [65*scale, angle] ];
-    pipe(80*scale, rivets=rivets, bolts=bolts);
-    translate([0, 0, 10*scale]) ring();
-    translate([0, 0, 50*scale]) ring();
-    translate([0, 0, 80*scale]) ring();
-    translate([0, 0, 80*scale]) bulb();
-    translate([0, 0, 80*scale+bulb_h()]) crown();
-}
 
-module full_pipe() {
-    translate([0, 0, ring_h()/2]) full_pipe0();
-}
-
-module full_pipe_bottom() {
-    difference() {
-        full_pipe();
-        translate([-1000, -1000, 0]) cube([2000, 2000, 2000]);
+    module full_pipe() {
+        translate([0, 0, ring_h()/2]) full_pipe0();
     }
-    connector_male();
-}
 
-
-module part12(angle) {
-    difference() {
-        rotate([0, angle, 0]) full_pipe_bottom();
-        translate([-1000, -1000, -2000]) cube([2000, 2000, 2000]);
+    module full_pipe_bottom() {
+        difference() {
+            full_pipe();
+            translate([-1000, -1000, 0]) cube([2000, 2000, 2000]);
+        }
+        connector_male();
     }
-}
 
-module part1() {
-    part12(-90);
-    connector_female_of() part12(-90);
-}
 
-module part2() {
-    part12(90);
-    connector_female_of() part12(90);
-}
-
-module part34() {
-    difference() {
-        full_pipe();
-        translate([-1000, -1000, -2000]) cube([2000, 2000, 2000]);
+    module part12(angle) {
+        difference() {
+            rotate([0, angle, 0]) full_pipe_bottom();
+            translate([-1000, -1000, -2000]) cube([2000, 2000, 2000]);
+        }
     }
-}
 
-module part3() {
-    difference() {
-        part34();
-        translate([-1000, -1000, printer_h]) cube([2000, 2000, printer_h]);
+    module part1() {
+        part12(-90);
+        connector_female_of() part12(-90);
     }
-    connector_female();
-}
 
-//connector_insert_of() part1();
-part1();
-//part2();
-//part3();
+    module part2() {
+        part12(90);
+        connector_female_of() part12(90);
+    }
+
+    module part34() {
+        difference() {
+            full_pipe();
+            translate([-1000, -1000, -2000]) cube([2000, 2000, 2000]);
+        }
+    }
+
+    module part3() {
+        difference() {
+            part34();
+            translate([-1000, -1000, printer_h]) cube([2000, 2000, printer_h]);
+        }
+        connector_female();
+    }
+
+    //connector_insert_of() part1();
+    part1();
+    //part2();
+    //part3();
+}
