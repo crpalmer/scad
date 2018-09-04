@@ -15,19 +15,32 @@ wire_hole_d = 5;
 plate_screw_post_d = M3_tapping_hole_d() + wall*2;
 
 // top/bottom parameters
-spring_pole_d = 4.25;
 button_body_d = 10;
 button_mount_d = button_body_d + wall*2;
 button_hole_d = 7;
 button_h = 12.5 - wall;
-magnet_d = 7;
-spring_pole_h = 10;
+magnet_d = 12.5;
+spring_len = inch_to_mm(.75);
+spring_pole_d = 7.5;
+spring_pole_h = 6;
+spring_post_d = (w - magnet_d)/2;
+spring_post_h = 5/2 + wall;
 
 // component heights
-plate_h = screw_slot_h2 + M4_through_hole_d()/2 + wall;
+min_plate_h = screw_slot_h2 + M4_through_hole_d()/2 + wall;
+plate_h = h - spring_post_h*2 - spring_len;
+echo("plate_h: ", plate_h, "min_plate_h: ", min_plate_h);
+if (plate_h < min_plate_h) {
+    echo("**** plate_h too small");
+}
 
 plate_to_bottom_screw_at = w/2 - wall - M3_tapping_hole_d()/2;
 ;
+
+module wire_hole() {
+    translate([w/4, w/4, 0]) cylinder(d = wire_hole_d, h=wall);
+}
+    
 
 module plate() {
     module box() {
@@ -49,10 +62,6 @@ module plate() {
         cylinder(d = mount_bolt_through, h=wall);
     }
 
-    module wire_hole() {
-        translate([w/4, w/4, 0]) cylinder(d = wire_hole_d, h=wall);
-    }
-    
     module screw_slot_holes() {
         translate([0, 0, screw_slot_h1]) rotate([90, 0, 0]) cylinder(d=M4_through_hole_d(), h=1000, center=true);
         translate([0, 0, screw_slot_h2]) rotate([0, 90, 0]) cylinder(d=M4_through_hole_d(), h=1000, center=true);
@@ -77,8 +86,11 @@ module top_bottom_common() {
     }
     
     module spring_post(dirs) {
-        d = w/2 - spring_pole_d/2 - 2;
-        translate([dirs[0]*d, dirs[1]*d, 0]) cylinder(d = spring_pole_d, h = spring_pole_h);
+        d = w/2 - spring_post_d/2;
+        translate([dirs[0]*d, dirs[1]*d, 0]) union() {
+            cylinder(d = spring_post_d, h = spring_post_h);
+            translate([0, 0, spring_post_h]) cylinder(d = spring_pole_d, h = spring_pole_h);
+        }
     }
     
     union() {
@@ -91,17 +103,9 @@ module top_bottom_common() {
 
 module bottom() {
     module hall_sensor_guide() {
-        hall = [4, 5, wall/2];
+        hall = [3.25, 4.25, wall/2];
         translate([0, 0, wall-hall[2]/2]) rotate([0, 0, 45])
        cube(hall, center=true);
-    }
-
-    module hall_sensor_holes() {
-        translate([w/4, w/4, 0])
-            rotate([0, 0, 135])
-            for (d = [-1, 0, 1]) {
-                translate([d*4, 0, 0]) cylinder(d = 1.5, h=wall);
-            }
     }
 
     module screw_hole(dirs) {
@@ -115,11 +119,18 @@ module bottom() {
         }
     }
     
+    module zip_tie_slots() {
+        for (dir = [1, -1]) {
+            translate([2.5*dir, -2.5*dir, 0]) rotate([0, 0, -45]) translate([-1, 0, 0]) cube([2, 6, h]);
+        }
+    }
+    
     difference() {
         top_bottom_common();
         screw_holes();
         hall_sensor_guide();
-        hall_sensor_holes();
+        zip_tie_slots();
+        wire_hole();
     }
 }
 
