@@ -76,7 +76,7 @@ module corner_mount_for_fsr() {
 
 module glass_bed_mount() {
     edge_h = 9;
-    mount = [22, 68, 6];
+    mount = [22, 100, 6];
     
     module bed_edge() {
         translate([0, 15, 0]) intersection() {
@@ -98,7 +98,7 @@ module glass_bed_mount() {
     difference() {
         mount();
         translate([0, 9.5, mount[2]-1.2]) linear_extrude() fsr2d();
-        translate([0, 9.5, 1]) linear_extrude() fsr2d(probe = 0);
+        translate([0, 9.5, mount[2]-2.75]) linear_extrude() fsr2d(probe = 0);
         translate([0, -43, 0]) screw_slot(d=M5_through_hole_d(), len=10);
     }
 }
