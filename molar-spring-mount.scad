@@ -5,12 +5,11 @@ include <utils.scad>
 
 w=32;
 h=60;
-wall=2;
+wall=1.8;
 
 mount_bolt_through=8.45;
 screw_slot_h1 = 10;
-screw_slot_h2 = screw_slot_h1 + M4_through_hole_d()/2;
-wire_hole_d = 5;
+screw_slot_h2 = screw_slot_h1 + M4_through_hole_d();
 magnet_d = 10;
 magnet_thick = 3;
 magnet_x = w/2 - (magnet_thick + wall*2 + wall*2 - 5);
@@ -19,13 +18,14 @@ spring_pole_d = 7.5;
 spring_pole_h = 6;
 spring_post_d = 10;
 spring_post_h = 0;
-hall = [4.25, 3.25, wall/2];
+hall = [4.25, 3.25, wall/3];
+wire_hole=[3, 8, wall];
 
 // component heights
 min_bottom_h = screw_slot_h2 + M4_through_hole_d()/2;
 bottom_h = h - spring_len;
 magnet_h = magnet_d/2 + spring_post_h + 4;
-hall_h = h - (magnet_h + 4 + magnet_d/2) -bottom_h;
+hall_h = h - (magnet_h + 5 + magnet_d/2) -bottom_h;
 
 echo("bottom_h: ", bottom_h, "min_bottom_h: ", min_bottom_h);
 if (bottom_h < min_bottom_h) {
@@ -33,7 +33,7 @@ if (bottom_h < min_bottom_h) {
 }
 
 module wire_hole() {
-    translate([w/4, w/4, 0]) cylinder(d = wire_hole_d, h=wall);
+    translate([-w/2 + wall*2, -wire_hole[1]/2, 0]) cube(wire_hole);
 }
     
 module hall_sensor_guide() {
@@ -42,10 +42,10 @@ module hall_sensor_guide() {
    cube(hall, center=true);
 }
 
-module zip_tie_slots() {
-    for (dir = [1, -1]) {
-        translate([2.5*dir, -2.5*dir, 0]) rotate([0, 0, -45]) translate([-1, 0, 0]) cube([2, 6, h]);
-    }
+module zip_tie_slot() {
+    d = 1.6;
+    h=5;
+    translate([wall - d/2, -w/2, 0]) cube([d, w, h]);
 }
 
 module bottom() {
@@ -80,9 +80,7 @@ module bottom() {
         translate([-w/2, -c[1]/2, 0]) difference() {
             cube(c);
             translate([c[0] - hall[2], wall, bottom_h + hall_h]) cube([hall[2], hall[0], hall[1]]);
-            translate([0, wall, bottom_h + 5]) cube([c[0], 1.5, 6]);
-            translate([0, c[1]-wall-1.5, bottom_h + 5]) cube([c[0], 1.5, 6]);
-            translate([0, wall, bottom_h + 5]) cube([wall, c[1] - wall*2, 6]);
+            translate([0, 0, bottom_h + (hall_h-5)/2]) zip_tie_slot();
         }
    }
  
@@ -153,6 +151,6 @@ module full_assembly(with_parts = true) {
     }
 }
 
-//full_assembly(true);
-bottom();
+full_assembly(true);
+//bottom();
 //top();
