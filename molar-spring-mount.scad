@@ -1,5 +1,5 @@
-//$fa = 1;
-//$fs = 0.6;
+$fa = 1;
+$fs = 0.6;
 
 include <utils.scad>
 
@@ -12,16 +12,21 @@ screw_slot_h1 = 10;
 screw_slot_h2 = screw_slot_h1 + M4_through_hole_d()/2;
 wire_hole_d = 5;
 magnet_d = 10;
+magnet_thick = 3;
+magnet_x = w/2 - (magnet_thick + wall*2 + wall*2 - 5);
 spring_len = inch_to_mm(1 + 3/8);
 spring_pole_d = 7.5;
 spring_pole_h = 6;
-spring_post_d = spring_pole_d;
+spring_post_d = 10;
 spring_post_h = 0;
+hall = [4.25, 3.25, wall/2];
 
 // component heights
-magnet_h = spring_post_h + spring_len/2;
-min_bottom_h = screw_slot_h2 + M4_through_hole_d()/2 + wall;
-bottom_h = h - spring_post_h*2 - spring_len;
+min_bottom_h = screw_slot_h2 + M4_through_hole_d()/2;
+bottom_h = h - spring_len;
+magnet_h = magnet_d/2 + spring_post_h + 4;
+hall_h = h - (magnet_h + 4 + magnet_d/2) -bottom_h;
+
 echo("bottom_h: ", bottom_h, "min_bottom_h: ", min_bottom_h);
 if (bottom_h < min_bottom_h) {
     echo("**** bottom_h too small");
@@ -55,19 +60,32 @@ module bottom() {
         r = spring_post_d / 2;
         
         module corner_post() {
-            translate([r, r, spring_post_d]) cylinder(d=spring_post_d, h=bottom_h - min_bottom_h - spring_post_d + spring_post_h);
-            intersection() {
+            base = min_bottom_h - wall;
+            
+            translate([0, 0, base]) intersection() {
                 linear_extrude(height = spring_post_d, scale = spring_post_d/wall) square([wall, wall]);
                 translate([r, r, 0]) cylinder(d = spring_post_d, h=spring_post_d);
             }
-            translate([r, r, bottom_h - min_bottom_h + spring_post_h]) cylinder(d = spring_pole_d, h = spring_pole_h);
+            translate([r, r, base + spring_post_d]) cylinder(d = spring_post_d, h = bottom_h - (base + spring_post_d));
+            translate([r, r, bottom_h + spring_post_h ]) cylinder(d=spring_pole_d, h=spring_pole_h);
         }
         
-        translate([-w/2, -w/2, min_bottom_h]) corner_post();
-        translate([w/2, -w/2, min_bottom_h]) rotate([0, 0, 90]) corner_post();
-        translate([0, w/2 + wall, min_bottom_h]) rotate([0, 0, -135]) corner_post();
+        translate([-w/2, -w/2, 0]) corner_post();
+        translate([w/2, -w/2, 0]) rotate([0, 0, 90]) corner_post();
+        translate([0, w/2 + wall, 0]) rotate([0, 0, -135]) corner_post();
     }
 
+    module hall_mount() {
+        c = [wall*2, hall[0] + wall*2, bottom_h + hall_h  + hall[1] + wall];
+        translate([-w/2, -c[1]/2, 0]) difference() {
+            cube(c);
+            translate([c[0] - hall[2], wall, bottom_h + hall_h]) cube([hall[2], hall[0], hall[1]]);
+            translate([0, wall, bottom_h + 5]) cube([c[0], 1.5, 6]);
+            translate([0, c[1]-wall-1.5, bottom_h + 5]) cube([c[0], 1.5, 6]);
+            translate([0, wall, bottom_h + 5]) cube([wall, c[1] - wall*2, 6]);
+        }
+   }
+ 
     module bolt_hole() {
         cylinder(d = mount_bolt_through, h=wall);
     }
@@ -81,6 +99,7 @@ module bottom() {
         union() {
             box();
             spring_posts();
+            hall_mount();
         }
         bolt_hole();
         wire_hole();
@@ -108,13 +127,14 @@ module top() {
             translate([wall, 0, wall]) linear_extrude(height=wall, scale=[1/wall, 1]) square([mount[0]/2+wall, mount[1]]);
         }
         
-    difference() {
-            translate([-mount[0], -mount[1]/2, 0]) union() {
+        difference() {
+            x = magnet_x - mount[0] - mount[0] / 2;
+            translate([x, -mount[1]/2, 0]) union() {
                 cube(mount);
                 support();
                 translate([wall*2, 0, 0]) mirror([1, 0, 0]) support();
             }
-            translate([0, 0, mount[2] - wall - magnet_d / 2]) rotate([0, -90, 0]) cylinder(d = magnet_d, h=mount[0]/2);
+            translate([x+mount[0]+.01, 0, mount[2] - wall - magnet_d / 2]) rotate([0, -90, 0]) cylinder(d = magnet_d, h=mount[0]/2);
         }
     }
     
@@ -126,14 +146,13 @@ module top() {
 }
 
 module full_assembly(with_parts = true) {
-    magnet_thick = 3;
     bottom();
     translate([0, 0, h]) rotate([0, 180, 0]) top();
     if (with_parts) {
-        translate([wall, 0, h - magnet_h]) rotate([0, -90, 0]) cylinder(d=magnet_d, h = magnet_thick);
+        translate([-magnet_x+magnet_thick, 0, h - magnet_h]) rotate([0, -90, 0]) cylinder(d=magnet_d, h = magnet_thick);
     }
 }
 
-full_assembly(true);
-//bottom();
+//full_assembly(true);
+bottom();
 //top();
