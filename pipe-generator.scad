@@ -1,10 +1,11 @@
-include <utils.scad>
+use <utils.scad>
+use <spline.scad>
 
 $fa = 1;
 $fs = 0.6;
 
 base_od=20;
-global_od=inch_to_mm(2.5);
+global_od=inch_to_mm(1);
 scale=global_od / base_od;
 
 wall=1.2;
@@ -14,6 +15,8 @@ printer_h = tlm_h;
 
 function ring_h(od=global_od) = od/4;
 function id(od=global_od) = od - wall*2;
+function od_of_id(id = id(global_od)) = id + wall*2;
+function elbow_offset(od=global_od) = od/2 + od/2;
 function street_elbow_offset(od=global_od) = od/2 + od;
 function bulb_cutoff(od=global_od, factor=1.5) = od*factor/2 - sqrt(od/2*od/2*factor*factor - od/2*od/2);
 function bulb_h(od=global_od, factor=1.5) = od*factor - 2*bulb_cutoff(od, factor);
@@ -155,9 +158,18 @@ module flange(len, od=global_od, factor=1.25) {
     }
 }
 
+module elbow(od=global_od) {
+    rotate([90, 0, -90]) rotate_extrude(angle=90)
+        translate([elbow_offset(od), 0, 0])
+        difference() {
+            circle(d=od);
+            circle(d=id(od));
+        };
+}
+
 module street_elbow(od=global_od) {
     rotate([90, 0, -90]) rotate_extrude(angle=90)
-        translate([od/2+od, 0, 0])
+        translate([street_elbow_offset(od), 0, 0])
         difference() {
             circle(d=od);
             circle(d=id(od));
@@ -380,7 +392,64 @@ module valve_pipe() {
 //    straight();
 //    valve1();
 //    valve2();
-    valve_handle();
+//    valve_handle();
 }
 
-valve_pipe();
+function holder_h(od=global_od, factor=2, layer=0.2) = od/5 + sqrt(od*factor - id(od));
+
+module holder(od=global_od, factor=2, layer=0.2) {
+    id = id(od);
+
+    h1 = od/5;
+    h2 = sqrt(od*factor - id);
+    h = holder_h(global_od, factor, layer);
+    
+    difference() {
+        union() {
+            cylinder(d = od*factor, h=h1);
+            for (h = [0:layer:h2]) {
+                d = od*factor - h*h;
+                translate([0, 0, h+h1]) difference() {
+                    cylinder(d = d, h=layer);
+                    cylinder(d = id, h=layer);
+                }
+            }
+            cylinder(d=od, h=h);
+        }
+        cylinder(d = id, h=h);
+    }
+}
+
+module distribution_pipe() {
+    function corner_h(od=global_od) = 40*scale + elbow_offset(od);
+    function corner_offset(od=global_od) = elbow_offset(od);
+
+    module corner(od = global_od) {
+        pipe(40*scale);
+        translate([0, 0, 40*scale]) ring(od);
+        translate([0, elbow_offset(), 40*scale]) {
+            elbow();
+            translate([0, 0, elbow_offset()]) rotate([-90, 0, 0]) ring();
+        }
+    }
+
+    holder();
+    translate([0, 0, holder_h()]) corner();
+    translate([0, corner_offset(), holder_h() + corner_h()]) rotate([-90, 0, 0]) union() {
+            pipe(30*scale);
+            translate([0, 0, 30*scale]) corner();
+        }
+    translate([0, corner_offset() + corner_h() + 30*scale, 0]) pipe(40*scale+holder_h());
+    translate([0, corner_offset() + corner_h() + 30*scale, 0]) rotate([-180, 0, 0]) corner();
+    translate([0, 30*scale+elbow_offset(), -corner_h()]) rotate([-90, 0, 0]) union() {
+        holder();
+        pipe(30*scale+holder_h());
+    }
+}
+
+module distribution_pipe_part() {
+    part_and_female_connector() top_of() rotate([0, -90, 0]) distribution_pipe();
+}
+
+
+distribution_pipe_part();
