@@ -16,7 +16,7 @@ magnet_thick = 3;
 magnet_x = w/2 - (magnet_thick + wall*2 + wall*2 - 5);
 spring_len = inch_to_mm(1 + 3/8);
 spring_pole_d = 7.5;
-spring_pole_h = 6;
+spring_pole_h = 8;
 spring_post_d = 10;
 spring_post_h = 0;
 hall = [4.25, 3.25, wall/3];
@@ -144,7 +144,7 @@ module top() {
     
     box();
     for (dirs = [ [-1,-1], [1, -1], [0,1] ]) {
-        spring_post(dirs);
+        translate([0, 0, wall]) spring_post(dirs);
     }
     magnet_mount();
 }
