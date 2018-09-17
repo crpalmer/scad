@@ -4,10 +4,11 @@ $fs = 0.6;
 include <utils.scad>
 
 w=32;
-h=60;
+h=56;
 wall=1.8;
 
 mount_bolt_through=8.45;
+mount_bolt_h = 2;
 screw_slot_h1 = 10;
 screw_slot_h2 = screw_slot_h1 + M4_through_hole_d();
 magnet_d = 10;
@@ -43,9 +44,9 @@ module hall_sensor_guide() {
 }
 
 module zip_tie_slot() {
-    d = 1.6;
+    d = 1;
     h=5;
-    translate([wall - d/2, -w/2, 0]) cube([d, w, h]);
+    translate([0, -w/2, 0]) cube([d, w, h]);
 }
 
 module bottom() {
@@ -60,7 +61,7 @@ module bottom() {
         r = spring_post_d / 2;
         
         module corner_post() {
-            base = min_bottom_h - wall;
+            base = screw_slot_h1 + M4_through_hole_d()/2 - wall;
             
             translate([0, 0, base]) intersection() {
                 linear_extrude(height = spring_post_d, scale = spring_post_d/wall) square([wall, wall]);
@@ -82,10 +83,14 @@ module bottom() {
             translate([c[0] - hall[2], wall, bottom_h + hall_h]) cube([hall[2], hall[0], hall[1]]);
             translate([0, 0, bottom_h + (hall_h-5)/2]) zip_tie_slot();
         }
-   }
+    }
  
+    module bolt_body() {
+        cylinder(d = mount_bolt_through+wall*4, h=mount_bolt_h);
+    }
+
     module bolt_hole() {
-        cylinder(d = mount_bolt_through, h=wall);
+        cylinder(d = mount_bolt_through, h=mount_bolt_h);
     }
 
     module screw_slot_holes() {
@@ -98,6 +103,7 @@ module bottom() {
             box();
             spring_posts();
             hall_mount();
+            bolt_body();
         }
         bolt_hole();
         wire_hole();
