@@ -23,21 +23,21 @@ function bulb_h(od=global_od, factor=1.5) = od*factor - 2*bulb_cutoff(od, factor
 function valve_h() = 20*scale+bulb_h();
 function connector_h() = 1;
 
-module connector_female_of(delta=global_od/4) {
+module connector_female_of(delta=global_od/4, inset=0) {
     linear_extrude(height=wall)
     difference() {
-        offset(delta=0.01) projection() children();
+        offset(delta=-inset) projection() children();
         offset(delta=-delta) projection() children();
     }
 }
 
-module part_and_female_connector() {
+module part_and_female_connector(inset=wall-0.01) {
     children();
-    connector_female_of() children();
+    connector_female_of(inset=inset) children();
 }
 
-module connector_male_of(delta=global_od/4, h=10, tolerance=0.5) {
-    connector_female_of(delta+tolerance) children();
+module connector_male_of(delta=global_od/4, h=10, tolerance=0.5, inset=0) {
+    connector_female_of(delta+tolerance, inset=inset) children();
     linear_extrude(height=h)
         difference() {
             offset(delta=-delta-tolerance) projection() children();
@@ -395,26 +395,21 @@ module valve_pipe() {
 //    valve_handle();
 }
 
-function holder_h(od=global_od, factor=2, layer=0.2) = od/5 + sqrt(od*factor - id(od));
+function holder_h(od=global_od, factor=2, layer=0.2) = od/5 + sqrt(od*factor);
 
 module holder(od=global_od, factor=2, layer=0.2) {
     id = id(od);
 
     h1 = od/5;
-    h2 = sqrt(od*factor - id);
     h = holder_h(global_od, factor, layer);
     
     difference() {
         union() {
             cylinder(d = od*factor, h=h1);
-            for (h = [0:layer:h2]) {
-                d = od*factor - h*h;
-                translate([0, 0, h+h1]) difference() {
-                    cylinder(d = d, h=layer);
-                    cylinder(d = id, h=layer);
-                }
-            }
-            cylinder(d=od, h=h);
+            d = od*factor;
+            mid = (od*factor-od)/2 + od;
+            spline_lathe([[d/2, h1], [mid/2, sqrt(mid)], [od/2, h]]);
+            cylinder(d = od, h=h);
         }
         cylinder(d = id, h=h);
     }
@@ -424,22 +419,22 @@ module distribution_pipe() {
     function corner_h(od=global_od) = 40*scale + elbow_offset(od);
     function corner_offset(od=global_od) = elbow_offset(od);
 
-    module corner(od = global_od) {
-        pipe(40*scale);
-        translate([0, 0, 40*scale]) ring(od);
-        translate([0, elbow_offset(), 40*scale]) {
+    module corner(od = global_od, pipe_len=40*scale) {
+        pipe(pipe_len);
+        translate([0, 0, pipe_len]) ring(od);
+        translate([0, elbow_offset(), pipe_len]) {
             elbow();
             translate([0, 0, elbow_offset()]) rotate([-90, 0, 0]) ring();
         }
     }
 
     holder();
-    translate([0, 0, holder_h()]) corner();
-    translate([0, corner_offset(), holder_h() + corner_h()]) rotate([-90, 0, 0]) union() {
-            pipe(30*scale);
+    translate([0, 0, holder_h()-0.01]) corner(pipe_len = 40*scale+0.01*2);
+    translate([0, corner_offset()-0.01, holder_h() + corner_h()]) rotate([-90, 0, 0]) union() {
+            pipe(30*scale+0.01);
             translate([0, 0, 30*scale]) corner();
         }
-    translate([0, corner_offset() + corner_h() + 30*scale, 0]) pipe(40*scale+holder_h());
+    translate([0, corner_offset() + corner_h() + 30*scale, -0.01]) pipe(40*scale+holder_h()+0.01);
     translate([0, corner_offset() + corner_h() + 30*scale, 0]) rotate([-180, 0, 0]) corner();
     translate([0, 30*scale+elbow_offset(), -corner_h()]) rotate([-90, 0, 0]) union() {
         holder();
@@ -452,4 +447,5 @@ module distribution_pipe_part() {
 }
 
 
-distribution_pipe_part();
+//distribution_pipe_part();
+distribution_pipe();
