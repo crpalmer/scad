@@ -197,7 +197,7 @@ module generate_pulley( belt_type , pulley_OD , tooth_depth , tooth_width )
 		//captive nut and grub screw holes
 	
 		if ( pulley_b_ht < m3_nut_flats ) { echo ("CAN'T DRAW CAPTIVE NUTS, HEIGHT LESS THAN NUT DIAMETER!!!"); } else {
-		if ( (pulley_b_dia - motor_shaft)/2 < m3_nut_depth + 3 ) { echo ("CAN'T DRAW CAPTIVE NUTS, DIAMETER TOO SMALL FOR NUT DEPTH!!!"); } else {
+		if ( (pulley_b_dia - motor_shaft)/2 < m3_nut_depth + 3 ) { echo ("CAN'T DRAW CAPTIVE NUTS, DIAMETER TOO SMALL FOR NUT DEPTH!!!"); } else { if (no_of_nuts <= 0) { echo("no nuts desired"); } else {
 	
 			for(j=[1:no_of_nuts]) rotate([0,0,j*nut_angle])
 			translate([0,0,nut_elevation])rotate([90,0,0])
@@ -220,7 +220,7 @@ module generate_pulley( belt_type , pulley_OD , tooth_depth , tooth_width )
 				//grub screw hole
 				rotate([0,0,22.5])cylinder(r=m3_dia/2,h=pulley_b_dia/2+1,$fn=8);
 			}
-		}}
+		}}}
 	 }
 	   
 	}
