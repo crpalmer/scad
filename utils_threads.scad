@@ -170,6 +170,8 @@ module No6_nut_insert_cutout(h=3.25)
     };
 }
 
+function quarter_twenty_through_hole_d() = inch_to_mm(0.2660);
+
 module quarter_twenty_hex_bolt(length = 12, D=12.5, h=4)
 {
     union() {
