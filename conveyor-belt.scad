@@ -28,20 +28,52 @@ module cap(h=5, base=wall) {
     }
 }    
 
-module pvc_drive_mount() {
+module pvc_mount() {
     difference() {
         cap(h=5+wall, base=wall*2);
         cylinder(d=hole, h=wall*2);
     }
 }
 
-module pvc_bearing_mount() {
-    difference() {
-        cylinder(d = bearing_d+wall*2, h=bearing_h + wall);
-        translate([0, 0, wall]) cylinder(d = bearing_inner_d, h=wall);
-        translate([0, 0, wall*2]) cylinder(d = bearing_d, h=bearing_h);
-        cylinder(d=quarter_twenty_through_hole_d(), h=wall);
+module bearing_mount() {
+    len = 75;
+    d=bearing_d + wall*2;
+    h=bearing_h + wall;
+    hole_d=inch_to_mm(0.177);
+    w=hole_d + wall*4;
+    module bearing() {
+        difference() {
+            cylinder(d = d, h=h);
+            translate([0, 0, 0]) cylinder(d = bearing_inner_d, h=h);
+            translate([0, 0, wall*2]) cylinder(d = bearing_d, h=h-wall);
+            cylinder(d=quarter_twenty_through_hole_d(), h=wall);
+        }
     }
+
+    module place_bearing() {
+        translate([0, 0, d/2+wall*2]) rotate([0, 90, 0]) children();
+    }
+    
+    module mount() {
+        place_bearing() bearing();
+        difference() {
+            translate([0, -d/2, wall*2]) cube([h, d, d/2]);
+            place_bearing() cylinder(d=d, h=h);
+        }
+        translate([0, -len/2, 0]) cube([w, len, wall*2]);
+    }
+    
+    module holes() {
+        for (at = [-len/3, len/3]) {
+            translate([w/2, at, 0]) cylinder(d=hole_d, h=100);
+        }
+    }
+    
+    difference() {
+        mount();
+        holes();
+    }
+        
 }
     
 module pvc_drive_pulley() {
@@ -55,9 +87,9 @@ module motor_pulley() {
     pulley(profile = PULLEY_XL, teeth = 12, motor_shaft=0, pulley_b_ht=0);    
 }
 
-pvc_drive_mount();
-//rotate([0, 180, 0])
-//pvc_bearing_mount();
+//pvc_mount();
+//rotate([0, -90, 0])
+bearing_mount();
 //pvc_drive_pulley();
 //rotate([0, 180, 0]) wiper_motor_mount(outer_d = motor_mount_d);
 //motor_pulley();
