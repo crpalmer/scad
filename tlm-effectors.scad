@@ -210,7 +210,10 @@ module e3d_clip() {
     difference() {
         clip_blank();
         for (hole = clip_holes) {
-            translate(hole) M3_heat_set_hole(h=100);
+            translate(hole) cylinder(d=M3_tapping_hole_d(), h=100);
+        }
+        for (angle = [135, -135]) {
+            translate([0, 0, clip_h/2]) rotate([0, 0, angle]) rotate([0, 90, 0]) cylinder(d=M3_tapping_hole_d(), h=100);
         }
     }
 }
