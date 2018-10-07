@@ -212,7 +212,7 @@ module e3d_clip() {
         for (hole = clip_holes) {
             translate(hole) cylinder(d=M3_tapping_hole_d(), h=100);
         }
-        for (angle = [135, -135]) {
+        for (angle = [90, -90]) {
             translate([0, 0, clip_h/2]) rotate([0, 0, angle]) rotate([0, 90, 0]) cylinder(d=M3_tapping_hole_d(), h=100);
         }
     }
