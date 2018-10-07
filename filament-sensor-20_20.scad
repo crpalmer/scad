@@ -44,6 +44,22 @@ module filament_tube()
         cylinder(d=filament_d, h=switch_body[1]*2+10);
 }
 
+module bowden_tube_in()
+{
+    filament_tube();
+    translate([0, -10, switch_arm_low])
+        rotate([-90, 0, 0])
+        cylinder(d=4, h=switch_arm_start+switch_arm_len/2);
+}
+
+module bowden_tube_out()
+{
+    filament_tube();
+    translate([0, outer[1] - thread_len - thread_len/2, switch_arm_low])
+        rotate([-90, 0, 0])
+        cylinder(d=4, h=100);
+}
+
 module switch_mounting_holes()
 {
     module hole(d, at) {
@@ -67,17 +83,43 @@ module extrusion_holes()
      }
  }
 
-echo (outer); 
-rotate([0, 180, 0])
- difference() {
-    translate([-outer[0]/2, 0, 0]) union() {
-        cube(outer);
-        translate([0, 0, -extrusion_body[2]]) cube(extrusion_body);
+module sensor_mount()
+ {
+     difference() {
+        translate([-outer[0]/2, 0, 0]) union() {
+            cube(outer);
+            translate([0, 0, -extrusion_body[2]]) cube(extrusion_body);
+        }
+        translate([-switch_body[0]/2, wall, 0]) cube(switch_body);
+//        threaded_coupler();
+//        filament_tube();
+        bowden_tube_in();
+        bowden_tube_out();
+        switch_arm_cutout();
+        switch_mounting_holes();
+        extrusion_holes();
     }
-    translate([-switch_body[0]/2, wall, 0]) cube(switch_body);
-    threaded_coupler();
-    filament_tube();
-    switch_arm_cutout();
-    switch_mounting_holes();
-    extrusion_holes();
 }
+
+
+module extrusion_mount()
+{
+    W=2;
+    
+    difference() {
+        union() {
+            translate([-10, 0, 0]) cube([20, outer[1], W]);
+            translate([3, 0, 0]) cube([W, outer[1], 30]);
+            translate([3+W, 0, W]) linear_extrude(scale=[0.01, 1], height=10-3-W) square([10-3-W, outer[1]]);
+        }
+        for (pct = [0.25, 0.75]) {
+            translate([0, extrusion_body[1]*pct, 0]) cylinder(d=M3_through_hole_d(), h=100);
+            translate([0, extrusion_body[1]*pct, 25]) rotate([0, 90, 0]) cylinder(d=M3_through_hole_d(), h=100);
+        }
+    }
+}
+
+rotate([0, 180, 0])
+   sensor_mount();
+
+//extrusion_mount();
