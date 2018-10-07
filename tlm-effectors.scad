@@ -241,6 +241,11 @@ module stock_effector() {
 }
 
 module carriage_adaptor(arm_spacing = 40) {
+    module jam_nut_cutout(nut_h = 0) {
+        translate([0, 0, nut_h]) rotate([0, 90, 0]) M3_nut_insert_cutout(h=1.9);
+        translate([0, -3, nut_h]) cube([1.9, 6, 100]);
+    }
+    
     wall=5;
     T=12;
     ext=15;
@@ -252,8 +257,9 @@ module carriage_adaptor(arm_spacing = 40) {
         }
         translate([0, 10/2+wall + ext/2, 0]) difference() {
             cube([arm_spacing, ext, T], center=true);
-            cube([arm_spacing-7*2, ext, T], center=true);
             translate([-100, ext/2-5, 0]) rotate([0, 90, 0]) cylinder(d=3, h=200);
+            translate([-arm_spacing/2+8, ext/2-5, 0]) jam_nut_cutout();
+            translate([arm_spacing/2-8, ext/2-5, 0]) jam_nut_cutout();
         }
     }
 }
