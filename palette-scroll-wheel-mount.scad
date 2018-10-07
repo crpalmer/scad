@@ -72,12 +72,13 @@ module extrusion_mount(mm=6.5) {
     difference() {
         union() {
             translate([-bottom_square[0]/2, -bottom_square[1]/2, 0]) cube(bottom_square);
-            translate([0, -top_square[1]/2, -5]) extrusion_groove(mm, top_square[1]*.75);
+            translate([0, -top_square[1]/3, -5]) extrusion_groove(mm, top_square[1]/3*2);
         }
         for (angle = [0, 180]) {
             rotate([0, 0, angle]) translate(spacer_hole) M3_recessed_through_hole();
         }
         translate([0, bottom_square[1]/4, 0]) cylinder(d=M3_through_hole_d(), h=100);
+        translate([0, -bottom_square[1]/4, 0]) cylinder(d=M3_through_hole_d(), h=100);
     }
 }
 
