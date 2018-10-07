@@ -9,6 +9,7 @@ void_h = full_void_h - void_w/2;
 mount_dim = [30, 30, 50];
 base_dim = [mount_dim[0] + wall*2 + 4, mount_dim[1] + wall*2 + 4, 65 + wall];
 wire_d = 4;
+string_d = 6;
 
 module bolt_cutout(d=M4_through_hole_d()+0.2, l=10) {
     translate([250, 0, 0]) rotate([0, -90, 0]) union() {
@@ -106,10 +107,11 @@ module base() {
     }
 }
 
+pole_d = 27.5;  // 3/4" thin wall 
+
 module mallet_top() {
     d=inch_to_mm(5);
     wall=5;
-    pole_d = 27.5;  // 3/4" thin wall pvc + glue space
     pole_ext = 30;
 
     difference() {
@@ -130,8 +132,7 @@ module mallet_top() {
 module mallet_bottom() {
     d=50;
     wall=5;
-    pole_d = 27.5;
-    h = 50;
+    h = 50 + string_d + wall*2;
     
     module base(h=10) {
         translate([-(d-5)/2, -(d-5)/2, 2.5]) minkowski() {
@@ -149,13 +150,39 @@ module mallet_bottom() {
             }
             cylinder(d=pole_d+wall*2, h=h);
         }
-        translate([0, 0, wall]) cylinder(d=pole_d, h=h);
+        translate([0, 0, wall*3+string_d]) cylinder(d=pole_d, h=h);
+        translate([-50, 0, wall*1.5+string_d/2]) rotate([0, 90, 0]) cylinder(d=string_d, h=100);
+    }
+}
+
+module mallet_clip() {
+    wall=8;
+    h=30;
+    d=pole_d+1;
+    w=d+wall*2;
+    l=pole_d * 2 + wall*2 + string_d;
+    start = wall*2 + string_d;
+    screw_wall = 4;
+    screw_d = inch_to_mm(0.1770);
+    
+    difference() {
+        union() {
+            cube([l, w, h]);
+            translate([0, -screw_d*3, 0]) cube([screw_wall, w+screw_d*3*2, h]);
+        }
+        translate([start+d/2, w/2, 0]) cylinder(d=d, h=h);
+        translate([start+d/2, wall, 0]) cube([l, d, h]);
+        translate([wall+string_d/2, -w, h/2]) rotate([-90, 0, 0]) cylinder(d=string_d, h=100);
+        for (y = [ -screw_d*3/2, w+screw_d*3/2]) for (z=[h/3, h/3*2]) {
+            translate([0, y, z]) rotate([0, 90, 0]) cylinder(d=screw_d, h=100);
+        }
     }
 }
 
 //rotate([0, 180, 0]) base();
-rotate([0, 90, 0]) mount();
+//rotate([0, 90, 0]) mount();
 //alignment_grooves_cutout();
 //alignment_grooves();
 //rotate([0, 180, 0]) mallet_top();
 //mallet_bottom();
+mallet_clip();
