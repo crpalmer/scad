@@ -23,6 +23,13 @@ module tapered_cylinder(d0, d1, h, steps=20) {
     linear_extrude(height=h, scale=d1/d0) circle(d=d0);
 }
 
+module hollow_cone(d1, d2, h, wall = 2) {
+    difference() {
+	cylinder(d1=d1, d2=d2, h);
+	cylinder(d1=d1 - wall*2, d2 = d2 - wall*2, h);
+    }
+}
+
 function inch_to_mm(inch) = inch * 25.4;
 function mm_to_inch(mm) = mm / 25.4;
 
