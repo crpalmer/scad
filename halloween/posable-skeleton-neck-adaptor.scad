@@ -19,8 +19,13 @@ module gap() {
     cur_d = od + wall*2;
     gap_fill = cur_d < gap_d ? gap_d - cur_d : 0;
     gap_fill_h = (gap_d - cur_d) / 2;
-    cylinder(d1=cur_d, d2=gap_d, h=gap_fill_h);
-    translate([0, 0, gap_fill_h]) linear_extrude(height = gap_h - gap_fill_h) projection() scan();
+    difference() {
+        union() {
+            cylinder(d1=cur_d, d2=gap_d, h=gap_fill_h);
+            translate([0, 0, gap_fill_h]) linear_extrude(height = gap_h - gap_fill_h) projection() scan();
+        }
+        cylinder(d1=gap_h*2, d2=0, h=gap_h);
+    }
 }
 
 module adaptor_body() {
