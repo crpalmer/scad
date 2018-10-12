@@ -446,6 +446,13 @@ module distribution_pipe_part() {
     part_and_female_connector() top_of() rotate([0, -90, 0]) distribution_pipe();
 }
 
+module glue_plate(h=1, d=79) {
+    cylinder(d=d, h=h);
+    translate([-d/2+10, 2, h]) cube([d-2*10, wall, 4]);
+    translate([-d/2+10, -2-wall, h]) cube([d-2*10, wall, 4]);
+}
+
+glue_plate();
 
 //distribution_pipe_part();
 distribution_pipe();
