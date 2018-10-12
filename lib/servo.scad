@@ -26,7 +26,7 @@ module clamping_hub(id = inch_to_mm(3/8), spacing=inch_to_mm(0.7), wall=2, h=8, 
         cylinder(d = id, h = big_h);
         translate([-1, 0, 0]) cube([2, d, big_h]);
         for (angle = [45:90:360]) {
-            rotate([0, 0, angle])         translate([spacing/2, 0, 0]) cylinder(d = hole_d, h = big_h);
+            rotate([0, 0, angle]) translate([spacing/2, 0, 0]) cylinder(d = hole_d, h = big_h);
         }
         translate([-extension, w/2+wall+thread_d/2, h/2]) rotate([0, 90, 0]) cylinder(d = thread_d, h = extension*2);
     }
@@ -44,6 +44,3 @@ module grub_hub(od = 25, id = inch_to_mm(3/8)+.1, h = 8, hole_d = M3_through_hol
         }
     }
 }
-        
-
-grub_hub(spacing=inch_to_mm(0.625), hole_d = No6_through_hole_d());
