@@ -1,8 +1,5 @@
 include <utils_threads.scad>
 
-$fa = 1;
-$fs = 0.6;
-
 module clamping_hub(id = inch_to_mm(3/8), spacing=inch_to_mm(0.7), wall=2, h=8, thread_d = M3_tapping_hole_d(), hole_d, extension_w = 8, clamp_ext) {
     
     hole_d = hole_d == undef ? thread_d : hole_d;
