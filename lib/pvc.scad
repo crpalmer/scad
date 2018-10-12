@@ -22,6 +22,10 @@ module pvc_tapered_holder(od = pvc_od_1in(), h=20, d2=0, wall=2, screw_d) {
     }
 }
 
+module pvc_holder(od = pvc_od_1in(), h=20, wall=2, screw_d) {
+    pvc_tapered_holder(od=od, h=h, wall=wall, d2=od, screw_d=screw_d);
+}
+
 module pvc_coupler(od1 = pvc_od_1in(), od2 = pvc_od_1in(), h=15, wall = 2, screw_d) {
     translate([0, 0, od1 < od2 ? h*2 : 0, 0]) rotate([od1 < od2 ? 180 : 0, 0, 0]) union() {
         pvc_tapered_holder(od1, d2=od1 - wall*2, h=h, wall=wall, screw_d = screw_d);
