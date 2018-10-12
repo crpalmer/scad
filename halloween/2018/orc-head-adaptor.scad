@@ -1,7 +1,5 @@
 include <pvc.scad>
-
-$fa=1;
-$fs=0.6;
+include <high-detail.scad>
 
 wall = 2;
 screw_d = M3_through_hole_d();

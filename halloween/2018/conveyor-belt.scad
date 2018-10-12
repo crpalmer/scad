@@ -1,9 +1,7 @@
 include <utils_threads.scad>
 include <pulleys.scad>
 include <wiper-motor.scad>
-
-$fa=1;
-$fs=0.6;
+include <high-detail.scad>
 
 wall=2;
 pvc_od=27;      // sch 40 pvc, 3/4" id

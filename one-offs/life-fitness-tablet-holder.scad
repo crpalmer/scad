@@ -1,12 +1,11 @@
+include <high-detail.scad>
+
 h=40;
 id=39;
 cutout_w=10;
 tablet_d=8;
 tablet_h=20;
 wall=2.4;
-
-$fa=1;
-$fs=0.6;
 
 union() {
     difference() {

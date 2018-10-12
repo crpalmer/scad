@@ -95,7 +95,6 @@ module wiper_motor_motor_mount_bottom() {
     wiper_motor_motor_mount_common(false);
 }
 
-//$fa=1;
-//$fs=0.6;
+//include <high-detail.scad>
 //wiper_motor_motor_mount_top();
 //wiper_motor_motor_mount_bottom();x

@@ -1,7 +1,5 @@
 include <utils.scad>
-
-$fa=1;
-$fs=0.6;
+include <high-detail.scad>
 
 w=15;
 h=1.5;
