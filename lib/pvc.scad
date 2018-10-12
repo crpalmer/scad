@@ -33,14 +33,16 @@ module pvc_coupler(od1 = pvc_od_1in(), od2 = pvc_od_1in(), h=15, wall = 2, screw
     }
 }
 
-module pvc_mount(od = pvc_od_1in(), base_d = 60, wall = 2, h = 10, screw_d = M3_through_hole_d()) {
+module pvc_mount(od = pvc_od_1in(), base_d = 60, wall = 2, h = 10, screw_d = M3_through_hole_d(), hole_d) {
+    hole_d = hole_d == undef ? screw_d : hole_d;
+    holder_d = od + wall*2;
     difference() {
         union() {
             cylinder(d = base_d, h = wall);
             translate([0, 0, wall]) pvc_tapered_holder(od = od, wall = wall, h = h, screw_d = screw_d, d2 = od);
         }
         for (angle = [0, 90, 180, 270]) {
-            rotate([0, 0, angle]) translate([base_d / 2 - screw_d * 1.5, 0, 0]) cylinder(d = screw_d, h = wall);
+            rotate([0, 0, angle]) translate([(base_d - holder_d) / 4 + holder_d/2, 0, 0]) cylinder(d = hole_d, h = wall);
         }
     }
 }
