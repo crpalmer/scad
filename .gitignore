@@ -3,4 +3,5 @@ Round-Anything
 *.gcode
 !stl/*.stl
 !halloween/stl/*.stl
+!halloween/*/stl/*.stl
 openscad-[0-9\.]*

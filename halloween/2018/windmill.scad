@@ -36,6 +36,23 @@ module shaft() {
         screw_holes(M3_through_hole_d());
     }
 }
-        
-//rotate([0, 180, 0]) motor();
-rotate([0, 180, 0]) shaft();
+
+module toothbrush_bottom_scan() {
+    rotate([0, 0, 90]) translate([365, 18, 0]) import("stl/toothbrush-low-no-bristles-chubby-bottom.stl");
+}
+    
+module toothbrush_mount() {
+    mount = [70, 125, 20];
+    difference() {
+        for (angle = [0:90:270]) {
+            rotate([0, 0, angle]) difference() {
+                translate([-mount[0]/2, 0, 0]) cube(mount);
+                translate([0, 60, -5]) toothbrush_bottom_scan();
+            }
+        }
+        translate([0, 0, 10]) cylinder(d=40, h=100);
+        cylinder(d = quarter_twenty_through_hole_d(), h=100);
+    }
+}
+
+toothbrush_mount();
