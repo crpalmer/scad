@@ -49,3 +49,112 @@ module grub_hub(od = 25, id = inch_to_mm(3/8)+.1, h = 8, hole_d = M3_through_hol
         }
     }
 }
+
+module standard_servo() {
+    A=19.82;
+    B=13.47;
+    C=33.79;
+    D=10.17;
+    E=9.66;
+    F=30.22;
+    G=11.68;
+    H=26.67;
+    K=9.35;
+    J=52.82;
+    L=4.38;
+    M=39.88;
+    
+    center_to_end = E + (J-M)/2;
+    bump_h = G - K;
+    block_h = K + H;
+    ext = (J-M)/2;
+    
+    difference() {
+        union() {
+            cylinder(d=inch_to_mm(0.265), h=3.05);
+            translate([0, 0, -bump_h]) cylinder(d=13, h=bump_h);
+            translate([-E, -A/2, -bump_h - block_h]) cube([M, A, block_h]);
+            translate([-center_to_end, -A/2, -G]) cube([J, A, 2.5]);
+        for (x = [-E-ext, F]) {
+            translate([x, -.75, -G+2.5]) cube([ext, 1.5, 1.6]);
+        }
+        }
+        for (x = [-B, C]) {
+            for (y = [D/2, -D/2]) {
+                translate([x, y, -block_h]) cylinder(d=L, h=block_h);
+            }
+        }
+    }
+}
+
+module standard_servo_cutout_raw(slop=0.1) {
+    A=19.82;
+    B=13.47;
+    C=33.79;
+    D=10.17;
+    E=9.66;
+    F=30.22;
+    G=11.68;
+    H=26.67;
+    K=9.35;
+    J=52.82;
+    L=4.38;
+    M=39.88;
+    
+    bump_h = G - K;
+    block_h = K + H;
+    full_h = block_h + bump_h;
+    bottom = G-full_h;
+    ext = (J-M)/2;
+    
+    union() {
+        translate([-E-slop, -A/2-slop, bottom]) cube([M+slop*2, A+slop*2, full_h]);
+        for (x = [-B, C]) {
+            for (y = [D/2, -D/2]) {
+                translate([x, y, bottom]) cylinder(d=M3_tapping_hole_d(), h=full_h);
+            }
+        }
+        for (x = [-E-ext-slop, F]) {
+            translate([x, -.75-slop/2, 2.5]) cube([ext+slop, 1.5+slop, 1.6+slop]);
+        }
+    }
+}
+
+module standard_servo_cutout_drop_in() {
+    standard_servo_cutout_raw();
+}
+
+module standard_servo_cutout_push_up() {
+    translate([0, 0, -2.5]) standard_servo_cutout_raw();
+}
+
+module standard_servo_mount_of(wall=2, h=2) {
+    A=19.82;
+    E=9.66;
+    J=52.82;
+    M=39.88;
+    
+    ext = (J-M)/2;
+    
+    difference() {
+        translate([-E-wall-ext, -A/2-wall, 0]) cube([M+wall*2+ext*2, A+wall*2, h]);
+        children();
+    }
+}
+
+module standard_servo_drop_in_mount(wall=2, h=2) {
+    standard_servo_mount_of(wall, h) standard_servo_cutout_drop_in();
+}
+
+module standard_servo_push_up_mount(wall=2, h=2) {
+    standard_servo_mount_of(wall, h) standard_servo_cutout_push_up();
+}
+
+// distance from center to each end in x
+function standard_servo_delta_x() = [-9.66 - (52.82-39.88)/2, 30.22 + (52.82-39.88)/2 ];
+
+// distance from center to either side in y
+function standard_servo_delta_y() = 19.82 / 2;
+
+// distance from the base of the spline to the [0] bottom of the mount [1] top of the mount
+function standard_servo_delta_h() = [ 11.68, 11.68 - 2.5];
