@@ -1,13 +1,13 @@
 include <utils_threads.scad>
 
-module clamping_hub(id = inch_to_mm(3/8), spacing=inch_to_mm(0.7), wall=2, h=8, thread_d = M3_tapping_hole_d(), hole_d, hole_h, recessed_d, extension_w = 8, clamp_ext) {
+module clamping_hub(id = inch_to_mm(3/8), spacing=inch_to_mm(0.7), wall=2, h=8, thread_d = M3_tapping_hole_d(), thread_through = M3_through_hole_d(), hole_d, hole_h, recessed_d, extension_w = 8, clamp_ext) {
     
     hole_d = hole_d == undef ? thread_d : hole_d;
     clamp_ext = clamp_ext == undef ? wall*2 : clamp_ext;
 
     extension_l = thread_d + wall*2;
     
-    d = spacing + wall*4 + thread_d*2;
+    d = spacing + wall*4 + hole_d;
     w = sqrt((d/2)*(d/2) / 2);
     w = sqrt(2)*d/2;
     big_h = h + wall * 2;
@@ -30,7 +30,10 @@ module clamping_hub(id = inch_to_mm(3/8), spacing=inch_to_mm(0.7), wall=2, h=8, 
                 translate([0, 0, hole_h]) cylinder(d = recessed_d, h = big_h);
             }
         }
-        translate([-extension, w/2+wall+thread_d/2, h/2]) rotate([0, 90, 0]) cylinder(d = thread_d, h = extension*2);
+        translate([0, w/2+wall+thread_d/2, h/2]) union() {
+	    rotate([0, -90, 0]) cylinder(d = thread_through, h = extension);
+            rotate([0, 90, 0]) cylinder(d = thread_d, h = extension);
+	}
     }
 }
 
