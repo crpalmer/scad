@@ -262,60 +262,55 @@ module valve_handle(od = global_od, factor=1.5) {
     }
 }
     
-
 module smoke_stack() {
-    module full_pipe0() {
-        translate([0, street_elbow_offset(), -street_elbow_offset()]) union() {
-            translate([0, 40*scale, 0]) rotate([-90, 0, 0]) half_ring(top=false);
-            translate([0, 20*scale, 0]) rotate([-90, 0, 0]) pipe(20*scale);
-            translate([0, 20*scale, 0]) rotate([-90, 0, 0]) ring();
-            rotate([-90, 0, 0]) flange(20*scale);
-            translate([0, 0, street_elbow_offset()]) rotate([90, 0, 0]) street_elbow();
-        }
-        ring();
-        rivets = [ for (h = [20, 30, 40]) for (angle = [0, 90, 180, 270]) [h*scale, angle] ];
-        bolts = [ for (angle = [45:90:360]) [65*scale, angle] ];
-        pipe(80*scale, rivets=rivets, bolts=bolts);
-        translate([0, 0, 10*scale]) ring();
-        translate([0, 0, 50*scale]) ring();
-        translate([0, 0, 80*scale]) ring();
-        translate([0, 0, 80*scale]) bulb();
-        translate([0, 0, 80*scale+bulb_h()]) crown();
+    translate([0, street_elbow_offset(), -street_elbow_offset()]) union() {
+        translate([0, 40*scale, 0]) rotate([-90, 0, 0]) half_ring(top=false);
+        translate([0, 20*scale, 0]) rotate([-90, 0, 0]) pipe(20*scale);
+        translate([0, 20*scale, 0]) rotate([-90, 0, 0]) ring();
+        rotate([-90, 0, 0]) flange(20*scale);
+        translate([0, 0, street_elbow_offset()]) rotate([90, 0, 0]) street_elbow();
     }
+    ring();
+    rivets = [ for (h = [20, 30, 40]) for (angle = [0, 90, 180, 270]) [h*scale, angle] ];
+    bolts = [ for (angle = [45:90:360]) [65*scale, angle] ];
+    pipe(80*scale, rivets=rivets, bolts=bolts);
+    translate([0, 0, 10*scale]) ring();
+    translate([0, 0, 50*scale]) ring();
+    translate([0, 0, 80*scale]) ring();
+    translate([0, 0, 80*scale]) bulb();
+    translate([0, 0, 80*scale+bulb_h()]) crown();
+}
 
+module smoke_stack_bottom() {
     module full_pipe() {
-        translate([0, 0, ring_h()/2]) full_pipe0();
+        translate([0, 0, ring_h()/2]) smoke_stack();
     }
 
-    module full_pipe_bottom() {
-        bottom_of() full_pipe();
-        connector_male();
+    bottom_of() full_pipe();
+    connector_male();
+}
+
+module smoke_stack_part1() {
+    module base() {
+        top_of() rotate([0, -90, 0]) smoke_stack_bottom();
     }
 
+    base();
+    connector_female_of() base();
+}
 
-    module part12(angle) {
-        top_of() rotate([0, angle, 0]) full_pipe_bottom();
+module smoke_stack_part2() {
+    module base() {
+        top_of() rotate([0, 90, 0]) smoke_stack_bottom();
     }
 
-    module part1() {
-        part12(-90);
-        connector_female_of() part12(-90);
-    }
+    base();
+    connector_female_of() base();
+}
 
-    module part2() {
-        part12(90);
-        connector_female_of() part12(90);
-    }
-
-    module part3() {
-        top_of(); full_pipe();
-        connector_female();
-    }
-
-    //connector_insert_of() part1();
-    part1();
-    //part2();
-    //part3();
+module smoke_stack_part3() {
+    top_of() smoke_stack();
+    connector_female();
 }
 
 module valve_pipe() {
