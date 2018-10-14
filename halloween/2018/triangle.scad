@@ -27,10 +27,10 @@ bearing_split_holes = [
 
 servo_mount_holes = [
     [ mount_x - connection_wall_x + 2.5, -mount_offset_y + 2.5 ],
-    [ mount_x - 2.5, -mount_offset_y + 2.5 ],
+    [ connection_wall_x - 10, -mount_offset_y + 2.5 ],
     [ mount_x - 2.5, 0 ],
     [ mount_x - connection_wall_x + 2.5, mount_y - mount_offset_y - 2.5 ],
-    [ mount_x - 2.5, mount_y - mount_offset_y - 2.5 ]
+    [ connection_wall_x - 10, mount_y - mount_offset_y - 2.5 ]
 ];
 
 module scan() {
@@ -72,7 +72,7 @@ module bearing_holder_in(h) {
     }
 }
 
-module bearing_mount() {
+module bearing_mount_no_cutout() {
     wall = 5;
     
     // openscad screws up rounding this in some way, fake it with a constant value
@@ -89,6 +89,13 @@ module bearing_mount() {
             translate([h[0], h[1] + mount_offset_y, -1]) cylinder(d = M3_tapping_hole_d(), h=15);
         }
     } 
+}
+
+module bearing_mount() {
+    difference() {
+        bearing_mount_no_cutout();
+        translate([0, 0, -10]) linear_extrude(height=20) polygon([ [0, -15], [mount_x - connection_wall_x, -mount_offset_y], [0, -mount_offset_y] ]);
+    }
 }
 
 module bearing_mount_part(hole_d) {
@@ -152,11 +159,15 @@ module mock_up() {
     translate([0, 0, -hub_h - alum_horn_h]) standard_servo();
 }
 
+//full_mount();
+//mock_up();
+//scan();
+
 //rotate([0, 90, 0]) 
 //bearing_mount_part1();
 
-//rotate([0, 180, 0]) 
-//bearing_mount_part2();
+rotate([0, 180, 0]) 
+bearing_mount_part2();
 
 //rotate([0, 180, 0])
 //servo_mount();
