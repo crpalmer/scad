@@ -50,6 +50,41 @@ module grub_hub(od = 25, id = inch_to_mm(3/8)+.1, h = 8, hole_d = M3_through_hol
     }
 }
 
+module round_hub(od, id = inch_to_mm(3/8), spacing=inch_to_mm(0.7), wall=2, h=8, thread_d = M3_tapping_hole_d(), thread_through = M3_through_hole_d(), hole_d, hole_h, recessed_d, clamp_side_d = 4) {
+    
+    hole_d = hole_d == undef ? thread_d : hole_d;
+
+    od = od == undef ? spacing + wall*4 + hole_d : od;
+    big_h = h + wall * 2;
+    hole_h = hole_h == undef ? big_h : hole_h;
+    recessed_d = recessed_d == undef ? hole_d : recessed_d;
+    clamp_d = od * 0.75;
+    slit = id / 4;
+    
+    difference() {
+        union() {
+            cylinder(d = od, h = hole_h);
+            cylinder(d = id + wall*2, h = h);
+        }
+        cylinder(d = id, h = big_h);
+        rotate([0, 0, 180]) translate([-slit/2, 0, 0]) cube([slit, od, big_h]);
+        for (angle = [0:90:180]) {
+            rotate([0, 0, angle]) translate([spacing/2, 0, 0]) union() {
+                cylinder(d = hole_d, h = big_h);
+                translate([0, 0, hole_h]) cylinder(d = recessed_d, h = big_h);
+            }
+        }
+        translate([0, -(id + wall*2)/2 - thread_through/2, hole_h / 2]) union() {
+            rotate([0, -90, 0]) cylinder(d = thread_through, h = od);
+            rotate([0, 90, 0]) cylinder(d = thread_d, h = od);
+            cutoff_y = thread_through + wall*2;
+            translate([-od/2, -cutoff_y/2, -big_h/2]) cube([od/2 - slit / 2 - clamp_side_d, cutoff_y, big_h]);
+            translate([slit/2 + clamp_side_d, -cutoff_y/2, -big_h/2]) cube([od/2, cutoff_y, big_h]);
+        }
+        translate([-od/2, -od/2, 0]) cube([od, od/2 - (id+wall*2)/2 - thread_through - wall, big_h]);
+    }
+}
+
 module standard_servo() {
     A=19.82;
     B=13.47;
