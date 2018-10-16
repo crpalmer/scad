@@ -1,3 +1,4 @@
+include <bearing.scad>
 include <servo.scad>
 include <high-detail.scad>
 
@@ -56,21 +57,6 @@ module hub() {
     );
 }
 
-module bearing_holder_in(h) {
-    od=30;
-    id=22;
-    iid=14;
-    
-    difference() {
-        union() {
-            cylinder(d = od, h = h);
-            children();
-        }
-        cylinder(d = id, h = h-1);
-        cylinder(d = iid, h = h);
-    }
-}
-
 module bearing_mount_no_cutout() {
     wall = 5;
     
@@ -79,7 +65,7 @@ module bearing_mount_no_cutout() {
 //echo (wall_z);
     wall_z = 29;
     
-    bearing_holder_in(bearing_h) translate([0, -mount_offset_y, -(wall_z - bearing_h)])
+    bearing_8mm_holder_in(bearing_h) translate([0, -mount_offset_y, -(wall_z - bearing_h)])
     difference() {
         cube([mount_x, mount_y, wall_z]);
         cube([mount_x - connection_wall_x, mount_y, wall_z - bearing_h]);
