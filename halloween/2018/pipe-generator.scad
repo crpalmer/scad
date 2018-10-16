@@ -1,11 +1,12 @@
 use <utils.scad>
 use <spline.scad>
+use <high-detail.scad>
 
 $fa = 1;
 $fs = 0.6;
 
 base_od=20;
-global_od=inch_to_mm(1);
+global_od=inch_to_mm(2.5);
 scale=global_od / base_od;
 
 wall=1.2;
@@ -447,7 +448,40 @@ module glue_plate(h=1, d=79) {
     translate([-d/2+10, -2-wall, h]) cube([d-2*10, wall, 4]);
 }
 
-glue_plate();
+module smoke_stack_attachment() {
+    module oriented_smoke_stack_of() {
+        translate([0, street_elbow_offset(), street_elbow_offset()+40*scale]) rotate([-90, 0, 0]) children();
+    }
+    
+    module oriented_smoke_stack() {
+        oriented_smoke_stack_of() smoke_stack();
+    }
+    
+    module oriented_smoke_stack_bottom() {
+        oriented_smoke_stack_of() bottom_of() smoke_stack();
+    }
+    
+    module new_part(od=global_od + 4.8, id=global_od) {
+        big_ring_h = ring_h(od=od*2)/2;
+        half_ring(od=od*2);
+//        cylinder(d=od, h=ring_h(
+        difference() {
+            cylinder(d=od*2, h=big_ring_h);
+            cylinder(d=id, h=big_ring_h);
+        }
+        pipe(od=od, id=id, len=20*scale);
+        translate([0, 0, 20*scale]) ring(od=od);
+    }
+    
+    difference() {
+        new_part();
+        oriented_smoke_stack() bottom_of();
+    }
+//    oriented_smoke_stack();
+}
 
-//distribution_pipe_part();
-distribution_pipe();
+module smoke_stack_attachment_part() {
+    top_of() rotate([0, -90, 0]) smoke_stack_attachment();
+}
+
+smoke_stack_attachment_part();
