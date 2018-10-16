@@ -44,16 +44,15 @@ module scan_for_cutout() {
 }
 
 module hub() {
-    clamping_hub(
+    round_hub(
         id = inch_to_mm(1/4),
         spacing = 14,
         wall = (12 - inch_to_mm(1/4))/2,
-        h=hub_h - 5,
+        h=hub_h,
         thread_d = M3_heat_set_hole_d(),
         hole_d = M3_through_hole_d(),
-        hole_h = 4,
-        recessed_d = 6,
-        clamp_ext = 5
+        hole_h = hub_h-4,
+        recessed_d = 6
     );
 }
 
@@ -166,10 +165,10 @@ module mock_up() {
 //rotate([0, 90, 0]) 
 //bearing_mount_part1();
 
-rotate([0, 180, 0]) 
-bearing_mount_part2();
+//rotate([0, 180, 0]) 
+//bearing_mount_part2();
 
 //rotate([0, 180, 0])
 //servo_mount();
 
-//hub();
+hub();
