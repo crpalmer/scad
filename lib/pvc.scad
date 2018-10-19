@@ -47,3 +47,29 @@ module pvc_mount(od = pvc_od_1in(), base_d = 60, wall = 2, h = 10, screw_d = M3_
         }
     }
 }
+
+module pvc_angle_connector(od = pvc_od_1in(), angle=45, wall=2.4, h = 20, screw_d = M3_through_hole_d()) {
+    d = od + wall*2;
+    
+    module outer() {
+        cylinder(d = d, h=h);
+        intersection() {
+            translate([0, 0, h]) rotate([0, angle, 0]) cylinder(d = d, h=h*2, center=true);
+            cylinder(d = d, h = h*2);
+        }
+        translate([0, 0, h]) rotate([0,angle, 0]) cylinder(d = d, h=h);
+    }
+    
+    module inner() {
+        cylinder(d = od, h=h);
+        translate([0, 0, h]) rotate([0, angle, 0]) cylinder(d = od, h=h);
+    }
+    
+    difference() {
+        outer();
+        inner();
+    }
+}
+
+
+pvc_angle_connector(od = pvc_od_3_4in());
