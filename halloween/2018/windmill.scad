@@ -7,7 +7,7 @@ outer_d = 35;
 motor_shaft_d1 = 10;
 shaft_d = inch_to_mm(.25);
 nut_d = 18;
-nut_h = 6;
+nut_h = 8;
 gap = 10;
 solid_h = 4;
 
@@ -30,10 +30,12 @@ module motor() {
 
 module shaft() {
     difference() {
+        screw_h = 4;
         cylinder(d = outer_d, h = nut_h * 2 + solid_h);
         cylinder(d = nut_d, h = nut_h * 2);
         cylinder(d = shaft_d, h = 100);
         screw_holes(M3_through_hole_d());
+        translate([0, 0, screw_h]) screw_holes(6);
     }
 }
 
@@ -55,4 +57,5 @@ module toothbrush_mount() {
     }
 }
 
-toothbrush_mount();
+//toothbrush_mount();
+rotate([0, 180, 0]) shaft();
