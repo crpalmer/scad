@@ -2,6 +2,7 @@ include <utils_threads.scad>
 
 function pvc_od_3_4in() = inch_to_mm(1.050);
 function pvc_od_1in() = inch_to_mm(1.315);
+function pvc_od_2in() = inch_to_mm(2.375);
 
 module pvc_tapered_cutout(od = pvc_od_1in(), h=20, d2 = 0) {
     taper = (od - d2) / 2;
