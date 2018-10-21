@@ -18,16 +18,44 @@ module faceplate(dim, radius, slop=0.5) {
     }
 }
 
-module part_plate(w, l, w_no_radius) {
+module part_plate_v1(w, l, w_no_radius) {
     faceplate([w, l, h], sqrt((w-w_no_radius)/2*(w-w_no_radius)/2)/2);
 }
 
+module part_plate(w, l, w_no_radius) {
+    diameter=sqrt((w-w_no_radius)*(w-w_no_radius));
+    faceplate([w, l, h], diameter/2);
+}
+
 module dial1() {
-    part_plate(139, 190, 134);
+    part_plate_v1(139, 190, 134);
 }
 
 module dial2() {
-    part_plate(187, 150, 170);
+    h=150;
+    difference() {
+        part_plate(187, h, 170);
+        translate([-100, -mink, 0]) cube([350, h/2+mink+w, 20]);
+    }
+    difference() {
+        part_plate(187, h, 150);
+        translate([-100, h/2+w, 0]) cube([350, 200, 20]);
+    }
+}
+
+module dial3() {
+    part_plate(168, 190, 145);
+}
+
+module fuel() {
+    difference() {
+        minkowski() {
+            cylinder(d = 50 - mink*2, h=h);
+            sphere(mink);
+        }
+        cylinder(d = 35, h=20);
+        translate([-50, -50, -50]) cube([100, 100, 50]);
+    }
 }
 
 dial2();
