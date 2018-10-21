@@ -75,6 +75,3 @@ module pvc_angle_connector(od = pvc_od_1in(), angle=45, wall=2.4, h = 20, screw_
     }
     
 }
-
-include <high-detail.scad>
-pvc_angle_connector(od = pvc_od_3_4in(), angle=35);
