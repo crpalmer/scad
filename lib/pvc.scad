@@ -4,6 +4,12 @@ function pvc_od_3_4in() = inch_to_mm(1.050);
 function pvc_od_1in() = inch_to_mm(1.315);
 function pvc_od_2in() = inch_to_mm(2.375);
 
+module pvc_screw_holes(h, screw_d) {
+    for (angle = [0, 90]) {
+		rotate([0, 0, angle]) translate([-100, 0, h/2]) rotate([0, 90, 0]) cylinder(d = screw_d, h = 200);
+    }
+}
+
 module pvc_tapered_cutout(od = pvc_od_1in(), h=20, d2 = 0) {
     taper = (od - d2) / 2;
     taper_h = taper;
@@ -16,9 +22,7 @@ module pvc_tapered_holder(od = pvc_od_1in(), h=20, d2=0, wall=2, screw_d) {
 	cylinder(d = od + wall*2, h=h);
 	pvc_tapered_cutout(od = od, h = h, d2 = d2);
 	if (screw_d != undef) {
-	    for (angle = [0, 90]) {
-		rotate([0, 0, angle]) translate([-(od + wall*2), 0, h/2]) rotate([0, 90, 0]) cylinder(d = screw_d, h = (od + wall*2)*3);
-	    }
+        pvc_screw_holes(h = h/2, screw_d = screw_d);
 	}
     }
 }
@@ -48,10 +52,13 @@ module pvc_mount(od = pvc_od_1in(), base_d = 60, wall = 2, h = 10, screw_d = M3_
     }
 }
 
-module pvc_angle_connector(od = pvc_od_1in(), angle=45, wall=2.4, h = 20, screw_d = M3_through_hole_d()) {
+module pvc_angle_connector(od = pvc_od_1in(), angle=45, wall=2.4, h = 20, screw_d = M3_through_hole_d(), screw_d = M3_through_hole_d(), slop=1) {
+    od = od + slop;
     d = od + wall*2;
-    
-    module outer() {
+
+    h2 = h + triangle_opp_length_angle_adj(angle=90-angle, adj=d);
+
+    module part(d = d, h=h) {
         cylinder(d = d, h=h);
         intersection() {
             translate([0, 0, h]) rotate([0, angle, 0]) cylinder(d = d, h=h*2, center=true);
@@ -59,17 +66,15 @@ module pvc_angle_connector(od = pvc_od_1in(), angle=45, wall=2.4, h = 20, screw_
         }
         translate([0, 0, h]) rotate([0,angle, 0]) cylinder(d = d, h=h);
     }
-    
-    module inner() {
-        cylinder(d = od, h=h);
-        translate([0, 0, h]) rotate([0, angle, 0]) cylinder(d = od, h=h);
-    }
-    
+
     difference() {
-        outer();
-        inner();
+        part(d = d);
+        part(d = od, h=h+.1);
+        pvc_screw_holes(h = h/2, screw_d=screw_d);
+        translate([0, 0, h]) rotate([0, angle, 0]) pvc_screw_holes(h = h - wall - screw_d/2, screw_d = screw_d);
     }
+    
 }
 
-
-pvc_angle_connector(od = pvc_od_3_4in());
+include <high-detail.scad>
+pvc_angle_connector(od = pvc_od_3_4in(), angle=35);
