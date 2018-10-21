@@ -461,10 +461,9 @@ module smoke_stack_attachment() {
         oriented_smoke_stack_of() bottom_of() smoke_stack();
     }
     
-    module new_part(od=global_od + 4.8, id=global_od) {
+    module new_part(od=global_od + 1 + 4.8, id=global_od+1) {
         big_ring_h = ring_h(od=od*2)/2;
         half_ring(od=od*2);
-//        cylinder(d=od, h=ring_h(
         difference() {
             cylinder(d=od*2, h=big_ring_h);
             cylinder(d=id, h=big_ring_h);
