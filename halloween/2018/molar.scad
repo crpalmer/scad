@@ -1,6 +1,5 @@
 include <utils_threads.scad>
-
-$fn=128;
+include <high-detail.scad>
 
 wall = 5;
 void_w = 78 - wall*2;
