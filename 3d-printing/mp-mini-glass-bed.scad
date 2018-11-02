@@ -1,45 +1,56 @@
 include <utils_threads.scad>
+include <high-detail.scad>
 
-$fn=32;
+h=3;
+wall=4;
+screw_top_d = 6;
+screw_from_front = 4;
+screw_from_side = 6.75;
+screw_slot_len = 15-screw_top_d;
+screw_delta_y = 153;
+glass=130;
 
-top_h=1;
-glass_h=3;
-screw_recess=6.5;
+module screw_cutout() {
+    recessed_screw_slot(d1=M3_through_hole_d(), d2=screw_top_d, h1=1, h2=h, len=screw_slot_len);
+}
 
-module front_mount() {
-    screw_to_side=10;
-    lip=4;
-    side_w=4;
-    side_l=15;
-    non_lip=screw_recess+2;
-    w=130+side_w*2;
-    
+module front_mount_frame() {
+    full=[wall+30+screw_from_side+screw_slot_len/2, screw_from_front + screw_top_d/2 + 30, h];
     difference() {
-        translate([-w/2, 0, 0]) union() {
-            cube([w, non_lip+side_l, glass_h+top_h]);
-        }
-        translate([-65+lip, non_lip, 0]) cube([130-lip*2, 100, 100]);
-        translate([-65, non_lip, top_h]) cube([130, 100, 100]);
-        for (delta = [-1, +1]) {
-            translate([delta*(w/2-screw_to_side), non_lip/2, 0]) union() {
-                cylinder(d=M3_through_hole_d(), h=100);
-                cylinder(d=screw_recess, h=glass_h+top_h-1);
-            }
-        }
+        cube(full);
+        translate([wall, screw_from_front + screw_top_d/2, 0]) cube(full);
+    }
+}
+
+module front_left_mount() {
+    difference() {
+        front_mount_frame();
+        translate([wall+screw_from_side, screw_from_front+.001, 0]) rotate([0, 0, 90]) screw_cutout();
+    }
+}
+
+module front_right_mount() {
+    difference() {
+        mirror([1, 0, 0]) front_mount_frame();
+        translate([-(wall+screw_from_side), screw_from_front+.001, 0]) rotate([0, 0, 90]) screw_cutout();
     }
 }
 
 module back_mount() {
     difference() {
-        union() {
-            cube([10, 16, top_h]);
-            cube([10, 8, glass_h+top_h]);
-        }
-        translate([5, 6, 0]) cylinder(d=M3_through_hole_d(), h=100);
+        cube([screw_top_d+wall*2, screw_delta_y - glass + wall + screw_slot_len/2 - screw_top_d, h]);
+        translate([wall + screw_top_d/2, wall + screw_slot_len/2, 0]) screw_cutout();
     }
 }
 
-//translate([-10, 0, 0]) rotate([0, -90, 0]) front_mount(false);
-//translate([0, 0, 0]) rotate([0, 90, 0]) front_mount(true);
-//translate([30, 0, 0]) back_mount();
-rotate([90, 0, 0]) front_mount();
+module bed_spacer() {
+    difference() {
+        cylinder(d=M3_through_hole_d() + wall*2, h=5);
+        cylinder(d=M3_through_hole_d(), h=10);
+    }
+}
+
+bed_spacer();
+//back_mount();
+//front_left_mount();
+//front_right_mount();
