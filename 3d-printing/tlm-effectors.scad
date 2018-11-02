@@ -262,6 +262,75 @@ module carriage_adaptor(arm_spacing = 40) {
     }
 }
 
+module carriage() {
+    wheel_d = 15.23;
+    extrusion_w = 20;
+    belt_middle = 40;
+    wall = 2;
+    hole_d = M5_through_hole_d();
+    eccentric_d = 7;
+    arm_h = 11;
+    arm_w = 35;
+    arm_d = M3_through_hole_d();
+    
+    w = extrusion_w + wheel_d*2 + wall * 2;
+    full = [ w + (belt_middle - extrusion_w) + 10, w, 10];
+
+    module plate() {        
+        difference() {
+            translate([-w/2, -w/2, 0]) rounded_cube(full, r = 5);
+            x = extrusion_w / 2 + wheel_d / 2;
+            for (y = [ 1, -1]) {
+                y = y * (w/2 - wall*2 - hole_d / 2);
+                translate([x, y, 0]) cylinder(d = hole_d, h=100);
+            }
+            translate([-x, 0, 0]) cylinder(d = eccentric_d, h=100);
+        }
+    }
+    
+    module arms() {
+        w=10;
+
+        module arms2d() {
+            difference() {
+                polygon([
+                    [ 0, 0],
+                    [ 0, arm_h + arm_d/2 ],
+                    [ arm_d, arm_h + arm_d*1.5 ],
+                    [ w - arm_d, arm_h + arm_d*1.5 ],
+                    [ w, arm_h + arm_d / 2 ],
+                    [ w, 0]
+                ]);
+                translate([w/2, arm_h]) circle(d = arm_d);
+            }
+        }
+        
+        module arms3d() {
+            translate([-arm_w/2, -w/2, full[2]])
+                rotate([90, 0, 90])
+                linear_extrude(height = arm_w)
+                arms2d();
+        }
+        
+        module nut_cutout() {
+            nut_w = 1.9;
+            translate([nut_w/2, 0, full[2] + arm_h]) union() {
+                rotate([90, 90, 90]) M3_nut_insert_cutout(h=1.9);
+                translate([0, -2.9, 0]) cube([1.9, 5.8, 100]);
+            }
+        }
+
+        difference() {
+            arms3d();
+            translate([arm_w/2-7, 0, 0]) nut_cutout();
+            translate([-arm_w/2+7, 0, 0]) nut_cutout();
+        }
+    }
+        
+    plate();
+    translate([0, 11, 0]) arms();
+}
+
 // Effectors
 // ----------
 //blank_effector();
@@ -269,7 +338,7 @@ module carriage_adaptor(arm_spacing = 40) {
 //rotate([0, 180, 0]) stock_effector();
 
 //rotate([0, 180, 0]) e3d_nimble_effector();
-rotate([0, 180, 0]) e3d_clip();
+//rotate([0, 180, 0]) e3d_clip();
 //e3dv6_nimble_plate();
 //e3dv6_bowden_plate();
 
@@ -278,6 +347,8 @@ rotate([0, 180, 0]) e3d_clip();
 //chimera_nimble_plate();
 // Left hand plate
 //mirror([1, 0, 0]) chimera_nimble_plate();
+
+carriage();
 
 //carriage_adaptor();
 
