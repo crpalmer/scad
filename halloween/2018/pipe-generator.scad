@@ -1,9 +1,7 @@
 use <utils.scad>
 use <spline.scad>
-use <high-detail.scad>
-
-$fa = 1;
-$fs = 0.6;
+include <pvc.scad>
+include <high-detail.scad>
 
 base_od=20;
 global_od=inch_to_mm(2.5);
@@ -483,4 +481,19 @@ module smoke_stack_attachment_part() {
     top_of() rotate([0, -90, 0]) smoke_stack_attachment();
 }
 
-smoke_stack_attachment_part();
+module fog_connector() {
+    h1 = inch_to_mm(2) + 10;
+    h2 = 30;
+    wall = 2.4;
+    
+    od = id(global_od)-2;
+    echo([od, pvc_od_2in()+wall*2]);
+    pvc_tapered_holder(od = pvc_od_2in(), d2=od-wall*2, wall=wall, h=h1);
+    translate([0, 0, h1]) difference() {
+        cylinder(d = od, h = h2);
+        cylinder(d = od - wall*2, h = h2);
+        translate([-od/3, -od, 0]) cube([od/3*2, od*2, h2]);
+    }
+}
+
+fog_connector();
