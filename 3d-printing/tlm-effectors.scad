@@ -1,8 +1,6 @@
 include <utils_threads.scad>
 include <tlm-effector-blank.scad>
-
-$fn=128;
-//util_threads_fake_heat_set_holes = true;
+include <high-detail.scad>
 
 module chimera_orientation_tabs()
 {
