@@ -30,6 +30,16 @@ module hollow_cone(d1, d2, h, wall = 2) {
     }
 }
 
+module dovetail(w, h, len = 10, angle=8) {
+    d = triangle_opp_length_angle_adj(angle=angle, adj=h);
+    polygon([
+	[-w/2, 0],
+	[-(w/2 + d), h],
+	[w/2 + d, h],
+	[w/2, 0]
+    ]);
+}
+
 function inch_to_mm(inch) = inch * 25.4;
 function mm_to_inch(mm) = mm / 25.4;
 
