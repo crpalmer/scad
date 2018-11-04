@@ -264,9 +264,10 @@ module carriage_adaptor(arm_spacing = 40) {
 
 module carriage() {
     wheel_d = 15.23;
-    extrusion_w = 20;
-    belt_middle = 40;
-    wall = 2;
+    extrusion_w = 80;
+    gap_between_wheels = 10;
+    belt_gap = 10;
+    wall = 4;
     hole_d = M5_through_hole_d();
     eccentric_d = 7;
     arm_h = 11;
@@ -274,17 +275,21 @@ module carriage() {
     arm_d = M3_through_hole_d();
     
     w = extrusion_w + wheel_d*2 + wall * 2;
-    full = [ w + (belt_middle - extrusion_w) + 10, w, 10];
+    h_for_wheels = wheel_d*2 + wall*2 + gap_between_wheels;
+    h_for_belt_tightener = 30 + wall + M3_through_hole_d() + wall*2;
+    h = max(h_for_wheels, h_for_belt_tightener);
+    
+    full = [ w, h, 10];
 
     module plate() {        
         difference() {
-            translate([-w/2, -w/2, 0]) rounded_cube(full, r = 5);
+            translate([-full[0]/2, -full[1]/2, 0]) rounded_cube(full, r = 5);
             x = extrusion_w / 2 + wheel_d / 2;
             for (y = [ 1, -1]) {
-                y = y * (w/2 - wall*2 - hole_d / 2);
+                y = y * (full[1]/2 - wall*2 - hole_d / 2);
                 translate([x, y, 0]) cylinder(d = hole_d, h=100);
             }
-            translate([-x, 0, 0]) cylinder(d = eccentric_d, h=100);
+            translate([-x-0.5, 0, 0]) cylinder(d = eccentric_d, h=100);
         }
     }
     
@@ -326,9 +331,98 @@ module carriage() {
             translate([-arm_w/2+7, 0, 0]) nut_cutout();
         }
     }
+    
+    module belt_tightener_fixed() {
+        translate([5, full[1]/2 - wall - M3_through_hole_d()/2, 0]) union() {
+            cylinder(d = M3_through_hole_d(), h=full[2]);
+            translate([0, 0, full[2] - 3]) M3_nut_insert_cutout(h=4);
+        }
+    }
+
+    module belt_tightener_adjustable() {
+        slot_w = wall*2;
+        slot_h = 8;
+        slot_len = 10+wall;
+        translate([0, slot_len - full[1]/2 + wall, 0]) rotate([90, 0, 0]) dovetail(w=slot_w+0.1, h=slot_h+0.2, len=slot_len);
+        translate([-slot_w/2 - 1, -full[1]/2 + wall + slot_len, 0]) cube([slot_w+2, wall+2, slot_h + 0.2]);
+        translate([0, -full[1]/2 + wall + slot_len, slot_h/2]) rotate([90, 0, 0]) cylinder(d = M3_through_hole_d(), h=100);
+    }
+
+    difference() {
+        union() {
+            plate();
+            arms();
+        }
+        belt_tightener_fixed();
+        translate([-belt_gap/2, 0, 0]) belt_tightener_adjustable();
+    }
+}
+
+module carriage_belt_clip(spacer = 5, mink = 2, center=false) {
+    module raw_clip() {
+        belt_w = 6;
+        belt_w_slop = 0.5;
+        wall = 4;
+        belt_depth = 1.5;
+        belt_depth_slop = 0.5;
         
-    plate();
-    translate([0, 11, 0]) arms();
+        inner_no_mink = [ wall, belt_depth + belt_depth_slop, belt_w + belt_w_slop ];
+        outer_no_mink = [ 0, wall * 2, spacer + wall] + inner_no_mink;
+        outer = outer_no_mink - [mink, mink, mink/2];
+        inner = inner_no_mink + [0, mink, mink];
+        
+        translate([center ? -outer[0]/2 : mink/2, 0, -outer[2]+mink/2]) difference() {
+            cube(outer);
+            translate([(outer[0] - inner[0]) / 2, (outer[1] - inner[1]) / 2,  wall - mink/2]) cube(inner);
+        }
+    }
+    
+    intersection() {
+        minkowski() {
+            raw_clip();
+            cylinder(d=mink, h=mink);
+        }
+        translate([-50, 0, -50]) cube([100, 50, 50]);
+    }
+
+}
+
+module carriage_belt_tightener_fixed() {
+    wall = 4;
+    base = [20, M3_through_hole_d() + wall*2, wall];
+    mink = 2;
+    
+    module top_mount() {
+        union() {
+            cube(base);
+            translate([0, base[1], 0]) cube([base[0], wall, wall*3]);
+        }
+    }
+
+    difference() {
+        union() {
+            top_mount();
+            carriage_belt_clip(mink=mink, spacer=2);
+        }
+        translate([wall+base[0]/2, base[1]/2, 0]) cylinder(d = M3_through_hole_d(), h = 100);
+    }
+}
+
+module carriage_belt_tightener_adjustable() {
+    wall=4;
+    mink=2;
+    
+    module top_mount() {
+        slot_h = 8;
+        translate([0, wall*2, slot_h/2]) rotate([90, 0, 0]) difference() {
+            translate([0, -slot_h/2, 0]) dovetail(w=wall*2, h=slot_h, len=wall*2);
+            cylinder(d = M3_through_hole_d(), h = 100);
+            M3_nut_insert_cutout();
+        }
+    }
+
+    top_mount();
+    carriage_belt_clip(mink=mink, center=true);
 }
 
 // Effectors
@@ -348,7 +442,9 @@ module carriage() {
 // Left hand plate
 //mirror([1, 0, 0]) chimera_nimble_plate();
 
-carriage();
+//carriage();
+rotate([0, -90, 0]) carriage_belt_tightener_fixed();
+//rotate([90, 0, 0]) carriage_belt_tightener_adjustable();
 
 //carriage_adaptor();
 
