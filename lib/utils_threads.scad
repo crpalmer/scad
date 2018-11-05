@@ -1,4 +1,3 @@
-use <utils.scad>
 use <threads.scad>
 
 util_threads_fake_heat_set_holes = false;
@@ -245,6 +244,7 @@ module M4_nut_insert_cutout(h=3, d_delta=0)
 }
 
 function M5_tapping_hole_d() = 4.2;
+function M5_tight_through_hole_d() = 5.25;
 function M5_through_hole_d() = 5.5;
 
 module M3_recessed_through_hole(h=100)
