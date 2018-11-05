@@ -30,9 +30,11 @@ module hollow_cone(d1, d2, h, wall = 2) {
     }
 }
 
+function dovetail_width(w, h, angle=8)  = w + triangle_opp_length_angle_adj(angle=angle, adj=h)*2;
+
 module dovetail(w, h, len = 10, angle=8) {
-    d = triangle_opp_length_angle_adj(angle=angle, adj=h);
-    polygon([
+    d =  triangle_opp_length_angle_adj(angle=angle, adj=h);
+    linear_extrude(height = len) polygon([
 	[-w/2, 0],
 	[-(w/2 + d), h],
 	[w/2 + d, h],
