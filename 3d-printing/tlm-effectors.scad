@@ -238,14 +238,43 @@ module stock_effector() {
     }
 }
 
-module carriage_adaptor(arm_spacing = 40) {
-    module jam_nut_cutout(nut_h = 0) {
-        translate([0, 0, nut_h]) rotate([0, 90, 0]) M3_nut_insert_cutout(h=1.9);
-        translate([0, -3, nut_h]) cube([1.9, 6, 100]);
+module ball_cup_arm_mounts(arm_spacing = 35) {
+    arm_h = 11;
+    arm_w = 7;
+    arm_d = M3_through_hole_d();
+    w=10;
+
+    module arm2d() {
+        difference() {
+            polygon([
+                [ 0, 0],
+                [ 0, arm_h + arm_d/2 ],
+                [ arm_d, arm_h + arm_d*1.5 ],
+                [ w - arm_d, arm_h + arm_d*1.5 ],
+                [ w, arm_h + arm_d / 2 ],
+                [ w, 0]
+            ]);
+            translate([w/2, arm_h]) circle(d = arm_d);
+        }
     }
     
+    module arm3d() {
+        translate([-arm_spacing/2, -w/2, 0])
+        union() {
+            rotate([90, 0, 90]) linear_extrude(height = arm_w) arm2d();
+            translate([arm_w, w, 0]) rotate([90, 0, 0]) linear_extrude(height=w) polygon([ [0, 0], [7, 0], [0, 7] ]);
+        }
+
+    }
+    
+    arm3d();
+    mirror([1, 0, 0]) arm3d();
+}
+    
+
+module carriage_adaptor(arm_spacing = 40) {
     wall=5;
-    T=12;
+    T=10;
     ext=15;
     union() {
         difference() {
@@ -253,26 +282,19 @@ module carriage_adaptor(arm_spacing = 40) {
             cube([45, 10, T], center=true);
             translate([-100, 0, 0]) rotate([0, 90, 0]) cylinder(d=M4_through_hole_d(), h=200);
         }
-        translate([0, 10/2+wall + ext/2, 0]) difference() {
-            cube([arm_spacing, ext, T], center=true);
-            translate([-100, ext/2-5, 0]) rotate([0, 90, 0]) cylinder(d=3, h=200);
-            translate([-arm_spacing/2+8, ext/2-5, 0]) jam_nut_cutout();
-            translate([arm_spacing/2-8, ext/2-5, 0]) jam_nut_cutout();
-        }
+        translate([0, 5+wall, 0]) rotate([-90, 0, 0]) ball_cup_arm_mounts(arm_spacing);
     }
 }
 
 module carriage() {
     wheel_d = 15.23;
-    wheel_x = 106 - wheel_d;
+    wheel_x = 105 - wheel_d;
     gap_between_wheels = 10;
     belt_gap = 10;
     wall = 4;
     hole_d = M5_tight_through_hole_d();
-    eccentric_hole_d = 7.1;
-    arm_h = 11;
-    arm_w = 35;
-    arm_d = M3_through_hole_d();
+    eccentric_hole_d = 7.15;
+    arm_spacing = 35;
     
     w = wheel_x + wheel_d + wall * 2;
     h_for_wheels = wheel_d*2 + wall*2 + gap_between_wheels;
@@ -292,45 +314,6 @@ module carriage() {
         }
     }
     
-    module arms() {
-        w=10;
-
-        module arms2d() {
-            difference() {
-                polygon([
-                    [ 0, 0],
-                    [ 0, arm_h + arm_d/2 ],
-                    [ arm_d, arm_h + arm_d*1.5 ],
-                    [ w - arm_d, arm_h + arm_d*1.5 ],
-                    [ w, arm_h + arm_d / 2 ],
-                    [ w, 0]
-                ]);
-                translate([w/2, arm_h]) circle(d = arm_d);
-            }
-        }
-        
-        module arms3d() {
-            translate([-arm_w/2, -w/2, full[2]])
-                rotate([90, 0, 90])
-                linear_extrude(height = arm_w)
-                arms2d();
-        }
-        
-        module nut_cutout() {
-            nut_w = 1.9;
-            translate([nut_w/2, 0, full[2] + arm_h]) union() {
-                rotate([90, 90, 90]) M3_nut_insert_cutout(h=1.9);
-                translate([0, -2.9, 0]) cube([1.9, 5.8, 100]);
-            }
-        }
-
-        difference() {
-            arms3d();
-            translate([arm_w/2-7, 0, 0]) nut_cutout();
-            translate([-arm_w/2+7, 0, 0]) nut_cutout();
-        }
-    }
-    
     module belt_tightener_fixed() {
         translate([5, full[1]/2 - wall - M3_through_hole_d()/2, 0]) union() {
             cylinder(d = M3_through_hole_d(), h=full[2]);
@@ -345,15 +328,15 @@ module carriage() {
         angle = 30;
         dovetail_w = dovetail_width(w=slot_w, h=slot_h, angle=angle);
         
-        translate([0, slot_len - full[1]/2 + wall, 0]) rotate([90, 0, 0]) dovetail(w=slot_w+0.1, h=slot_h+0.2, len=slot_len, angle=angle);
-        translate([-dovetail_w/2+0.05, -full[1]/2 + wall + slot_len, 0]) cube([dovetail_w+.1, wall*2 + 1, slot_h + 0.2]);
+        translate([0, slot_len - full[1]/2 + wall, 0]) rotate([90, 0, 0]) dovetail(w=slot_w+0.1, h=slot_h+0.3, len=slot_len, angle=angle);
+        translate([-dovetail_w/2+0.05, -full[1]/2 + wall + slot_len, 0]) cube([dovetail_w+.2, wall*2 + 1, slot_h + 0.3]);
         translate([0, -full[1]/2 + wall + slot_len, slot_h/2]) rotate([90, 0, 0]) cylinder(d = M3_through_hole_d(), h=100);
     }
 
     difference() {
         union() {
             plate();
-            arms();
+            translate([0, 0, full[2]]) ball_cup_arm_mounts(arm_spacing);
         }
         belt_tightener_fixed();
         translate([belt_gap/2, 0, 0]) belt_tightener_adjustable();
@@ -453,6 +436,7 @@ carriage();
 //rotate([90, 0, 0]) carriage_belt_tightener_adjustable();
 
 //carriage_adaptor();
+//carriage_adaptor(35);
 
 //clip_effector_blank();
 
