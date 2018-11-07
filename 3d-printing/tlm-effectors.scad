@@ -286,7 +286,7 @@ module carriage_adaptor(arm_spacing = 40) {
     }
 }
 
-module carriage() {
+module carriage(arm_spacing = 35) {
     wheel_d = 15.23;
     wheel_x = 105 - wheel_d;
     gap_between_wheels = 10;
@@ -294,7 +294,6 @@ module carriage() {
     wall = 4;
     hole_d = M5_tight_through_hole_d();
     eccentric_hole_d = 7.15;
-    arm_spacing = 35;
     
     w = wheel_x + wheel_d + wall * 2;
     h_for_wheels = wheel_d*2 + wall*2 + gap_between_wheels;
