@@ -241,7 +241,7 @@ module stock_effector() {
 module ball_cup_arm_mounts(arm_spacing = 35) {
     arm_h = 11;
     arm_w = 7;
-    arm_d = M3_through_hole_d();
+    arm_d = M3_tight_through_hole_d();
     w=10;
 
     module arm2d() {
