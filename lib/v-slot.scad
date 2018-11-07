@@ -1,4 +1,5 @@
 //part = "20x Extrusion"; //[20x Extrusion, 40x40 Extrusion, Wheel, OpenRail, 20mm Gantry Plate, Universal Gantry Plate, OpenRail Gantry Plate, 20x End Cap, T-Nut, Flat Linker, Angled Linker] 
+// or "vslot-profile"
 
 //type = "20mm"; //[20mm, 40mm, 60mm, 80mm]
 
@@ -12,6 +13,20 @@ module vslot_2040_extrusion(length = 20) {
 
 module vslot_2080_extrusion(length = 20) {
     vslot_part("20x Extrusion", type="80mm", length=length);
+}
+
+module vslot_profile(type="20mm") {
+    vslot_part("vslot-profile", type=type);
+}
+
+module vslot_insert(depth = 0, width = 6, length = 10, tolerance = 0.1) {
+    linear_extrude(height = length) offset(delta=-tolerance) union() {
+        translate([0, -width/2+tolerance]) square([depth, width-tolerance*2]);
+        translate([-8.35+depth, 0]) difference() {
+            translate([8.25, -4.8]) square([1.9, 9.6]);
+            vslot_profile();
+        }
+    }
 }
 
 module vslot_part(part, type, length = 20) {
@@ -412,16 +427,23 @@ module vslot_part(part, type, length = 20) {
         polygon(points=[[3.9-1.5*sqrt(0.5),3.9],[5.5,5.5+1.5*sqrt(0.5)],[5.5,8.2],[-5.5,8.2],[-5.5,5.5+1.5*sqrt(0.5)],[-3.9+1.5*sqrt(0.5),3.9]]);
     }
 
+    module vslot_profile() {
+    }
+
+    module extrusions() {
+	if(type == "20mm")
+	    extrusion(sections=0, offset_r=0);
+	if(type == "40mm")
+	    extrusion(sections=1, offset_r=0);
+	if(type == "60mm")
+	    extrusion(sections=2, offset_r=0);
+	if(type == "80mm")
+	    extrusion(sections=3, offset_r=0);
+    }
+
     module show_what(){
         if(part == "20x Extrusion"){
-            if(type == "20mm")
-                extrusion(sections=0, offset_r=0);
-            if(type == "40mm")
-                extrusion(sections=1, offset_r=0);
-            if(type == "60mm")
-                extrusion(sections=2, offset_r=0);
-            if(type == "80mm")
-                extrusion(sections=3, offset_r=0);
+	    extrusions();
         }
         if(part == "40x40 Extrusion")
             40x40();
@@ -459,6 +481,11 @@ module vslot_part(part, type, length = 20) {
             flat_linker();
         if (part == "Angled Linker")
             angled_linker();
+	if (part == "vslot-profile")
+	    projection() {
+		length = 1;
+		extrusions();
+	   }
     }
 
     color("silver")
