@@ -196,6 +196,7 @@ module quarter_twenty_tube(length=8, D=8)
 }
 
 function M3_tapping_hole_d() = 2.5;
+function M3_tight_through_hole_d() = 3.15;
 function M3_through_hole_d() = 3.5;
 function M3_heat_set_hole_d() = 5.25;
 function M3_heat_set_h() = 3.9;
