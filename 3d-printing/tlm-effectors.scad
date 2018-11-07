@@ -276,12 +276,14 @@ module carriage_adaptor(arm_spacing = 40) {
     wall=5;
     T=10;
     ext=15;
+    box=[45+wall*2, 10+wall*2, T];
     union() {
         difference() {
-            cube([45+wall*2, 10+wall*2, T], center=true);
-            cube([45, 10, T], center=true);
+            cube(box, center=true);
+            cube(box - [wall*2, wall*2, 0], center=true);
             translate([-100, 0, 0]) rotate([0, 90, 0]) cylinder(d=M4_through_hole_d(), h=200);
         }
+        translate([-5, (box[1]-wall*2)/2+0.5, T/2]) linear_extrude(height=0.6) text(text=str(arm_spacing), size=4, font="Courier New");
         translate([0, 5+wall, 0]) rotate([-90, 0, 0]) ball_cup_arm_mounts(arm_spacing);
     }
 }
@@ -304,7 +306,10 @@ module carriage(arm_spacing = 35) {
 
     module plate() {        
         difference() {
-            translate([-full[0]/2, -full[1]/2, 0]) rounded_cube(full, r = 5);
+            translate([-full[0]/2, -full[1]/2, 0]) union() {
+                rounded_cube(full, r = 5);
+                translate([full[0]*.25, full[1]*.75 - 5, full[2]]) linear_extrude(height = 1) text(str(arm_spacing), font="Courier New", size=10);
+            }
             for (y = [ 1, -1]) {
                 y = y * (full[1]/2 - wall*2 - hole_d / 2);
                 translate([wheel_x/2, y, 0]) cylinder(d = hole_d, h=100);
@@ -430,7 +435,7 @@ module carriage_belt_tightener_adjustable() {
 // Left hand plate
 //mirror([1, 0, 0]) chimera_nimble_plate();
 
-carriage();
+carriage(35);
 //rotate([0, -90, 0]) carriage_belt_tightener_fixed();
 //rotate([90, 0, 0]) carriage_belt_tightener_adjustable();
 
