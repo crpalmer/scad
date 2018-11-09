@@ -336,6 +336,15 @@ module carriage(arm_spacing = 35) {
         translate([-dovetail_w/2+0.05, -full[1]/2 + wall + slot_len, 0]) cube([dovetail_w+.2, wall*2 + 1, slot_h + 0.3]);
         translate([0, -full[1]/2 + wall + slot_len, slot_h/2]) rotate([90, 0, 0]) cylinder(d = M3_through_hole_d(), h=100);
     }
+    
+    module grub_screw_hole() {
+        grub_screw_offset = [-20, full[1]/2, full[2]/2];    // just a guess until I can measure it
+        // screw length is based on fully seating M3x16mm grub screws to get
+        // all carriages even but triggering the endstop.  If there is something
+        // wrong with the frame or the build plate is not even, you can then
+        // adjust 2 of the 3 to get it all right.
+        translate(grub_screw_offset) rotate([90, 0, 0]) M3_heat_set_hole(10);
+    }
 
     difference() {
         union() {
@@ -344,6 +353,7 @@ module carriage(arm_spacing = 35) {
         }
         belt_tightener_fixed();
         translate([belt_gap/2, 0, 0]) belt_tightener_adjustable();
+        grub_screw_hole();
     }
 }
 
@@ -435,7 +445,7 @@ module carriage_belt_tightener_adjustable() {
 // Left hand plate
 //mirror([1, 0, 0]) chimera_nimble_plate();
 
-carriage(35);
+carriage(34.8);
 //rotate([0, -90, 0]) carriage_belt_tightener_fixed();
 //rotate([90, 0, 0]) carriage_belt_tightener_adjustable();
 
