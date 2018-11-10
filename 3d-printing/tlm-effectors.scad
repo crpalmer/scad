@@ -273,18 +273,20 @@ module ball_cup_arm_mounts(arm_spacing = 35) {
 }
     
 
-module carriage_adaptor(arm_spacing = 40) {
+module carriage_adaptor(arm_spacing = 40, label) {
     wall=5;
     T=10;
     ext=15;
     box=[45+wall*2, 10+wall*2, T];
+    label = (label == undef ? str(arm_spacing) : label);
+    size = len(label) == 1 ? 10 : len(label) == 2 ? 7 : 4;
     union() {
         difference() {
             cube(box, center=true);
             cube(box - [wall*2, wall*2, 0], center=true);
             translate([-100, 0, 0]) rotate([0, 90, 0]) cylinder(d=M4_through_hole_d(), h=200);
         }
-        translate([-5, (box[1]-wall*2)/2+0.5, T/2]) linear_extrude(height=0.6) text(text=str(arm_spacing), size=4, font="Courier New");
+        translate([-arm_spacing/2+.5, (box[1]-wall*2)/2+0.5, T/2]) linear_extrude(height=1) text(text=label, size=size, font="Courier New");
         translate([0, 5+wall, 0]) rotate([-90, 0, 0]) ball_cup_arm_mounts(arm_spacing);
     }
 }
@@ -480,8 +482,9 @@ carriage(35);
 
 endstop_mount();
 
-//carriage_adaptor();
-//carriage_adaptor(35);
+//carriage_adaptor(34.6, "X");
+//carriage_adaptor(34.6, "Y");
+//carriage_adaptor(34.8, "Z");
 
 //clip_effector_blank();
 
