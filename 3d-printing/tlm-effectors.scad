@@ -425,7 +425,7 @@ module endstop_mount() {
     switch_w = 20;
     hole_spacing = 9.5;
     hole_from_top = 4;
-    outer = [27 + thick[1], 40 + thick[0], 8+M3_through_hole_d()+bottom_wall];
+    outer = [23 + thick[1], 40 + thick[0], 8+M3_through_hole_d()+bottom_wall];
 
     module face() {
         difference() {
@@ -447,7 +447,7 @@ module endstop_mount() {
         translate([20+2+thick[1], thick[0]+10, slot_hole_h]) rotate([-90, 0, 90]) M3_recessed_through_hole();
         translate([20+2+thick[1], thick[0]+30, slot_hole_h]) rotate([-90, 0, 90]) M3_recessed_through_hole();
         for (dir = [-1, +1]) {
-            translate([10 + switch_w/2 + dir*hole_spacing/2, -.01, hole_from_top]) rotate([-90, 0, 0]) M3_heat_set_hole(h=thick[0]+0.4);
+            translate([8 + switch_w/2 + dir*hole_spacing/2, -.01, hole_from_top]) rotate([-90, 0, 0]) M3_heat_set_hole(h=thick[0]+0.4);
         }
     }
 
