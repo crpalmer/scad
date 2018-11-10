@@ -19,13 +19,17 @@ module vslot_profile(type="20mm") {
     vslot_part("vslot-profile", type=type);
 }
 
-module vslot_insert(depth = 0, width = 6, length = 10, tolerance = 0.1) {
-    linear_extrude(height = length) offset(delta=-tolerance) union() {
-        translate([0, -width/2+tolerance]) square([depth, width-tolerance*2]);
-        translate([-8.35+depth, 0]) difference() {
-            translate([8.25, -4.8]) square([1.9, 9.6]);
-            vslot_profile();
-        }
+module vslot_insert(depth = 1.9, width = 6, length = 10, tolerance = 0.1) {
+    depth = depth - 1.9;
+    intersection() {
+        linear_extrude(height = length) offset(delta=-tolerance) union() {
+            translate([0, -width/2+tolerance]) square([depth, width-tolerance*2]);
+            translate([-8.1+depth, 0]) difference() {
+                translate([8.25, -4.8]) square([1.9, 9.6]);
+                vslot_profile();
+            }
+	}
+	translate([0, -100, 0]) cube([100, 200, length]);
     }
 }
 
