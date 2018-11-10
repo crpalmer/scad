@@ -1,5 +1,6 @@
 include <utils_threads.scad>
 include <tlm-effector-blank.scad>
+use <v-slot.scad>
 include <high-detail.scad>
 
 module chimera_orientation_tabs()
@@ -418,6 +419,44 @@ module carriage_belt_tightener_adjustable() {
     carriage_belt_clip(mink=mink, spacer=9, center=true);
 }
 
+module endstop_mount() {
+    bottom_wall = 2;
+    thick = [4.5, 5];
+    switch_w = 20;
+    hole_spacing = 9.5;
+    hole_from_top = 4;
+    outer = [27 + thick[1], 40 + thick[0], 8+M3_through_hole_d()+bottom_wall];
+
+    module face() {
+        difference() {
+            cube(outer);
+            translate([0, thick[0], 0]) cube([20, outer[1], outer[2]]);
+            translate([20+thick[1], thick[0], 0]) cube(outer);
+        }
+    }
+    
+    module mount() {
+        face();
+        translate([10, thick[0]+1.5, 0]) rotate([0, 0, -90]) vslot_insert(depth=1.5, length=outer[2]);
+        translate([20 - .5, thick[0] + 10, 0])vslot_insert(depth = .5, length=outer[2]);
+        translate([20 - .5, thick[0] + 30, 0])vslot_insert(depth = .5, length=outer[2]);
+    }
+    
+    module holes() {
+        slot_hole_h = outer[2]/2;
+        translate([20+2+thick[1], thick[0]+10, slot_hole_h]) rotate([-90, 0, 90]) M3_recessed_through_hole();
+        translate([20+2+thick[1], thick[0]+30, slot_hole_h]) rotate([-90, 0, 90]) M3_recessed_through_hole();
+        for (dir = [-1, +1]) {
+            translate([10 + switch_w/2 + dir*hole_spacing/2, -.01, hole_from_top]) rotate([-90, 0, 0]) M3_heat_set_hole(h=thick[0]+0.4);
+        }
+    }
+
+    difference() {
+        mount();
+        holes();
+    }
+}
+
 // Effectors
 // ----------
 //blank_effector();
@@ -438,6 +477,8 @@ module carriage_belt_tightener_adjustable() {
 carriage(35);
 //rotate([0, -90, 0]) carriage_belt_tightener_fixed();
 //rotate([90, 0, 0]) carriage_belt_tightener_adjustable();
+
+endstop_mount();
 
 //carriage_adaptor();
 //carriage_adaptor(35);
