@@ -277,7 +277,7 @@ module carriage_adaptor(arm_spacing = 40, label) {
     wall=5;
     T=10;
     ext=15;
-    box=[45+wall*2, 10+wall*2, T];
+    box=[45.05+wall*2, 10+wall*2, T];
     label = (label == undef ? str(arm_spacing) : label);
     size = len(label) == 1 ? 10 : len(label) == 2 ? 7 : 4;
     union() {
