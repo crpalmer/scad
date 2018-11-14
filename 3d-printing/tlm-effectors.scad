@@ -459,6 +459,39 @@ module endstop_mount() {
     }
 }
 
+module idler_mount() {
+    extra_h = 4;
+    mink=2;
+    thick = 4;
+    wide=20;
+    
+    module rough_shape() {
+        polygon([
+            [0, 0], [20, 0], [30, extra_h], [50, extra_h], [60, 0], [80, 0],
+            [80, thick], [60, thick], [50, extra_h+thick], [30, extra_h+thick], [20, thick], [0, thick]
+        ]);
+    }
+    
+    module shape() {
+        minkowski() {
+            offset(delta=-mink/2) rough_shape();
+            circle(d=mink);
+        }
+    }
+
+    module shape3d() {
+        translate([-40, wide/2, 0])
+            rotate([90, 0, 0])
+            linear_extrude(height = wide)
+            shape();
+    }
+    
+    difference() {
+        shape3d();
+        cylinder(d = M5_tight_through_hole_d(), h=100);
+        for (x = [-30, 30]) translate([-x, 0, 0]) cylinder(d = M3_through_hole_d(), h=100);
+    }
+}
 // Effectors
 // ----------
 //blank_effector();
