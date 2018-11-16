@@ -291,181 +291,67 @@ module carriage_adaptor(arm_spacing = 40, label) {
     }
 }
 
-module carriage_wide(arm_spacing = 35) {
-    wheel_d = 15.23;
-    wheel_x = 105 - wheel_d;
-    gap_between_wheels = 10;
-    belt_gap = 10;
-    wall = 4;
-    hole_d = M5_tight_through_hole_d();
-    eccentric_hole_d = 7.15;
-    
-    w = wheel_x + wheel_d + wall * 2;
-    h_for_wheels = wheel_d*2 + wall*2 + gap_between_wheels;
-    h_for_belt_tightener = 30 + wall + M3_through_hole_d() + wall*2;
-    h = max(h_for_wheels, h_for_belt_tightener);
-    
-    full = [ w, h, 10];
-
-    module plate() {        
-        difference() {
-            translate([-full[0]/2, -full[1]/2, 0]) union() {
-                rounded_cube(full, r = 5);
-                translate([full[0]*.25, full[1]*.75 - 5, full[2]]) linear_extrude(height = 1) text(str(arm_spacing), font="Courier New", size=10);
-            }
-            for (y = [ 1, -1]) {
-                y = y * (full[1]/2 - wall*2 - hole_d / 2);
-                translate([wheel_x/2, y, 0]) cylinder(d = hole_d, h=100);
-            }
-            translate([-wheel_x/2-0.5, 0, 0]) cylinder(d = eccentric_hole_d, h=100);
-        }
-    }
-    
-    module belt_tightener_fixed() {
-        translate([5, full[1]/2 - wall - M3_through_hole_d()/2, 0]) union() {
-            cylinder(d = M3_through_hole_d(), h=full[2]);
-            translate([0, 0, full[2] - 3]) M3_nut_insert_cutout(h=4);
-        }
-    }
-
-    module belt_tightener_adjustable() {
-        slot_w = wall*2;
-        slot_h = 8;
-        slot_len = 14+wall;
-        angle = 30;
-        dovetail_w = dovetail_width(w=slot_w, h=slot_h, angle=angle);
-        
-        translate([0, slot_len - full[1]/2 + wall, 0]) rotate([90, 0, 0]) dovetail(w=slot_w+0.1, h=slot_h+0.3, len=slot_len, angle=angle);
-        translate([-dovetail_w/2+0.05, -full[1]/2 + wall + slot_len, 0]) cube([dovetail_w+.2, wall*2 + 1, slot_h + 0.3]);
-        translate([0, -full[1]/2 + wall + slot_len, slot_h/2]) rotate([90, 0, 0]) cylinder(d = M3_through_hole_d(), h=100);
-    }
-
-    difference() {
-        union() {
-            plate();
-            translate([0, 0, full[2]]) ball_cup_arm_mounts(arm_spacing);
-        }
-        belt_tightener_fixed();
-        translate([belt_gap/2, 0, 0]) belt_tightener_adjustable();
-    }
-}
-
-module carriage_belt_clip(spacer = 5, mink = 2, center=false) {
-    module raw_clip() {
-        belt_w = 6;
-        belt_w_slop = 0.5;
-        wall = 4;
-        belt_depth = 1.5;
-        belt_depth_slop = 0.5;
-        
-        inner_after_mink = [ wall, belt_depth + belt_depth_slop, belt_w + belt_w_slop ];
-        outer_after_mink = [ 0, wall * 2, spacer + wall] + inner_after_mink;
-        outer = outer_after_mink - [mink, mink, mink];
-        inner = inner_after_mink + [mink, mink, mink];
-        
-        echo(inner_after_mink);
-        echo(outer_after_mink);
-        
-        translate([center ? -outer[0]/2 : mink/2, 0, -outer_after_mink[2]+mink/2])
-        difference() {
-            cube(outer);
-            translate([(outer[0] - inner[0]) / 2, (outer[1] - inner[1]) / 2,  wall - mink]) cube(inner);
-        }
-    }
-    
-    intersection() {
-        minkowski() {
-            raw_clip();
-            cylinder(d=mink, h=mink, center=true);
-        }
-        translate([-50, 0, -50]) cube([100, 50, 50]);
-    }
-
-}
-
-module carriage_belt_tightener_fixed() {
-    wall = 4;
-    base = [20, M3_through_hole_d() + wall*2, wall];
-    mink = 2;
-    
-    module top_mount() {
-        union() {
-            cube(base);
-            translate([0, base[1], 0]) cube([base[0], wall, wall*3]);
-        }
-    }
-
-    difference() {
-        union() {
-            top_mount();
-            carriage_belt_clip(mink=mink, spacer=10-wall);
-        }
-        translate([wall+base[0]/2, base[1]/2, 0]) cylinder(d = M3_through_hole_d(), h = 100);
-    }
-}
-
-module carriage_belt_tightener_adjustable() {
-    wall=4;
-    mink=2;
-    
-    module top_mount() {
-        slot_h = 8;
-        translate([0, wall*2, slot_h/2]) rotate([90, 0, 0]) difference() {
-            translate([0, -slot_h/2, 0]) dovetail(w=wall*2, h=slot_h, len=wall*2, angle=30);
-            cylinder(d = M3_through_hole_d(), h = 100);
-            M3_nut_insert_cutout();
-        }
-    }
-
-    top_mount();
-    carriage_belt_clip(mink=mink, spacer=9, center=true);
-}
-
-carriage_h = 5; // 5 would need 25mm bolts, 10 would need 30mm bolts
+carriage_h = 10; // 30mm bolts
+belt_clip_hole_spacing = 12;
+belt_clip_hole_z = 5;
 
 module carriage(arm_spacing = 35) {
     wheel_d = 15.23;
-    wheel_x = 20 + wheel_d - 3.5;
-    equal_gap_between_wheels = triangle_opp_length_angle_adj(angle = 30, adj=wheel_x)*2;
-    gap_between_wheels = max(equal_gap_between_wheels, 40);
+    wheel_x = 80 + wheel_d - 4.75;
+    gap_between_wheels = 40;
     wall = 2;
     hole_d = M5_tight_through_hole_d();
     eccentric_hole_d = 7.5;
+    belt_gap = 10;
     
     w = wheel_x + wheel_d;
     h = gap_between_wheels + wheel_d;
     
     full = [ w, h, carriage_h];
 
-    module plate() {        
+    module plate() {
+        bc_mount=[4, belt_clip_hole_spacing + M3_through_hole_d() + wall*2, belt_clip_hole_z * 2];
+        
+        module belt_clip_mount() {
+            translate([-belt_gap/2, -bc_mount[1]/2, full[2]]) union() {
+                rounded_cube(bc_mount);
+                cube([bc_mount[0]/2, bc_mount[1], bc_mount[2]]);
+            }
+        }
+        
+        module belt_clip_cutout() {
+            for (y = belt_clip_hole_spacing * [-.5, .5]) {
+                translate([0, y, full[2]+belt_clip_hole_z])
+                    rotate([0, -90, 0])
+                   cylinder(d = M3_through_hole_d(), h=6);
+            }
+            translate([-belt_gap/2 - wall - 1, -bc_mount[1]/2-0.5, 0]) cube([wall+1, bc_mount[1]+1, full[2]]);
+        }
+        
         difference() {
-            translate([-full[0]/2, -full[1]/2, 0]) rounded_cube(full, r = 5);
+            union() {
+                translate([-full[0]/2, -full[1]/2, 0]) rounded_cube(full, r = 5);
+                rotate([0, 0, 180]) belt_clip_mount();
+            }
+            rotate([0, 0, 180]) belt_clip_cutout();
             for (y = [ 1, -1]) {
                 y = y * gap_between_wheels/2;
                 translate([wheel_x/2, y, 0]) cylinder(d = hole_d, h=100);
             }
             translate([-wheel_x/2, 0, 0]) cylinder(d = eccentric_hole_d, h=100);
-            for (y = 6 * [-1, 1]) {
-                translate([full[0]/2, y, full[2]/2])
-                    rotate([0, -90, 0])
-                    // M3_heat_set_hole(h=6);
-                    cylinder(d = M3_tapping_hole_d(), h=6); // temp until part is complete
-            }
         }
     }
     
     union() {
         plate();
-        translate([0, (gap_between_wheels/2 - hole_d/2 - eccentric_hole_d/2)/2 + eccentric_hole_d/2, full[2]])
-        ball_cup_arm_mounts(arm_spacing);
+        translate([0, full[1]/2-wall-8, full[2]])
+            ball_cup_arm_mounts(arm_spacing);
     }
 }
 
 module carriage_belt_clip() {
     top_of_rail_to_bottom_of_carriage = 2;
-    space_above_mount = 1*0;
-    mount_h = carriage_h - space_above_mount + top_of_rail_to_bottom_of_carriage;
-    wheel_gap = 2;
+    mount_h = carriage_h + top_of_rail_to_bottom_of_carriage + belt_clip_hole_z*2;
     mount_len = 20;
 
     belt_width = 6;
@@ -479,10 +365,10 @@ module carriage_belt_clip() {
         difference() {
             translate([0, -mount_len/2, 0]) union() {
                 rounded_cube([wall, mount_len, mount_h]);
-                translate([-wheel_gap, 0, 0]) cube([wheel_gap+wall/2, mount_len, mount_h]);
+                cube([wall/2, mount_len, mount_h]);
             }
             for (y = 6*[-1, 1]) {
-                translate([-50, y, top_of_rail_to_bottom_of_carriage + carriage_h / 2])
+                translate([-50, y, top_of_rail_to_bottom_of_carriage + carriage_h + belt_clip_hole_z])
                     rotate([0, 90, 0])
                     cylinder(d = M3_tight_through_hole_d(), h = 100);
             }
@@ -547,7 +433,7 @@ module endstop_mount() {
 module idler_mount() {
     extra_h = 4;
     mink=2;
-    thick = 4;
+    thick = 6;
     wide=20;
     
     module rough_shape() {
