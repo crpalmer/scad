@@ -463,6 +463,47 @@ module idler_mount() {
         for (x = [-30, 30]) translate([-x, 0, 0]) cylinder(d = M3_through_hole_d(), h=100);
     }
 }
+
+module linear_slide_mount() {
+    full=[35, 15, 3];
+
+    module vslot_mount() {
+        translate([0, 0, full[2]/2]) rounded_cube(full, center=true);
+        for (x = 10 * [-1, 1]) {
+            translate([x, full[1]/2, -0.5]) rotate([0, -90, 90]) vslot_insert(depth = .5, length=full[1]);
+        }
+    }
+    
+    module guide_channel() {
+        wall = 2;
+        tolerance = .1;
+        Wr = 7 - tolerance;
+        H1 = 1.5 - tolerance;
+        
+        
+        for (x = [-Wr/2-wall, Wr/2]) {
+            translate([x, -full[1]/2, full[2]]) rounded_cube([wall, full[1], H1]);
+        }
+    }
+
+    module body() {
+        vslot_mount();
+        guide_channel();
+    }
+    
+    module holes() {
+        cylinder(d = M2_heat_set_hole_d(), h=full[2]);
+        for (x = 10 * [-1, 1]) {
+            translate([x, 0, -10]) cylinder(d = M3_tight_through_hole_d(), h=full[2] + 10);
+        }
+    }
+
+    difference() {
+        body();
+        holes();
+    }
+}
+        
 // Effectors
 // ----------
 //blank_effector();
