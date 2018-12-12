@@ -2,10 +2,10 @@ include <utils_threads.scad>
 
 function flatten(V) = [ for (a = V) for (b = a) b ];
 
-module rounded_square(size, r=1) {
+module rounded_square(size, r=1, center=false) {
     x=size[0];
     y=size[1];
-    union() {
+    translate([center ? -size[0]/2 : 0, center ? -size[1]/2 : 0]) union() {
 	translate([r,r]) circle(r=r, $fn=50);
 	translate([r,y-r]) circle(r=r, $fn=50);
 	translate([x-r,r]) circle(r=r, $fn=50);
@@ -15,8 +15,8 @@ module rounded_square(size, r=1) {
     }
 }
 
-module rounded_cube(size, r=1) {
-    linear_extrude(height=size[2]) rounded_square(size=size, r=r);
+module rounded_cube(size, r=1, center=false) {
+    translate([0, 0, center ? -size[2]/2 : 0]) linear_extrude(height=size[2]) rounded_square(size=size, r=r, center=center);
 }
 
 module tapered_cylinder(d0, d1, h, steps=20) {
