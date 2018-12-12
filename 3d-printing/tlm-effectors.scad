@@ -292,8 +292,7 @@ module carriage_adaptor(arm_spacing = 40, label) {
 }
 
 carriage_h = 10; // 30mm bolts
-belt_clip_hole_spacing = 12;
-belt_clip_hole_z = 5;
+carriage_belt_clip_spacing = 12.5;
 
 module carriage(arm_spacing = 35) {
     wheel_d = 15.23;
@@ -310,30 +309,15 @@ module carriage(arm_spacing = 35) {
     full = [ w, h, carriage_h];
 
     module plate() {
-        bc_mount=[4, belt_clip_hole_spacing + M3_through_hole_d() + wall*2, belt_clip_hole_z * 2];
-        
-        module belt_clip_mount() {
-            translate([-belt_gap/2, -bc_mount[1]/2, full[2]]) union() {
-                rounded_cube(bc_mount);
-                cube([bc_mount[0]/2, bc_mount[1], bc_mount[2]]);
-            }
-        }
-        
         module belt_clip_cutout() {
-            for (y = belt_clip_hole_spacing * [-.5, .5]) {
-                translate([0, y, full[2]+belt_clip_hole_z])
-                    rotate([0, -90, 0])
-                   cylinder(d = M3_through_hole_d(), h=6);
+            for (x = carriage_belt_clip_spacing * [-.5, .5]) {
+                translate([x, 0, 0]) cylinder(d = M3_through_hole_d(), h=full[2]);
             }
-            translate([-belt_gap/2 - wall - 1, -bc_mount[1]/2-0.5, 0]) cube([wall+1, bc_mount[1]+1, full[2]]);
         }
         
         difference() {
-            union() {
-                translate([-full[0]/2, -full[1]/2, 0]) rounded_cube(full, r = 5);
-                rotate([0, 0, 180]) belt_clip_mount();
-            }
-            rotate([0, 0, 180]) belt_clip_cutout();
+            translate([-full[0]/2, -full[1]/2, 0]) rounded_cube(full, r = 5);
+            belt_clip_cutout();
             for (y = [ 1, -1]) {
                 y = y * gap_between_wheels/2;
                 translate([wheel_x/2, y, 0]) cylinder(d = hole_d, h=100);
@@ -351,9 +335,6 @@ module carriage(arm_spacing = 35) {
 
 module carriage_belt_clip() {
     top_of_rail_to_bottom_of_carriage = 2;
-    mount_h = carriage_h + top_of_rail_to_bottom_of_carriage + belt_clip_hole_z*2;
-    mount_len = 20;
-
     belt_width = 6;
     belt_tolerance = 0.5;
     wall = 2;
@@ -361,34 +342,44 @@ module carriage_belt_clip() {
     clip_h = belt_width + belt_tolerance + wall;
     mink = 1;
     
-    module mount() {        
+    screw_mount = [25, 10, 5];
+    clip = [wall-mink, clip_d + wall*2, clip_h];
+
+    module screw_mount() {
         difference() {
-            translate([0, -mount_len/2, 0]) union() {
-                rounded_cube([wall, mount_len, mount_h]);
-                cube([wall/2, mount_len, mount_h]);
-            }
-            for (y = 6*[-1, 1]) {
-                translate([-50, y, top_of_rail_to_bottom_of_carriage + carriage_h + belt_clip_hole_z])
-                    rotate([0, 90, 0])
-                    cylinder(d = M3_tight_through_hole_d(), h = 100);
+            translate([-screw_mount[0]/2, -screw_mount[1]/2, 0]) rounded_cube(screw_mount);
+            for (x = carriage_belt_clip_spacing/2 * [-1, 1]) {
+                translate([x, 0, screw_mount[2]+.01]) rotate([180, 0, 0]) M3_heat_set_hole(h=screw_mount[2]+1);
             }
         }
+    }
+
+    screw_mount();
+    translate([-clip[0]/2 - mink/2, -screw_mount[1]/2, top_of_rail_to_bottom_of_carriage]) cube([clip[0] + mink, screw_mount[1], clip[2]+.1]);
+    
+    for (angle = [0, 180]) {
+        rotate([0, 0, angle]) translate([0, screw_mount[1]/2, 0]) clip();
     }
     
     module clip() {
-        full = [wall-mink, clip_d*2 + wall*4, clip_h];
-        difference() {
-            translate([0, -full[1]/2, 0]) cube(full);
-            for (y = [-full[1]/2 + wall, wall]) {
-                translate([0, y, wall]) cube([full[0], clip_d, full[2]]);
+        base = [clip[0]+ wall*2, clip[1], top_of_rail_to_bottom_of_carriage];
+        
+        module clip_raw() {
+            difference() {
+                cube(clip);
+                translate([0, wall, 0]) cube([clip[0], clip_d, clip[2]-wall]);
             }
         }
-    }
-    
-    translate([0, 0, clip_h]) mount();
-    minkowski() {
-        translate([mink/2, 0, 0]) clip();
-        cylinder(d=mink, h=0.1);
+
+        union() {
+            minkowski() {
+                union() {
+                    translate([-clip[0]/2, 0, top_of_rail_to_bottom_of_carriage]) clip_raw();
+                    translate([-base[0]/2, 0, 0]) cube(base);
+                }
+                cylinder(d=mink, h=0.1);
+            }
+        }
     }
 }
 
@@ -521,15 +512,18 @@ module linear_slide_mount() {
 // Left hand plate
 //mirror([1, 0, 0]) chimera_nimble_plate();
 
-carriage(35);
-//rotate([0, -90, 0]) carriage_belt_tightener_fixed();
-//rotate([90, 0, 0]) carriage_belt_tightener_adjustable();
+carriage();
+//carriage_belt_clip();
+//idler_mount();
+//endstop_mount();
 
-endstop_mount();
+//rotate([90, 0, 0])
+//    linear_slide_mount();
 
 //carriage_adaptor(34.6, "X");
 //carriage_adaptor(34.6, "Y");
 //carriage_adaptor(34.8, "Z");
+//carriage_adaptor(35);
 
 //clip_effector_blank();
 
