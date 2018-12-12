@@ -1,6 +1,5 @@
 include <utils.scad>
-
-$fn=128;
+include <high-detail.scad>
 
 top_h = 4;
 top_d = 39;
@@ -98,8 +97,83 @@ module screw_mount(mm=M3_through_hole_d()) {
     }
 }
 
+module bearing_plate() {
+    top_wall = 2;
+    bearing_h = 7;
+    bearing_hole_d = 16;
+    bearing_d = 22;
+    
+    h = top_wall + bearing_h;
+    w = bearing_d + 2*4;
+    
+    module plate() {
+        translate([spacer_hole[0] - w/2, -abs(spacer_hole[1])]) cube([w, abs(spacer_hole[1])*2, h]);
+        translate(spacer_hole) cylinder(d = w, h = h);
+        rotate([0, 0, 180]) translate(spacer_hole) cylinder(d = w, h = h);
+    }
+    
+    module spacer_holes() {
+        translate(spacer_hole) cylinder(d = M3_through_hole_d(), h = h);
+        rotate([0, 0, 180]) translate(spacer_hole) cylinder(d = M3_through_hole_d(), h = h);
+    }
+
+    module bearing_cutout() {
+        translate([0, 0, top_wall]) cylinder(d = bearing_d, h = h);
+        cylinder(d = bearing_hole_d, h = h);
+    }
+    
+    difference() {
+        plate();
+        spacer_holes();
+        bearing_cutout();
+    }
+}
+
+module bearing_mounting_bracket_tlm() {
+    wall = 4;
+    hole_to_spacer = 30;
+    bearing_plate_h = 9;
+    bearing_h = abs(spacer_hole[1]) + wall*2;
+    spacer_d = 13;
+    spacer_h = 5;
+    mount_spacing = 20;
+    
+    base = [hole_to_spacer + bearing_plate_h + spacer_h + wall*2 + M3_through_hole_d() / 2, mount_spacing + wall * 2, wall];
+    bearing_wall = [ wall, base[1], wall + bearing_h + M5_through_hole_d()/2 + wall];
+    
+    module base() {
+        difference() {
+            translate([0, -base[1]/2, 0]) cube(base);
+            translate([base[0] - wall - M3_through_hole_d()/2, 0, 0]) for (y = [1, -1] * mount_spacing/2) {
+                translate([0, y, 0]) cylinder(d = M3_through_hole_d(), h = base[2]);
+            }
+        }
+    }
+    
+    module bearing_wall() {
+        difference() {
+            union() {
+                translate([0, -bearing_wall[1]/2, 0]) cube(bearing_wall);
+                translate([0, 0, bearing_h + wall]) rotate([0, 90, 0]) cylinder(d = spacer_d, h = spacer_h + wall);
+            }
+            translate([0, 0, bearing_h + wall]) rotate([0, 90, 0]) cylinder(d = M5_through_hole_d(), h = spacer_h + wall);
+        }
+    }
+    
+    module brace() {
+        translate([0, -bearing_wall[1]/2, 0]) linear_extrude(height = wall*3, scale=[1/(wall*3), 1]) square([wall*3, bearing_wall[1]]);
+    }
+    
+    base();
+    bearing_wall();
+    brace();
+}
+
 //rotate([0, 180, 0]) top();
-rotate([0, 180, 0]) extrusion_mount();
+//rotate([0, 180, 0]) extrusion_mount();
 //rotate([0, 180, 0]) taz_mount();
 //rotate([0, 180, 0]) screw_mount();
 //rotate([0, 180, 0]) screw_mount(6);
+
+//translate([20, 0, 0]) bearing_plate();
+rotate([0, -90, 0]) bearing_mounting_bracket_tlm();
