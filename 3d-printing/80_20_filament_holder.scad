@@ -80,6 +80,19 @@ module taz() {
     }
 }
 
+module wall_mount() {
+    mount = [8, 100, 30];
+    difference() {
+        union() {
+            arm();
+            translate([-4, -mount[1]/2, 0]) rounded_cube(mount);
+        }
+        translate([mount[0], -mount[1]/2 + 10, mount[2]/2]) rotate([0, -90, 0]) cylinder(d = 8, h = 100);
+        translate([mount[0], mount[1]/2 - 10, mount[2]/2]) rotate([0, -90, 0]) cylinder(d = 8, h = 100);
+    }
+}
+
 //right_hang();
 //left_hang();
-taz();
+//taz();
+wall_mount();
