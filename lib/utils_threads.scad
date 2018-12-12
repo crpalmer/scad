@@ -195,6 +195,17 @@ module quarter_twenty_tube(length=8, D=8)
     e_tube(D=D, tpi=quarter_twenty_tpi(), d=quarter_twenty_d(), length=length);
 }
 
+function M2_tapping_hole_d() = 1.625;
+function M2_tight_through_hole_d() = 2.1;
+function M2_through_hold_d() = 2.2;
+function M2_heat_set_hole_d() = 3.2;
+function M2_heat_set_h() = 3;
+
+module M2_heat_set_hole(h = 0)
+{
+    threaded_heat_set_hole(d = M2_heat_set_hole_d(), alt_d = M2_tapping_hole_d(), h = M2_heat_set_h(), hole_h = h, hole_d = M2_through_hole_d());
+}
+
 function M3_tapping_hole_d() = 2.5;
 function M3_tight_through_hole_d() = 3.15;
 function M3_through_hole_d() = 3.5;
