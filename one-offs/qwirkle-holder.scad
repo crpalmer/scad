@@ -1,14 +1,19 @@
+
+include <utils.scad>
+
 //Scrabble letter holder
 mm_inch = 25.4;
+slot_angle = 30; //degrees
+slot_height = .155 * mm_inch;
 
 //Scrabble letter piece size:
-letter_height = .803 * mm_inch;
-letter_width = .720 * mm_inch;
-letter_thick = .179 * mm_inch;
+letter_height = 19;
+letter_width = 19;
+letter_thick = 6;
 
 //Holder Dimensions:
-holder_length = 6 * mm_inch;
-holder_depth = 0.825 * mm_inch;
+holder_length = 6 * (letter_width+.5);
+holder_depth = 24;
 
 //Little lip to keep your pieces from falling off
 lip_dia = 0.125 * mm_inch;
@@ -18,8 +23,6 @@ lip_rad = lip_dia/2;
 slot_space = 0.025 * mm_inch;
 slot_thick = slot_space + letter_thick;
 
-slot_angle = 30; //degrees
-slot_height = .155 * mm_inch;
 lip_y = slot_height + sin(slot_angle) * (slot_thick + lip_dia);
 lip_x = tan(slot_angle) * lip_y;
 slot_offset = lip_x + cos(slot_angle) * (slot_thick + lip_dia);
@@ -136,10 +139,10 @@ mirror([1,0,0])
 translate([-holder_length/2, 0,0])
 end_bevels();
 
-//Add 7 letters to give an idea
+//Add 6 letters to give an idea
 /*
 //spacing between letters (1/2 space one ach side, equal space between)
-spacing = (holder_length - (letter_width * 7))/7;
+spacing = (holder_length - (letter_width * 6))/6;
 
 echo(holder_length,letter_width,spacing);
 
@@ -148,7 +151,7 @@ color("red"){
     mirror([0,1,0])
     translate([0,-slot_offset,slot_height])
     rotate([slot_angle, 0, 0])    
-    for(i=[0:6]){
+    for(i=[0:5]){
 	translate([spacing * (i + 0.5) + letter_width * i, 0, 0])
 	cube([letter_width, letter_thick, letter_height]);
     }
