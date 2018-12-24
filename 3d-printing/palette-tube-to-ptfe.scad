@@ -3,10 +3,8 @@ include <high-detail.scad>
 
 wall = 2;
 gripper_l = 15;
-tube_extension_l = 5;
-tube_extension_block_l = 1;
 
-module tube_gripper(tube_d) {
+module tube_gripper(tube_d, ext_l) {
     module slit() {
         translate([-wall/2, -50, 0]) cube([wall, 100, gripper_l]);
     }
@@ -21,33 +19,33 @@ module tube_gripper(tube_d) {
     }
     
     difference() {
-        cylinder(d=tube_d + wall*2, h=gripper_l);
-        cylinder(d=tube_d, h=gripper_l);
-        slit();
-        zip_tie_slot();
+        cylinder(d=tube_d + wall*2, h=gripper_l + ext_l);
+        cylinder(d=tube_d, h=gripper_l + ext_l);
+        translate([0, 0, ext_l]) slit();
+        translate([0, 0, ext_l]) zip_tie_slot();
     }
 }
 
-module tube_extension(tube_d, real_tube_d) {
+module filament_guide(outer_d, tube_d, filament_d, h) {
     difference() {
-        cylinder(d = tube_d + wall*2, h = tube_extension_l);
-        cylinder(d = real_tube_d, h = tube_extension_l);
+        cylinder(d = outer_d, h = h);
+        cylinder(d2 = filament_d, d1 = tube_d, h = h);
     }
 }
 
-module tube_extension_block(tube_d, real_tube_d) {
-    difference() {
-        cylinder(d = tube_d+wall*2, h= tube_extension_block_l);
-        cylinder(d1 = 3.5, d2 = real_tube_d, h = tube_extension_block_l);
-    }
+module adaptor() {
+    palette_tube_d = 5.75;
+    filament_d = 2.25;
+    guide_h = 5;
+
+    rotate([180, 0, 0]) tube_gripper(palette_tube_d, 2);
+    translate([0, 0, 0]) filament_guide(palette_tube_d + wall*2, palette_tube_d, filament_d, guide_h);
+    translate([0, 0, guide_h]) tube_gripper(4.25, 2.25);
 }
 
-module tube(real_tube_d) {
-    tube_d = real_tube_d + 0.5;
-    tube_extension_block(tube_d, real_tube_d);
-    translate([0, 0, tube_extension_block_l]) tube_extension(tube_d, real_tube_d);
-    translate([0, 0, tube_extension_block_l + tube_extension_l]) tube_gripper(tube_d);
+module end_gripper() {
+    tube_gripper(4.25, 2.25);
 }
 
-rotate([180, 0, 0]) tube(6);
-tube(4);
+ adaptor();
+//end_gripper();
