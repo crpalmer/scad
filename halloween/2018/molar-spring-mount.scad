@@ -1,7 +1,5 @@
-$fa = 1;
-$fs = 0.6;
-
 include <utils.scad>
+include <high-detail.scad>
 
 w=32;
 h=56;
@@ -11,9 +9,9 @@ mount_bolt_through=8.45;
 mount_bolt_h = 2;
 screw_slot_h1 = 10;
 screw_slot_h2 = screw_slot_h1 + M4_through_hole_d();
-magnet_d = 10;
+magnet_d = 10.5;
 magnet_thick = 3;
-magnet_x = w/2 - (magnet_thick + wall*2 + wall*2 - 3);
+magnet_x = w/2 - (magnet_thick + wall*2 + wall*2 - 2);
 spring_len = inch_to_mm(1 + 3/8);
 spring_pole_d = 7.5;
 spring_pole_h = 8;
@@ -157,6 +155,6 @@ module full_assembly(with_parts = true) {
     }
 }
 
-full_assembly(true);
+//full_assembly(true);
 //bottom();
-//top();
+top();
