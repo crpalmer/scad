@@ -19,10 +19,10 @@ module board_mount() {
 
 module msm_spacer() {
     difference() {
-        cylinder(d=6, h=9);
+        cylinder(d=20, h=9);
         cylinder(d = M3_tapping_hole_d(), h=10);
     }
 }
 
-board_mount();
-//msm_spacer();
+//board_mount();
+msm_spacer();
