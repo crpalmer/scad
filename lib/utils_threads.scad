@@ -146,6 +146,10 @@ module No6_hex_bolt(length = 12, D=9, h=3)
     }
 }
 
+function No6_tapping_hole_d() = inch_to_mm(0.1);
+function No6_through_hole_d() = inch_to_mm(0.1495);
+function No6_tight_through_hole_d() = inch_to_mm(0.1440);
+
 module No6_nut(D=8.8)
 {
     e_nut(D=D, tpi=No6_tpi(), d=No6_d());
