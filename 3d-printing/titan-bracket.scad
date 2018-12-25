@@ -4,7 +4,7 @@ mountplate_thickness = 2 ; // [0:10]
 motormountplate_thickness = 2 ; // [2:7]
 
 /* [Hidden] */
-layer_height=.25; extrusion_width=.5;
+layer_height=.2; extrusion_width=.4;
 epsilon=.01;
 
 module smoothen(r) {
@@ -20,8 +20,8 @@ module the_bracket(
  motor_protrusion_hole_d = 23.5,
  motormountholes_span = 31,
  thickness = 2,
- motormountplate_thickness = 2.5,
- mountplate_thickness = 2,
+ motormountplate_thickness = motormountplate_thickness,
+ mountplate_thickness = mountplate_thickness,
  motormounthole_d = 3,
  motorconnector_width = 16.5,
  motorconnector_hole_r = 2.5,
@@ -84,5 +84,19 @@ module the_bracket(
  }//difference
 }//the_bracket module
 
-// mountplate_thickness = 5.1
-the_bracket(mountplate_thickness=mountplate_thickness,motormountplate_thickness=motormountplate_thickness);
+
+module standard_bracket() {
+    the_bracket();
+}
+
+module mp_mini_bracket() {
+    difference() {
+        the_bracket(
+            mountplate_size=[65,40],
+            mountholes_span=[56.5,30]
+        );
+        translate([23.175, 30, 0]) cube([50, 50, 50]);
+    }
+}
+
+mp_mini_bracket();
