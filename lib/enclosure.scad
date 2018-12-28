@@ -271,3 +271,15 @@ echo( [ module_size[0], hole[1], deltas[hole[0]], hole_offset[0] ]);
     }
 }
 
+module enclosure_duet_mount(obj, at = [0, 0], h = 4)
+{
+    thick = enclosure_thick(obj);
+    holes = [ [4.119, 4], [96.119, 4], [4.4, 119], [96.4, 119] ];
+    translate([at[0] + thick, at[1] + thick, thick])
+        for (hole = holes) {
+        translate([hole[0], hole[1], 0]) difference() {
+            cylinder(d = M3_through_hole_d() + thick*2, h = h);
+            cylinder(d = M3_tapping_hole_d(), h = h);
+        }
+    }
+}
