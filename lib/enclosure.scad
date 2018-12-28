@@ -1,7 +1,7 @@
 include <utils.scad>
 
-function enclosure_define(size, thick=2.5, mount=9, lip=true, screw_d=2.5, screw_len=8, has_lid=true) =
-    [ size[0], size[1], size[2], thick, mount, lip, screw_d, screw_len, has_lid ];
+function enclosure_define(size, thick=2.5, mount=9, lip=true, screw_d=2.5, screw_len=8, has_lid=true, n_posts=2, corner_posts=false) =
+    [ size[0], size[1], size[2], thick, mount, lip, screw_d, screw_len, has_lid, n_posts, corner_posts ];
 
 function enclosure_x(obj) = obj[0];
 function enclosure_y(obj) = obj[1];
@@ -12,13 +12,38 @@ function enclosure_lip(obj) = obj[5];
 function enclosure_screw_d(obj) = obj[6];
 function enclosure_screw_len(obj) = obj[7];
 function enclosure_has_lid(obj) = obj[8];
+function enclosure_n_posts(obj) = obj[9];
+function enclosure_corner_posts(obj) = obj[10];
 
 function enclosure_wall(str) = str == "front" ? 0 : str == "left" ? 1 : str == "right" ? 2 : str == "back"?  3 : -1;
 
+module enclosure_mount_points(obj)
+{
+    x = enclosure_x(obj);
+    y = enclosure_y(obj);
+    thick = enclosure_thick(obj);
+    mount = enclosure_mount(obj);
+    screw_len = enclosure_screw_len(obj);
+    screw_d = enclosure_screw_d(obj);
+    n_posts = enclosure_n_posts(obj);
+    corner_posts = enclosure_corner_posts(obj);
+
+    if (corner_posts) {
+        delta = mount/2 + thick/2;
+        if (n_posts > 0) translate([delta, delta, 0]) children();
+        if (n_posts > 1) translate([x - delta, y - delta, 0]) children();
+        if (n_posts > 2) translate([delta, y - delta, 0]) children();
+        if (n_posts > 3) translate([x - delta, delta, 0]) children();
+    } else {
+        if (n_posts > 0) translate([mount/2, y/2, 0]) children();
+        if (n_posts > 1) translate([x - mount/2, y/2, 0]) children();
+        if (n_posts > 2) translate([x/2, mount/2, 0]) children();
+        if (n_posts > 3) translate([x/2, x - mount/2, 0]) children();
+    }
+}
+
 module enclosure_box(obj)
 {
-    $fn=100;
-
     x = enclosure_x(obj);
     y = enclosure_y(obj);
     z = enclosure_z(obj);
@@ -29,11 +54,11 @@ module enclosure_box(obj)
 
     module mount() {
         if (enclosure_has_lid(obj)) {
-	    difference() {
-		cylinder(d=mount, h=z);
-		translate([0, 0, z-screw_len]) cylinder(d=screw_d, h=screw_len);
-	    }
-	}
+            difference() {
+            cylinder(d=mount, h=z);
+            translate([0, 0, z-screw_len]) cylinder(d=screw_d, h=screw_len);
+            }
+        }
     }
 
     module box() {
@@ -42,18 +67,17 @@ module enclosure_box(obj)
                 rounded_cube([x, y, z], r=thick*2);
                 translate([thick, thick, thick]) rounded_cube([x-thick*2, y-thick*2, z-thick], r=thick*2);
             }
-            translate([mount/2, y/2, 0]) mount();
-            translate([x - mount/2, y/2, 0]) mount();
+            enclosure_mount_points(obj) mount();
         }
     }
 
     module lip() {
         if (enclosure_has_lid(obj)) {
-	    if (enclosure_lip(obj)) {
-		translate([thick/2, thick/2, z-thick])
-		rounded_cube(size=[x - thick,y - thick, thick], r=thick*2);
-	    }
-	}
+            if (enclosure_lip(obj)) {
+                translate([thick/2, thick/2, z-thick])
+                rounded_cube(size=[x - thick,y - thick, thick], r=thick*2);
+            }
+        }
     }
 
     difference() {
@@ -115,7 +139,6 @@ module enclosure_lid(obj) {
 
     module lip() {
         if (enclosure_lip(obj)) {
-            translate([0, 0, thick*1.5])
             difference() {
                 rounded_cube(r=thick*2, size=[x, y, thick/2]);
                 translate([thick/2+clearance, thick/2+clearance, 0]) rounded_cube(r=thick*2, size=[x-thick-clearance*2, y-thick-clearance*2, thick/2]);
@@ -125,11 +148,8 @@ module enclosure_lid(obj) {
 
     difference() {
         rounded_cube(r=thick*2, size=[x, y, thick*2]);
-        union() {
-            translate([mount/2,y/2,0]) hole();
-            translate([x-mount/2,y/2,0]) hole();
-            lip();
-        }
+        enclosure_mount_points(obj) hole();
+        lip();
     }
 }
 
