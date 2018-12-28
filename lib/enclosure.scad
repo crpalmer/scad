@@ -87,7 +87,18 @@ module enclosure_box(obj)
 }
 
 module enclosure_punch(obj, wall, at, D) {
+    thick = enclosure_thick(obj);
+    enclosure_punch_common(obj, wall, at) cylinder(h=thick+2, r=D/2);
+}
+
+module enclosure_punch_square(obj, wall, at, size) {
+    thick = enclosure_thick(obj);
+    enclosure_punch_common(obj, wall, at) translate([-size[0]/2, -size[1]/2, 0]) cube([size[0], size[1], thick*2]);
+}
+
+module enclosure_punch_common(obj, wall, at) {
     at_x = at[0];
+    
     at_y = at[1];
     e_x = enclosure_x(obj);
     e_y = enclosure_y(obj);
@@ -98,7 +109,7 @@ module enclosure_punch(obj, wall, at, D) {
                    [ e_x-(thick+1), at_x, at_y ],
                    [ e_x-at_x, e_y+1, at_y ] ];
     rotations = [ [90, 0, 0], [0, 90, 0], [0, 90, 0], [90, 0, 0] ];
-    translate(translates[wall_id]) rotate(rotations[wall_id]) cylinder(h=thick+2, r=D/2, $fn=100);
+    translate(translates[wall_id]) rotate(rotations[wall_id]) children();
 }
 
 module enclosure_mounting_tabs(obj, wall, hole_d=5) {
