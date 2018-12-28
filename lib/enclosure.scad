@@ -107,6 +107,7 @@ module enclosure_mounting_tabs(obj, wall, hole_d=5) {
     thick = enclosure_thick(obj);
     wall_id = enclosure_wall(wall);
     D = hole_d + thick * 2;
+    r = thick*2;
 
     module tab() {
         difference() {
@@ -115,10 +116,10 @@ module enclosure_mounting_tabs(obj, wall, hole_d=5) {
         }
     }
 
-    mounts = [ [ [0, -D, 0], [e_x - D, -D, 0] ],
-                [ [-D, 0, 0], [-D, e_y - D, 0] ],
-                [ [e_x, 0, 0], [e_x, e_y - D, 0] ],
-                [ [0, e_y, 0], [e_x - D, e_y, 0] ] ];
+    mounts = [ [ [r, -D, 0], [e_x - D - r, -D, 0] ],
+                [ [-D, r, 0], [-D, e_y - D - r, 0] ],
+                [ [e_x, r, 0], [e_x, e_y - D - r, 0] ],
+                [ [r, e_y, 0], [e_x - D - r, e_y, 0] ] ];
 
     translate(mounts[wall_id][0]) tab();
     translate(mounts[wall_id][1]) tab();
