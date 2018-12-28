@@ -78,8 +78,6 @@ module enclosure_punch(obj, wall, at, D) {
 }
 
 module enclosure_mounting_tabs(obj, wall, hole_d=5) {
-    $fn = 100;
-
     e_x = enclosure_x(obj);
     e_y = enclosure_y(obj);
     thick = enclosure_thick(obj);
@@ -103,8 +101,6 @@ module enclosure_mounting_tabs(obj, wall, hole_d=5) {
 }
 
 module enclosure_lid(obj) {
-    $fn = 100;
-
     x = enclosure_x(obj);
     y = enclosure_y(obj);
     thick = enclosure_thick(obj);
@@ -150,7 +146,7 @@ module enclosure_pi_mount(obj) {
     }
 
     module mount() {
-            cylinder(d=2.5, h=3, $fn=100);
+            cylinder(d=2.5, h=3);
     }
 
     module mounts() {
@@ -189,8 +185,6 @@ module self_tap_tube(obj) {
 }
 
 module enclosure_ssr_mount(obj) {
-    $fn = 100;
-
     screw_d = enclosure_screw_d(obj);
     screw_len = enclosure_screw_len(obj);
     thick = enclosure_thick(obj);
@@ -218,8 +212,6 @@ module enclosure_ssr_mount(obj) {
 }
 
 module enclosure_maestro_mount(obj) {
-    $fn = 100;
-
     thick = enclosure_thick(obj);
 
     translate([thick, thick, thick])
@@ -231,8 +223,6 @@ module enclosure_maestro_mount(obj) {
 }
 
 module enclosure_relay_module_mount(obj) {
-    $fn = 100;
-
     screw_d = enclosure_screw_d(obj);
     screw_len = enclosure_screw_len(obj);
     thick = enclosure_thick(obj);
