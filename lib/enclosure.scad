@@ -1,7 +1,12 @@
 include <utils.scad>
 
-function enclosure_define(size, thick=2.5, mount=9, lip=true, screw_d=2.5, screw_len=8, has_lid=true, n_posts=2, corner_posts=false) =
-    [ size[0], size[1], size[2], thick, mount, lip, screw_d, screw_len, has_lid, n_posts, corner_posts ];
+ENCLOSURE_PATTERN_SOLID = 0;
+ENCLOSURE_PATTERN_HONEYCOMB = 1;
+ENCLOSURE_PATTERN_DIAMOND = 2;
+ENCLOSURE_PATTERN_CIRCLE = 3;
+
+function enclosure_define(size, thick=2.5, mount=9, lip=true, screw_d=2.5, screw_len=8, has_lid=true, n_posts=2, corner_posts=false, side_pattern = ENCLOSURE_PATTERN_SOLID, side_pattern_size) =
+    [ size[0], size[1], size[2], thick, mount, lip, screw_d, screw_len, has_lid, n_posts, corner_posts, side_pattern, side_pattern_size];
 
 function enclosure_x(obj) = obj[0];
 function enclosure_y(obj) = obj[1];
@@ -14,6 +19,8 @@ function enclosure_screw_len(obj) = obj[7];
 function enclosure_has_lid(obj) = obj[8];
 function enclosure_n_posts(obj) = obj[9];
 function enclosure_corner_posts(obj) = obj[10];
+function enclosure_side_pattern(obj, wall) = obj[11][0] == undef ? obj[11] : (len(obj[11]) <= wall ? obj[11][len(obj[11])-1] : obj[11][wall]);
+function enclosure_side_pattern_size(obj) = obj[12] == undef ? min(enclosure_x(obj), enclosure_y(obj)) / 25 : obj[12];
 
 function enclosure_wall(str) = str == "front" ? 0 : str == "left" ? 1 : str == "right" ? 2 : str == "back"?  3 : -1;
 
@@ -62,15 +69,41 @@ module enclosure_box(obj)
     }
 
     module box() {
+        module side_pattern(pattern, len) {
+            size = enclosure_side_pattern_size(obj);
+            
+            module do_pattern() {
+                rotate([90, 0, 0]) 
+                for (x = [5 + size/2 : size + thick : len - 5 - size/2]) {
+                    for (y = [thick + 5 + size/2: size + thick : z - 5 - size/2]) {
+                        delta_x = floor(y/ (size + thick)) % 2 == 1 ? (size+thick)/2 : 0;
+                        translate([x + delta_x, y, -thick*2]) children();
+                    }
+                }
+            }
+
+            if (pattern == ENCLOSURE_PATTERN_HONEYCOMB) {
+                do_pattern() rotate([0, 0, 90]) cylinder(d = size, h=thick*4, $fn=6);
+            } else if (pattern == ENCLOSURE_PATTERN_DIAMOND) {
+                diagonal_size = triangle_adj_length_angle_hyp(45, size/2)*2;
+                echo([size, diagonal_size]);
+                do_pattern() rotate([0, 0, 45]) translate([0, 0, thick*2]) cube([diagonal_size, diagonal_size, thick*4], center=true);
+            } else if (pattern == ENCLOSURE_PATTERN_CIRCLE) {
+                do_pattern() cylinder(d = size, h = thick*4);
+            }
+        }
+        
         union() {
             difference() {
                 rounded_cube([x, y, z], r=thick*2);
                 translate([thick, thick, thick]) rounded_cube([x-thick*2, y-thick*2, z-thick], r=thick*2);
+                for (wall = [0:3]) {
+                    translate([wall == 2 ? x - thick : 0, wall == 3 ? y - thick : 0, 0]) rotate([0, 0, wall == 1 || wall == 2 ? 90 : 0]) side_pattern(enclosure_side_pattern(obj, wall), wall == 1 || wall == 2 ? y : x);
+                }
             }
             enclosure_mount_points(obj) mount();
         }
     }
-
     module lip() {
         if (enclosure_has_lid(obj)) {
             if (enclosure_lip(obj)) {
