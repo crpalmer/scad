@@ -496,5 +496,3 @@ module vslot_part(part, type, length = 20) {
     scale(scale_factor)
     show_what();
 }
-
-vslot_2080_extrusion();
