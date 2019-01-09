@@ -5,7 +5,6 @@ module nema_mount_plate(size, hole_offset, hole_d, wall = 4) {
         translate([0, 0, wall/2]) cube([size, size, wall], center=true);
         for (xy = [ [-1, -1], [1, -1], [1, 1], [-1, 1] ] * hole_offset/2) {
             translate([xy[0], xy[1], 0]) cylinder(d = M3_through_hole_d(), h=wall*2);
-            translate([xy[0], xy[1], 0]) cylinder(d = 6, h=wall - 2);
         }
         cylinder(d = 23, h = wall*2) cylinder(d = 23, h=wall*2);
     }
