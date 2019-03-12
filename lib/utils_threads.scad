@@ -228,10 +228,7 @@ module M3_heat_set_hole(h = 0)
 
 module M3_nut_insert_cutout(h=2.4)
 {
-    minkowski() {
-	cylinder(d=6.2, h=h-0.01, $fn=6);
-	cylinder(r=0.2, h=0.01);
-    };
+    cylinder(d=6.45, h=h-0.01, $fn=6);
 }
 
 function M4_tapping_hole_d() = 3.375;
