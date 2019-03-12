@@ -121,15 +121,30 @@ module duet_enclosure() {
     enclosure_box(E);
 }
 
+module 120mm_fan_cutout() {
+    for (xy = [ [1, 1], [-1, 1], [-1, -1], [1, -1] ] * 52.5) {
+        translate([xy[0], xy[1], 0]) circle(d = inch_to_mm(0.150));
+    }
+    difference() {
+        for (d = [20:10:100]) {
+            difference() {
+                circle(d = d);
+                circle(d = d - 5);
+            }
+        }
+        for (angle = [0 : 60 : 320]) {
+            rotate([0, 0, angle]) translate([-3/2, 0]) square([3, 100]);
+        }
+    }
+}
+
 module duet_lid() {
     E = duet_E;
     
     difference() {
         translate([-enclosure_x(E)/2, -enclosure_y(E)/2, 0]) enclosure_lid(E);
-        rounded_square([95, 95, 10], r=5);
-        for (xy = [ [1, 1], [-1, 1], [-1, -1], [1, -1] ] * 52.5) {
-            translate([xy[0], xy[1], 0]) cylinder(d = inch_to_mm(0.150), h=10);
-        }
+        linear_extrude(h = 10) 120mm_fan_cutout();
+        translate([-13/2, 75, 0]) cube([13, 10, 10]);
     }
 }
     
@@ -177,5 +192,5 @@ module power_enclosure() {
 
 //power_enclosure();
 //enclosure_lid(power_E);
-duet_enclosure();
-//duet_lid();
+//duet_enclosure();
+duet_lid();
