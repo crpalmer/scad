@@ -17,7 +17,7 @@ layer_h=0.2;
 height = is_big ? 20 : 5;
 size = (is_big ? 8 : 2) *25.4;
 
-solid_h=height - (is_big ? 5 : 2);
+solid_h=height - 1;
 
 // Use outer_w > 0 to carry the stripes down the outside of the print to make
 // it look like the stripes go all the way down without having to print the
@@ -68,6 +68,8 @@ module letter(L, which) {
             dark(L, solid_h);
             T(L, solid_h, -outer_w);
         }
+        // dark stripes, upper
+        translate([0, 0, solid_h]) dark(L, height - solid_h);
     }
     if (which == 1) {
         // light stripes, only outer_w, bottom
@@ -75,12 +77,6 @@ module letter(L, which) {
             light(L, solid_h);
             T(L, solid_h, -outer_w);
         }
-    }
-    if (which == 2){
-        // dark stripes, upper
-        translate([0, 0, solid_h]) dark(L, height - solid_h);
-    }
-    if (which == 3){
         // light stripes, upper
         translate([0, 0, solid_h]) light(L, height - solid_h);
     }
