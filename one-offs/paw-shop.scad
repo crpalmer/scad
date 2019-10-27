@@ -5,16 +5,19 @@ letter="P";
 
 $fn=64;
 
-nozzle_d=0.4;
+nozzle_d=0.6;
 layer_h=0.2;
 
-// This is meant to be printed with 0.4mm nozzle, 0.5mm outer shell
-// We end up with 0.5mm solid bottom, 1mm solid top sitting on a 0.5mm solid foundation to get a good top finish
 height = is_big ? 20 : 5;
 size = (is_big ? 8 : 2) *25.4;
 
-solid_h=height-5;
-outer_w=1.2;
+solid_h=height - (is_big ? 5 : 2);
+
+// Use outer_w > 0 to carry the stripes down the outside of the print to make
+// it look like the stripes go all the way down without having to print the
+// stripe all the way through it
+//outer_w=1.2;
+outer_w = 0;
 
 module T2D(L) {
     font = "College Block 2.0";
