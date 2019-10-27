@@ -2,7 +2,7 @@ include <utils.scad>
 include <utils_threads.scad>
 
 // Command line arguments for generation:
-is_big=1;
+is_big=0;
 which=1;
 letter="O";
 drill_guide=0;
@@ -143,14 +143,11 @@ module all_letters(is_light) {
 //rotate([0, 180, 0]) 
 //all_letters(0);
 
-if (drill_guide) {
-    difference() {
-        T2D(letter);
-        offset(delta=-5) T2D(letter);
+difference() {
+    if (drill_guide) {
+        T(letter, height=drill_guide_thick);
+    } else {
+        letter(letter, which);
     }
-    for (y = [ -size*1.1/2 - 5, size*1.1/2 + 5]) {
-        translate([-inch_to_mm(8)/2, y]) square([inch_to_mm(8), 5]);
-    }
-} else {
-    letter(letter, which);
+    mounting_holes(letter);
 }
