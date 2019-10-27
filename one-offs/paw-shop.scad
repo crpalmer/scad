@@ -1,7 +1,13 @@
+include <utils.scad>
+include <utils_threads.scad>
+
 // Command line arguments for generation:
 is_big=0;
-which=3;
-letter="P";
+which=1;
+letter="O";
+drill_guide=0;
+drill_guide_hole_d=1;
+drill_guide_thick=1;
 
 $fn=64;
 
@@ -88,6 +94,44 @@ module letter(L, which) {
     }
 }
 
+module mounting_holes(L, D = drill_guide ? drill_guide_hole_d : M3_heat_set_hole_d()) {
+    module hole(x_pct, y_pct) {
+        translate([x_pct/100 * size, y_pct/100 * size, 0]) union() {
+            cylinder(d=D, h=6);
+            if (! drill_guide) cylinder(d=M3_through_hole_d(), h = 10);
+        }
+    }
+
+    if (L == "P") {
+        hole(-20, 46);
+        hole(10, 46);
+        hole(-20, -30);
+    } else if (L == "A") {
+        hole(-4, 40);
+        hole(-25, -42);
+        hole(15, -42);
+    } else if (L == "W") {
+        hole(-42, 45);
+        hole(34, 45);
+        hole(-25, -40);
+        hole(18, -40);
+    } else if (L == "S") {
+        hole(18, 30);
+        hole(-2, 0);
+        hole(-25, -35);
+    } else if (L == "H") {
+        hole(-25, 45);
+        hole(17, 45);
+        hole(-25, -42);
+        hole(17, -42);
+    } else if (L == "O") {
+        hole(-25, 0);
+        hole(18, 0);
+        hole(-5, 45);
+        hole(-5, -45);
+    }
+}
+
 module all_letters(is_light) {
     at = [ [-size, 1.5*size], [0, 1.5*size], [size, 1.5*size], [-1.5*size, 0], [-size*.5, 0], [size*.75, 0], [1.75*size, 0] ];
     text="PAWSHOP";
@@ -103,4 +147,11 @@ module all_letters(is_light) {
 //rotate([0, 180, 0]) 
 //all_letters(0);
 
-letter(letter, which);
+difference() {
+    if (drill_guide) {
+        T(letter, height=drill_guide_thick);
+    } else {
+        letter(letter, which);
+    }
+    mounting_holes(letter);
+}
