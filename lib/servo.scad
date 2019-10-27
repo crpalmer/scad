@@ -1,4 +1,53 @@
+include <utils.scad>
 include <utils_threads.scad>
+
+module spline(height = 2.6, disc_d = 14, inside_points_diameter = 5.3, spline_count = 24) {
+  r1 = inside_points_diameter/2;
+  // approximate distance along circumference from one bump to the next
+  space = r1*sin(360/spline_count);
+  r2 = r1 + space*0.75;  // pointy but not *too* pointy
+  // about 4mm solid between outer points and outside disc, should be large enough to prevent 
+  // slicers from being goofy about the space betewen the splines and the outside.
+
+  linear_extrude(height=height)
+  difference() {
+    circle(d=disc_d);
+    polygon([
+      for (i=[1:2*spline_count])
+        (i % 2 == 0) ? 
+          [ r1*cos(i*360/(2*spline_count)), r1*sin(i*360/(2*spline_count)) ] :
+          [ r2*cos(i*360/(2*spline_count)), r2*sin(i*360/(2*spline_count)) ]
+        ]);
+  }
+  translate([0, 0, height]) difference() {
+      cylinder(d = disc_d, h = 2);
+      cylinder(d = 3, h = 2);
+  }
+}
+
+module servo_to_shaft_coupler(id = 6.1, height = 15, set_screw_hole_d = 2.5, set_screw_from_top = 5)
+{
+    h = height - (2 + 2.6);
+    
+    module shaft_clamp() {
+        od = max(id + 8, 14);
+        
+        module shaft_clamp_without_holes() {
+            linear_extrude(height = h) difference() {
+                circle(d = od);
+                circle(d = id);
+            }
+        }
+        
+        difference() {
+            shaft_clamp_without_holes();
+            translate([0, 0, h - set_screw_from_top]) rotate([0, 90, 0]) translate([0, 0, -od]) cylinder(d = set_screw_hole_d, h=od*2);
+        }
+    }
+    
+    spline();
+    translate([0, 0, 2+2.6]) shaft_clamp();
+}
 
 module clamping_hub(id = inch_to_mm(3/8), spacing=inch_to_mm(0.7), wall=2, h=8, thread_d = M3_tapping_hole_d(), thread_through = M3_through_hole_d(), hole_d, hole_h, recessed_d, extension_w = 8, clamp_ext) {
     
@@ -8,7 +57,6 @@ module clamping_hub(id = inch_to_mm(3/8), spacing=inch_to_mm(0.7), wall=2, h=8, 
     extension_l = thread_d + wall*2;
     
     d = spacing + wall*4 + hole_d;
-    w = sqrt((d/2)*(d/2) / 2);
     w = sqrt(2)*d/2;
     big_h = h + wall * 2;
     hole_h = hole_h == undef ? big_h : hole_h;
