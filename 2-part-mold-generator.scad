@@ -27,14 +27,12 @@ fname = "d:/temp/greenie med 50pct settled.stl";
 
 // What to generate
 style = "square";
-what = "single";
-
-is_single = what == "single";
+what = "top";
 
 // Mold-related variables
-width_margin = (is_single ? 4 : 10);		// Margin along X axis
-depth_margin = (is_single ? 4 : 10);		// Margin along Y axis
-height_margin = (is_single ? 1 : 5);		// Margin along Z axis
+width_margin = 10;		// Margin along X axis
+depth_margin = 10;		// Margin along Y axis
+height_margin = 5;		// Margin along Z axis
 
 // Pour hole variables
 pour_hole_top = false;
@@ -77,7 +75,7 @@ module stl() {
         translate(translation) rotate(rotation) import(fname);
     }
 }
-function h(is_top) = what == "single" ? (h + height_margin) : (h/2+height_margin + z_offset * (is_top ? +1 : -1));
+function h(is_top) = h/2+height_margin + z_offset * (is_top ? +1 : -1);
 
 module mold_body(is_top) {
     if (style == "square") {
@@ -141,12 +139,5 @@ module bottom_half() {
         }
 
         translate([0, 0, height_margin]) stl();
-    }
-}
-
-module single_part() {
-    difference() {
-        mold_body(true);
-        stl();
     }
 }
