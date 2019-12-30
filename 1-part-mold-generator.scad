@@ -7,27 +7,7 @@
 // * lower the original object a tiny bit (e.g. 0.01 mm) and subtract it from the mold
 
 include <high-detail.scad>
+include <molds.scad>
 
-h = 0.5 + 19.61 ;
-translation = [ 0, 0, 0 ];
-rotation = [ 0, 0, 0];
-shape_fname = "d:/temp/crimp sloper textured.stl";
-
-// Mold-related variables
-wall = 1.2;
-do_hull = true;
-
-linear_extrude(height = h) 
-    offset(wall)
-    conditional_hull()
-    projection()
-    rotate(rotation)
-        import(shape_fname);
-
-module conditional_hull() {
-    if (do_hull) {
-        hull() children();
-    } else {
-        children();
-    }
-}
+1_part_mold_form(h = 0.5 + 46.8, wall=1.2, hull=true)
+    rotate([0, 0, 0]) import("d:/temp/bear paw hold textured.stl");

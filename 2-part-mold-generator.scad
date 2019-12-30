@@ -6,64 +6,45 @@
 // * run it through this
 
 include <high-detail.scad>
+include <molds.scad>
 
-// Dimensions of your STL object
-//w = 101.48;	// Measured along X axis
-//d = 69.37;	// Measured along Y axis
-//h = 30.65;	// Measured along Z axis
-//z_offset = -1.75; // 5;
-w = 119.25;
-d = 71.56;
-h = 21.81;
-z_offset = -2.1;
+// for open molds (left/right/box) only size[2] is needed
+parting_h = 10;
+size = [0, 0, 34.6];
 
-translation = [ 0, 5, -2.1 ];
-rotation = [ 0, 0, 0];
+// what to generate
+fname = "d:/temp/incut jug.stl";
+what = "left";
+wall = 1;       // use 5 for a closed mold?
+cut_box = [ 100, 200 ];
 
-// STL file and transformation variables
-fname = "d:/temp/greenie med 50pct settled.stl";
-//fname = "d:/temp/3DBenchy.stl";
-//fname = "";
+// Position the object
+translation = [ 22, 0, 0 ];
+rotation = [ 0, 0, 75];
 
-// What to generate
-style = "square";
-what = "top";
-
-// Mold-related variables
-width_margin = 10;		// Margin along X axis
-depth_margin = 10;		// Margin along Y axis
-height_margin = 5;		// Margin along Z axis
-
-// Pour hole variables
-pour_hole_top = false;
-pour_hole_translate = [-15, 10,0];
-pour_hole_d1 = 20;
-pour_hole_d2 = 4;
-pour_hole_height = depth_margin+50;
-
-// Keys
-dot_d = 5;
-cube_d = dot_d;
-
-box=[w+width_margin*2, d+depth_margin*2];
-keys=[box[0]/2 - width_margin/2, box[1]/2 - height_margin/2];
+// Do not change:
+function tab(x, y) = [x * (size[0]/2 + wall), y * (size[1]/2 + wall)];
+pour_mold_tabs = [ tab(-1, 0), tab(1, 0), tab(0, -1), tab(0, 1) ];
+open_mold_tabs = [];
 
 if (what == "top") {
-    top_half();
+    2_part_mold_bottom(tabs = pour_mold_tabs, parting_h = parting_h) stl();
 }
 
 if (what == "bottom") {
-    bottom_half();
+    2_part_mold_top(tabs = pour_mold_tabs, obj_h = size[2], parting_h = parting_h) stl();
 }
 
-if (what == "both") {
-    offset = w/2+width_margin + 2;
-    translate([-offset, 0, 0]) top_half();
-    translate([offset, 0, 0]) bottom_half();
+if (what == "left") {
+    2_part_open_mold_left(tabs = open_mold_tabs, h = size[2] + 1) stl();
 }
 
-if (what == "single") {
-    translate([0, 0, h(true)]) rotate([0, 180, 0]) single_part();
+if (what == "right") {
+    2_part_open_mold_right(tabs = open_mold_tabs, h = size[2] + 1) stl();
+}
+
+if (what == "box") {
+    2_part_open_mold_box(tabs = open_mold_tabs, h = size[2] + 1) stl();
 }
 
 if (what == "stl") {
@@ -73,71 +54,5 @@ if (what == "stl") {
 module stl() {
     if (fname != "") {
         translate(translation) rotate(rotation) import(fname);
-    }
-}
-function h(is_top) = h/2+height_margin + z_offset * (is_top ? +1 : -1);
-
-module mold_body(is_top) {
-    if (style == "square") {
-        translate([-box[0]/2, -box[1]/2, 0]) cube([box[0], box[1], h(is_top)]);
-    } else {
-        d = min(box[0], box[1]);
-        linear_extrude(height=h(is_top)) scale([box[0]/d, box[1]/d]) circle(d=d);
-    }
-}
-
-module reference_cube(is_top) {
-    this_d = cube_d + (is_top ? 0 : 0.25);
-    this_h = cube_d / 2 + (is_top ? 0 : 0.25);
-    translate([0, -keys[1], h(is_top)]) cube([this_d, this_d, this_h], center=true);
-}
-
-module reference_dots(is_top) {
-    this_d = dot_d + (is_top ? 0 : 0.1);
-    for (xy = [ [0, 1], [1, 0], [-1, 0] ]) {
-        translate([keys[0]*xy[0], keys[1]*xy[1], h(is_top)])
-            sphere(d=this_d);
-    }
-}
-
-module pour_hole() {
-    translate(pour_hole_translate) union() {
-        cylinder(h=height_margin, d1 = pour_hole_d1, d2 = pour_hole_d2);
-        translate([0, 0, height_margin]) cylinder(h=pour_hole_height - height_margin, d = pour_hole_d2);
-    }
-}
-
-module top_half() {
-    difference() {
-        union() {
-            mold_body(true);
-            reference_cube(true);
-        }
-
-        reference_dots(true);
-
-        if (pour_hole_top) {
-            pour_hole();
-        }
-        
-        translate([0, 0, h+height_margin]) rotate([0, 180, 0]) stl();
-    }
-}
-
-module bottom_half() {
-    box_h = h/2+height_margin + z_offset;
-
-    difference() {
-        union() {
-            mold_body(false);
-            reference_dots(false);
-        }
-        reference_cube(false);
-        
-        if (! pour_hole_top) {
-            pour_hole();
-        }
-
-        translate([0, 0, height_margin]) stl();
     }
 }
