@@ -16,10 +16,11 @@ size = [0, 0, 34.6];
 fname = "d:/temp/incut jug.stl";
 what = "left";
 wall = 1;       // use 5 for a closed mold?
-cut_box = [ 100, 200 ];
+cut_box = [ 400, 400 ];
+bounding_box = true;
 
 // Position the object
-translation = [ 22, 0, 0 ];
+translation = [ 25, -25, 0 ];
 rotation = [ 0, 0, 75];
 
 // Do not change:
@@ -35,16 +36,21 @@ if (what == "bottom") {
     2_part_mold_top(tabs = pour_mold_tabs, obj_h = size[2], parting_h = parting_h) stl();
 }
 
+if (what == "pour-box") {
+    // todo
+    2_part_mold_box(h = size[2] + 1, wall = wall) stl();
+}
+
 if (what == "left") {
-    2_part_open_mold_left(tabs = open_mold_tabs, h = size[2] + 1) stl();
+    2_part_open_mold_left(tabs = open_mold_tabs, h = size[2] + 1, cut_box = cut_box, wall = wall, bounding_box = bounding_box) stl();
 }
 
 if (what == "right") {
-    2_part_open_mold_right(tabs = open_mold_tabs, h = size[2] + 1) stl();
+    2_part_open_mold_right(tabs = open_mold_tabs, h = size[2] + 1, cut_box = cut_box, wall = wall, bounding_box = bounding_box) stl();
 }
 
-if (what == "box") {
-    2_part_open_mold_box(tabs = open_mold_tabs, h = size[2] + 1) stl();
+if (what == "open-box") {
+    2_part_open_mold_box(h = size[2] + 1, wall = wall, bounding_box = bounding_box) stl();
 }
 
 if (what == "stl") {

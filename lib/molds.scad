@@ -3,14 +3,32 @@
 // ************************
 
 
-module 1_part_mold(h, wall=1.2, hull=true) {
+module 1_part_mold(h, wall=1.2, hull=true, bounding_box = false) {
     difference() {
-        1_part_mold_form(h=h, wall=wall, hull=hull) children();
+        1_part_mold_form(h=h, wall=wall, hull=hull, bounding_box=bounding_box) children();
         children();
     }
 }
 
-module 1_part_mold_form(h, wall=1.2, hull=true) {
+module 1_part_mold_form(h, wall=1.2, hull=true, bounding_box=false) {
+    module bounding_box() {
+        // the extent of the children projection on x axis
+        module xExtent() {
+            hull() translate([0,0.5])
+                projection() rotate([90,0,0])
+                    linear_extrude(1) children();
+        }
+        
+        module yExtent() {
+            rotate([0, 0, -90]) xExtent() rotate([0, 0, 90]) children();
+        }
+
+        offset(-0.5) minkowski() {
+            xExtent() children();
+            yExtent() children();
+        }
+    }
+    
     module conditional_hull() {
         if (hull) {
             hull() children();
@@ -19,11 +37,21 @@ module 1_part_mold_form(h, wall=1.2, hull=true) {
         }
     }
 
-    linear_extrude(height = h)
-        offset(wall)
+    module projected_form() {
         conditional_hull()
         projection()
         children();
+    }
+    
+    module 2d_form() {
+        if (bounding_box) {
+            bounding_box() projected_form() children();
+        } else {
+            projected_form() children();
+        }
+    }
+
+    linear_extrude(height = h) offset(delta = wall) 2d_form() children();
 }
 
 
@@ -50,47 +78,47 @@ module 2_part_open_mold_tabs(h, tabs, tab_size) {
     }
 }
 
-module 2_part_open_mold_form_left(h, tabs, cut_box = [100, 100], wall=10, hull=false, tab_size = 7.5) {
+module 2_part_open_mold_form_left(h, tabs, cut_box = [100, 100], wall=10, hull=true, bounding_box = false, tab_size = 7.5) {
     difference() {
-        1_part_mold_form(h, wall=wall, hull=hull) children();
+        1_part_mold_form(h, wall=wall, hull=hull, bounding_box=bounding_box) children();
         translate([0, -cut_box[1]/2]) cube([cut_box[0], cut_box[1], h]);
     }
     2_part_open_mold_tabs(h=h, tabs=tabs, tab_size = tab_size);
 }
 
-module 2_part_open_mold_form_right(h, tabs, cut_box = [100, 100], wall=10, hull=false, tab_size = 7.5) {
+module 2_part_open_mold_form_right(h, tabs, cut_box = [100, 100], wall=10, hull=true, bounding_box = false, tab_size = 7.5) {
     difference() {
         intersection() {
-            1_part_mold_form(h, wall=wall, hull=hull) children();
+            1_part_mold_form(h, wall=wall, hull=hull, bounding_box=bounding_box) children();
             translate([0, -cut_box[1]/2]) cube([cut_box[0], cut_box[1], h]);
         }
         2_part_open_mold_tabs(h=h, tabs=tabs, tab_size = tab_size + 0.2);
     }
 }
 
-module 2_part_open_mold_left(h, tabs, cut_box = [100, 100], wall=10, hull=true, tab_size = 7.5) {
+module 2_part_open_mold_left(h, tabs, cut_box = [100, 100], wall=10, hull=true, bounding_box = false, tab_size = 7.5) {
     difference() {
-        2_part_open_mold_form_left(h=h, tabs=tabs, cut_box=cut_box, wall=wall, hull=hull, tab_size=tab_size) children();
+        2_part_open_mold_form_left(h=h, tabs=tabs, cut_box=cut_box, wall=wall, hull=hull, bounding_box=bounding_box, tab_size=tab_size) children();
         children();
     }
     2_part_open_mold_tabs(h=h, tabs=tabs, tab_size = tab_size);
 }
 
-module 2_part_open_mold_right(h, tabs, cut_box = [100, 100], wall=10, hull=true, tab_size = 7.5) {
+module 2_part_open_mold_right(h, tabs, cut_box = [100, 100], wall=10, hull=true, bounding_box = false, tab_size = 7.5) {
     difference() {
-        2_part_open_mold_form_right(h=h, tabs=tabs, cut_box=cut_box, wall=wall, hull=hull, tab_size=tab_size) children();
+        2_part_open_mold_form_right(h=h, tabs=tabs, cut_box=cut_box, wall=wall, hull=hull, bounding_box=bounding_box, tab_size=tab_size) children();
         children();
     }
 }
 
-module 2_part_open_mold_box(h, wall=10, hull=true, box_wall = 2, delta = -0.1, box_width = 200, slot_d = 25) {
+module 2_part_open_mold_box(h, wall=10, hull=true, bounding_box = false, box_wall = 2, delta = -0.1, box_width = 200, slot_d = 25) {
+    module mold_form(height, offset) {
+        linear_extrude(height = height) offset(delta = offset) projection() 1_part_mold_form(h=h, wall=wall, hull=hull, bounding_box=bounding_box) children();
+    }
+    
     difference() {
-        linear_extrude(height = h + box_wall) offset(box_wall + delta) projection() 1_part_mold_form(h=h, wall=wall, hull=hull) children();
-        translate([0, 0, box_wall]) linear_extrude(height = h) offset(delta) projection() 1_part_mold_form(h=h, wall=wall, hull=hull) children();
-        translate([-slot_d/2, 0, box_wall])
-        
-        translate([-box_width/2, -slot_d/2, box_wall*2 + slot_d/2]) cube([box_width, slot_d, h]);
-        translate([0, 0, box_wall*2 + slot_d/2]) rotate([0, -90, 0]) linear_extrude(height = box_width, center = true) circle(d = slot_d);
+        mold_form(height = h + box_wall, offset = box_wall + delta) children();
+        translate([0, 0, box_wall]) mold_form(height = h, offset = delta) children();
     }
 }
 
