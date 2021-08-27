@@ -19,6 +19,8 @@ variation = 0.1; // step for varying lines
 lineHeight = 2.2; //set to your calibration layer height.
 lineWidth = 0.42; //set to the first layer line width your slicer generates
 lineLength = 30;  //the length of the printed lines
+solidLength=5;    //the length of the solid box holding the lines together
+solidHeight=1;    //the height of the solid box holding the lines together
 gap=1;
 
 
@@ -32,7 +34,8 @@ module regularGrid() {
                 cube([lineSpacing/2-0.2,0.1,lineHeight],center=true);
         }
     }
-    
+    translate([-((numLines)/2)*lineSpacing, lineLength + 0*gap, 0])
+       cube([numLines*lineSpacing+lineWidth, solidLength, solidHeight]);
 }
 
 module varyingGrid() {
@@ -45,7 +48,8 @@ module varyingGrid() {
                 cube([lineSpacing/2-0.2,0.1,lineHeight],center=true);
         }
     }
-    
+    translate([-((numLines)/2)*(lineSpacing+variation), -(lineLength + 0*gap) - solidLength, 0])
+       cube([numLines*lineSpacing+lineWidth, solidLength, solidHeight]);    
 }
 
 //create STLs for regular and varying grid seperately anc combine them in your slicer
