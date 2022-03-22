@@ -25,7 +25,7 @@ module spline(height = 2.6, disc_d = 14, inside_points_diameter = 5.3, spline_co
   }
 }
 
-module servo_to_shaft_coupler(id = 6.1, height = 15, set_screw_hole_d = 2.5, set_screw_from_top = 5)
+module servo_to_shaft_coupler(id = 6.1, height = 15, set_screw_hole_d = 5.25, set_screw_from_top = 5)
 {
     h = height - (2 + 2.6);
     
@@ -40,7 +40,13 @@ module servo_to_shaft_coupler(id = 6.1, height = 15, set_screw_hole_d = 2.5, set
         }
         
         difference() {
-            shaft_clamp_without_holes();
+            union() {
+                shaft_clamp_without_holes();
+                translate([-od/2, -set_screw_from_top, h-set_screw_from_top*2])
+                cube([2, set_screw_from_top*2, set_screw_from_top*2]);
+                translate([od/2-2, -set_screw_from_top, h-set_screw_from_top*2])
+                cube([2, set_screw_from_top*2, set_screw_from_top*2]);
+            }
             translate([0, 0, h - set_screw_from_top]) rotate([0, 90, 0]) translate([0, 0, -od]) cylinder(d = set_screw_hole_d, h=od*2);
         }
     }
@@ -48,6 +54,9 @@ module servo_to_shaft_coupler(id = 6.1, height = 15, set_screw_hole_d = 2.5, set
     spline();
     translate([0, 0, 2+2.6]) shaft_clamp();
 }
+
+include <high-detail.scad>
+servo_to_shaft_coupler();
 
 module clamping_hub(id = inch_to_mm(3/8), spacing=inch_to_mm(0.7), wall=2, h=8, thread_d = M3_tapping_hole_d(), thread_through = M3_through_hole_d(), hole_d, hole_h, recessed_d, extension_w = 8, clamp_ext) {
     
