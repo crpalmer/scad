@@ -15,12 +15,11 @@ You may need a course and fine test, 1 to get within 0.5mm and one to get <0.05m
 
 numLines = 11; //number of calibration lines must be an odd number
 lineSpacing = 5; //line spacing in mm for the regular lines
-variation = 0.1; // step for varying lines
-lineHeight = 2.2; //set to your calibration layer height.
+lineHeight = 0.2; //set to your calibration layer height.
 lineWidth = 0.42; //set to the first layer line width your slicer generates
 lineLength = 30;  //the length of the printed lines
 solidLength=5;    //the length of the solid box holding the lines together
-solidHeight=1;    //the height of the solid box holding the lines together
+solidHeight=lineHeight;    //the height of the solid box holding the lines together
 gap=1;
 
 
@@ -38,7 +37,9 @@ module regularGrid() {
        cube([numLines*lineSpacing+lineWidth, solidLength, solidHeight]);
 }
 
-module varyingGrid() {
+//variation: step for varying lines
+
+module varyingGrid(variation) {
     for(i=[-((numLines-1)/2): 1 : ((numLines-1)/2)]){
         translate([i*lineSpacing-variation*i,-gap/2,lineHeight/2])
         color("red")
@@ -54,6 +55,7 @@ module varyingGrid() {
 
 //create STLs for regular and varying grid seperately anc combine them in your slicer
 //regularGrid();
-varyingGrid();
-
+//varyingGrid(0.5);
+//varyingGrid(0.1);
+//varyingGrid(0.01);
 
